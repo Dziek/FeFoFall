@@ -31,7 +31,7 @@ public class LevelInfoDisplay : MonoBehaviour {
 		// GameObject.Find("Player").GetComponent<PlayerControl>().UpdateLevelInfoDisplayObject(gameObject);
 		
 		//At Some Point change this to send this script, not this gameObject
-		levelObject.GetComponentInChildren<PlayerControl>().UpdateLevelInfoDisplayObject(gameObject);
+		levelObject.GetComponentInChildren<PlayerControl>().UpdateLevelInfoDisplayObject(this);
 		
 		// if (lvlDesc.text == null)
 		// {

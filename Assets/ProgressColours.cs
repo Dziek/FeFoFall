@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ProgressColours : MonoBehaviour {
 	
+	//I DO NOT LIKE USING MATERIALS FOR THIS
 	public Gradient backgroundGradient;
 	
 	public ColourPairing player;
@@ -29,14 +30,10 @@ public class ProgressColours : MonoBehaviour {
 	
 	void OnEnable () {
 		Messenger.AddListener("UpdateColour", UpdateColour);
-		// Messenger.AddListener("Failure", PlayFailure);
-		// Messenger.AddListener("Trigger", PlayTrigger);
 	}
 	
 	void OnDisable () {
 		Messenger.RemoveListener("UpdateColour", UpdateColour);
-		// Messenger.RemoveListener("Failure", PlayFailure);
-		// Messenger.RemoveListener("Trigger", PlayTrigger);
 	}
 }
 
