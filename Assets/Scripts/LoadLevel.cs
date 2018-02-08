@@ -41,6 +41,14 @@ public class LoadLevel : MonoBehaviour {
 	static int totalAttempts;
 	static int totalLevelsCompleted;
 	
+	public struct LevelStats {
+		public int currentAttempts;
+		public int totalAttempts;
+		public int timesCompleted;
+	}
+	
+	private static LevelStats[] levelStats;
+	
 	void Awake () {
 	
 		// PlayerPrefs.DeleteAll();
@@ -55,6 +63,7 @@ public class LoadLevel : MonoBehaviour {
 		numberOfLevels = listOfLevels.Count;
 		
 		completedLevels = new bool[numberOfLevels];
+		levelStats = new LevelStats[numberOfLevels];
 		
 		// int activeLevelCap = activeRange;
 		#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
@@ -62,7 +71,7 @@ public class LoadLevel : MonoBehaviour {
 			// for (int i = 0; i < activeLevelCap; i++)
 			{
 				// if (PlayerPrefsX.GetBool("Level"+i+"Completed"))
-				if (PlayerPrefsX.GetBool("Level"+listOfLevels[i]+"Completed") == false)
+				if (PlayerPrefsX.GetBool("Level"+listOfLevels[i].name+"Completed") == false)
 				{
 					// Debug.Log("");
 					// levels.RemoveAt(i);
@@ -73,6 +82,10 @@ public class LoadLevel : MonoBehaviour {
 					levelsCompleted++;
 					// activeLevelCap++;
 				}
+				
+				levelStats[i].currentAttempts = PlayerPrefs.GetInt("Level"+levels[i].name+"CurrentAttempts");
+				levelStats[i].totalAttempts = PlayerPrefs.GetInt("Level"+levels[i].name+"TotalAttempts");
+				levelStats[i].timesCompleted = PlayerPrefs.GetInt("Level"+levels[i].name+"TimesCompleted");
 			}
 			
 			// for (int j = 0; j < levelClusterInfo.Length; j++)
@@ -216,8 +229,9 @@ public class LoadLevel : MonoBehaviour {
 		
 		// Debug.Log(levels[lastLevel]);
 		// levels.RemoveAt(lastLevel);
+		
 		#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
-			PlayerPrefsX.SetBool("Level"+levels[lastLevel]+"Completed", true);
+			PlayerPrefsX.SetBool("Level"+levels[lastLevel].name+"Completed", true);
 		#endif
 		
 		#if UNITY_WEBGL && !UNITY_EDITOR
@@ -232,9 +246,11 @@ public class LoadLevel : MonoBehaviour {
 		
 		levelsCompleted++;
 		totalLevelsCompleted++;
+		levelStats[lastLevel].timesCompleted++;
 		
 		#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
-				PlayerPrefs.SetInt("TotalLevelsCompleted", totalLevelsCompleted);
+			PlayerPrefs.SetInt("TotalLevelsCompleted", totalLevelsCompleted);
+			PlayerPrefs.SetInt("Level"+levels[lastLevel].name+"TimesCompleted", levelStats[lastLevel].timesCompleted);
 		#endif
 		
 		// if (levelsCompleted >= LoadLevel.instance.levelClusterInfo[difficultyStage].levelInfo[0])
@@ -275,9 +291,13 @@ public class LoadLevel : MonoBehaviour {
 		completedLevels = new bool[numberOfLevels];
 		for (int i = 0; i < completedLevels.Length; i++)
 		{
+			
+			levelStats[i].currentAttempts = 0;
+			
 			// PlayerPrefsX.SetBool("Level"+i+"Completed", false);
 			#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
-				PlayerPrefsX.SetBool("Level"+levels[i]+"Completed", false);
+				PlayerPrefsX.SetBool("Level"+levels[i].name+"Completed", false);
+				PlayerPrefs.SetInt("Level"+levels[i].name+"CurrentAttempts", levelStats[i].currentAttempts);
 			#endif
 	
 			#if UNITY_WEBGL && !UNITY_EDITOR
@@ -340,11 +360,19 @@ public class LoadLevel : MonoBehaviour {
 	}
 	
 	public static void AddToCurrentAttempts () {
+		
 		currentAttempts++;
 		totalAttempts++;
+		levelStats[lastLevel].currentAttempts++;
+		levelStats[lastLevel].totalAttempts++;
+		
 		#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
 			PlayerPrefs.SetInt("CurrentAttempts", currentAttempts);
 			PlayerPrefs.SetInt("TotalAttempts", totalAttempts);
+			PlayerPrefs.SetInt("Level"+levels[lastLevel].name+"CurrentAttempts", levelStats[lastLevel].currentAttempts);
+			PlayerPrefs.SetInt("Level"+levels[lastLevel].name+"TotalAttempts", levelStats[lastLevel].totalAttempts);
+			
+			Debug.Log("Level"+levels[lastLevel].name+"TotalAttempts");
 		#endif
 		
 		#if UNITY_WEBGL && !UNITY_EDITOR
@@ -374,6 +402,10 @@ public class LoadLevel : MonoBehaviour {
 	
 	public static float GetPercentageComplete () {
 		return (float)levelsCompleted / (float)numberOfLevels;
+	}
+	
+	public static int GetThisLevelAttempts () {
+		return levelStats[lastLevel].currentAttempts;
 	}
 	
 	#if UNITY_WEBGL

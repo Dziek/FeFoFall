@@ -7,6 +7,8 @@ public class LevelInfoDisplay : MonoBehaviour {
 	public Text lvlName;
 	public Text lvlDesc;
 	public Text lvlID;
+	public Text lvlAttempts;
+	
 	// public string completeDesc;
 	
 	// private bool canRid = true; // whether can move buttons to get rid of screen
@@ -23,9 +25,12 @@ public class LevelInfoDisplay : MonoBehaviour {
 			lvlName.text = lN;
 			lvlDesc.text = lD;
 			lvlID.text = levelObject.name;
+			lvlAttempts.text = LoadLevel.GetThisLevelAttempts().ToString();
 		}
 		
 		// GameObject.Find("Player").GetComponent<PlayerControl>().UpdateLevelInfoDisplayObject(gameObject);
+		
+		//At Some Point change this to send this script, not this gameObject
 		levelObject.GetComponentInChildren<PlayerControl>().UpdateLevelInfoDisplayObject(gameObject);
 		
 		// if (lvlDesc.text == null)

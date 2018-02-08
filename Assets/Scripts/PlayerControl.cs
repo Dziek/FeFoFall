@@ -244,15 +244,15 @@ public class PlayerControl : MonoBehaviour {
 		   {
 			   Messenger.Broadcast("Failure");
 			   GameStates.ChangeState("Transition", "Bad");
+			   gameObject.SetActive(false);
 		   }
 		   
 		   if(collision.gameObject.tag == "End")
 		   {
 			   Messenger.Broadcast("Success");
 			   GameStates.ChangeState("Transition", "Good");
+			   gameObject.SetActive(false);
 		   }
-		   
-		   gameObject.SetActive(false);
 		}
 	}
 	
