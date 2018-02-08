@@ -24,7 +24,7 @@ public class PlayerControl : MonoBehaviour {
 	
 	private Renderer pR; // player renderer
 	
-	private GameObject lvlInfoDisplay; // the level info display, to be removed on first movement
+	private LevelInfoDisplay lvlInfoDisplay; // the level info display, to be removed on first movement
 	private bool canGoAway = true; // a check to make sure movement doesn't register multiple game attempts
 	
 	public enum directions{
@@ -188,7 +188,7 @@ public class PlayerControl : MonoBehaviour {
 		
 		if (lvlInfoDisplay != null && canGoAway)
 		{
-			lvlInfoDisplay.GetComponent<LevelInfoDisplay>().GoAway();
+			lvlInfoDisplay.GoAway();
 			canGoAway = false;
 		}
 		
@@ -222,7 +222,7 @@ public class PlayerControl : MonoBehaviour {
 		transform.position = startingPos;
 	}
 	
-	public void UpdateLevelInfoDisplayObject (GameObject lID) {
+	public void UpdateLevelInfoDisplayObject (LevelInfoDisplay lID) {
 		lvlInfoDisplay = lID;
 	}
 	
