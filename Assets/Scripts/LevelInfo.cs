@@ -7,13 +7,12 @@ public class LevelInfo : MonoBehaviour {
 	public string description;
 	public Color background;
 	
-	void OnEnable () {
-		// Debug.Log(description);
-		if (background != null)
-		{
-			Camera.main.backgroundColor = background;
-		}
-	}
+	// void OnEnable () {
+		// if (background != null)
+		// {
+			// Camera.main.backgroundColor = background;
+		// }
+	// }
 	
 	public void GetInfo (out string n, out string d) {
 		// return description;

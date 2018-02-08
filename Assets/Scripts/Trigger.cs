@@ -8,6 +8,8 @@ public class Trigger : MonoBehaviour {
 	public bool oneShot;
 	public bool oneShotDestroy;
 	
+	public bool playAudio = true;
+	
 	public Material deactivated;
 	private Material activated;
 	
@@ -40,6 +42,11 @@ public class Trigger : MonoBehaviour {
 			{
 				// GetComponent.<Renderer>().material = deactivated;
 				StartCoroutine("Reactivate");
+			}
+			
+			if (playAudio == true)
+			{
+				Messenger.Broadcast("Trigger");
 			}
 		}
 		

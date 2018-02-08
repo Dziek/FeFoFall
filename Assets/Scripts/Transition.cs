@@ -72,6 +72,8 @@ public class Transition : MonoBehaviour {
 		if (e != "Load")
 		{
 			startPoint = GameObject.Find("Player");
+			// Debug.Log(startPoint.transform.position);
+			// GameObject.Find("Player").SetActive(false);
 		}else{
 			startPoint = GameObject.Find("Play");
 		}
@@ -125,6 +127,9 @@ public class Transition : MonoBehaviour {
 		}
 		
 		// levelInfo.SetActive(true);
+		
+		Messenger.Broadcast("UpdateColour");
+		
 		transitionGO.SetActive(false);
 		
 		

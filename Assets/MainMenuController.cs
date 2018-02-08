@@ -10,8 +10,14 @@ public class MainMenuController : MonoBehaviour {
 	public MenuScreen statsSubMenu;
 	public MenuScreen extrasSubMenu;
 	
+	private GameObject selectedButtonGO;
+	
 	void OnEnable () {
 		LoadMainSub();
+	}
+	
+	void OnDisable () {
+		selectedButtonGO = null;
 	}
 	
 	public void LoadMainSub () {
@@ -20,7 +26,13 @@ public class MainMenuController : MonoBehaviour {
 		statsSubMenu.menuScreenGO.SetActive(false);
 		extrasSubMenu.menuScreenGO.SetActive(false);
 		
-		EventSystem.current.SetSelectedGameObject(mainSubMenu.firstSelectedGO);
+		// MenuManager always makes the Play Button be selected on MainMenu load anyway
+		// What this does, is make it so when you leave Options, you're still on Options
+		
+		if (selectedButtonGO != null)
+		{
+			EventSystem.current.SetSelectedGameObject(selectedButtonGO);
+		}
 	}
 	
 	public void OpenOptionsSub () {
@@ -29,6 +41,7 @@ public class MainMenuController : MonoBehaviour {
 		statsSubMenu.menuScreenGO.SetActive(false);
 		extrasSubMenu.menuScreenGO.SetActive(false);
 		
+		selectedButtonGO = EventSystem.current.currentSelectedGameObject;
 		EventSystem.current.SetSelectedGameObject(optionsSubMenu.firstSelectedGO);
 	}
 	
@@ -38,6 +51,7 @@ public class MainMenuController : MonoBehaviour {
 		statsSubMenu.menuScreenGO.SetActive(true);
 		extrasSubMenu.menuScreenGO.SetActive(false);
 		
+		selectedButtonGO = EventSystem.current.currentSelectedGameObject;
 		EventSystem.current.SetSelectedGameObject(statsSubMenu.firstSelectedGO);
 	}
 	
@@ -47,6 +61,7 @@ public class MainMenuController : MonoBehaviour {
 		statsSubMenu.menuScreenGO.SetActive(false);
 		extrasSubMenu.menuScreenGO.SetActive(true);
 		
+		selectedButtonGO = EventSystem.current.currentSelectedGameObject;
 		EventSystem.current.SetSelectedGameObject(extrasSubMenu.firstSelectedGO);
 	}
 }

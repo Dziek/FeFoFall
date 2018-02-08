@@ -251,6 +251,8 @@ public class PlayerControl : MonoBehaviour {
 			   Messenger.Broadcast("Success");
 			   GameStates.ChangeState("Transition", "Good");
 		   }
+		   
+		   gameObject.SetActive(false);
 		}
 	}
 	

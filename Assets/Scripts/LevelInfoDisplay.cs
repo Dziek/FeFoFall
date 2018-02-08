@@ -25,7 +25,8 @@ public class LevelInfoDisplay : MonoBehaviour {
 			lvlID.text = levelObject.name;
 		}
 		
-		GameObject.Find("Player").GetComponent<PlayerControl>().UpdateLevelInfoDisplayObject(gameObject);
+		// GameObject.Find("Player").GetComponent<PlayerControl>().UpdateLevelInfoDisplayObject(gameObject);
+		levelObject.GetComponentInChildren<PlayerControl>().UpdateLevelInfoDisplayObject(gameObject);
 		
 		// if (lvlDesc.text == null)
 		// {

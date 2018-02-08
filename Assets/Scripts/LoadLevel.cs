@@ -26,7 +26,8 @@ public class LoadLevel : MonoBehaviour {
 	static GameObject currentLevel;
 	
 	static int nextLevel;
-	static int lastLevel;
+	static int lastLevel = -1;
+	static int beforeLastLevel = -1;
 	
 	// static int difficultyStage; // plugs into levelClusterInfo to work out when later levels can load
 	public int activeRange; // how many levels can be 'active' at a time
@@ -133,6 +134,8 @@ public class LoadLevel : MonoBehaviour {
 		// }
 		// currentAttempts++;
 		
+		Debug.Log("GetLevel");
+		
 		if (currentLevel != null)
 		{
 			Destroy(currentLevel);
@@ -147,8 +150,11 @@ public class LoadLevel : MonoBehaviour {
 		}else if (levels.Count == 1)
 		{
 			nextLevel = 0;
-		}else if (levels.Count > 1){
-			while (nextLevel == lastLevel) 
+		}else if (levels.Count == 2)
+		{
+			nextLevel = Random.Range(0, 2);
+		}else if (levels.Count > 2){
+			while (nextLevel == lastLevel || nextLevel == beforeLastLevel) 
 			{	
 				if (levels.Count < instance.activeRange)
 				{
@@ -166,13 +172,16 @@ public class LoadLevel : MonoBehaviour {
 						if (r == 0)
 						{
 							nextLevel = 0;
-							Debug.Log("Did it");
+							Debug.Log("Set to early level override");
 						}else{
 							nextLevel = Random.Range(0, instance.activeRange);
 						}
 					}else{
 						nextLevel = Random.Range(0, instance.activeRange);
 					}
+					
+					Debug.Log("Finding suitable level " + "BeforeLast: " + beforeLastLevel.ToString() + 
+								" Last: " + lastLevel.ToString() + " Next: " + nextLevel.ToString());
 				}
 				
 					// nextLevel = Random.Range(0, instance.activeRange);
@@ -181,11 +190,18 @@ public class LoadLevel : MonoBehaviour {
 			}
 		}
 		
+		if (nextLevel == lastLevel)
+		{
+			Debug.Log("Well that shouldn't happen");
+			Debug.Break();
+		}
+		
 		if (nextLevel != -1)
 		{
 			currentLevel = Instantiate(levels[nextLevel], Vector3.zero, Quaternion.identity) as GameObject;
 		}
 		
+		beforeLastLevel = lastLevel;
 		lastLevel = nextLevel;
 	}
 	
@@ -227,6 +243,8 @@ public class LoadLevel : MonoBehaviour {
 		// }
 		
 		// PlayerPrefs.SetInt("LevelsComple
+		
+		// Debug.Log("Broadcast");
 		
 		// if (levels.Count > 0)
 		if (levelsCompleted < numberOfLevels)
@@ -284,6 +302,8 @@ public class LoadLevel : MonoBehaviour {
 		#if UNITY_WEBGL && !UNITY_EDITOR
 			Application.ExternalCall("UpdateCurrentAttempts", 0);
 		#endif
+		
+		Messenger.Broadcast("UpdateColour");
 	}
 	
 	public static void Completed () {
@@ -350,6 +370,10 @@ public class LoadLevel : MonoBehaviour {
 	
 	public static int GetTotalAttempts () {
 		return totalAttempts;
+	}
+	
+	public static float GetPercentageComplete () {
+		return (float)levelsCompleted / (float)numberOfLevels;
 	}
 	
 	#if UNITY_WEBGL
