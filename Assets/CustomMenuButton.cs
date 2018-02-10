@@ -2,21 +2,38 @@
  using UnityEngine.EventSystems;
  using UnityEngine.UI;
  
- public class CustomMenuButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
+ public class CustomMenuButton : MonoBehaviour, ISelectHandler, IDeselectHandler  {
  
-     private Text myText;
+     private Text buttonText;
+	 
+	 private Color selectedColor = new Color (1, 1, 1, 1);
+	 private Color deselectedColor = new Color (1, 1, 1, 0.8f);
+	 
+	 private string defaultText;
+	 // private Color defaultColour;
  
-     void Start (){
-         myText = GetComponentInChildren<Text>();
+     void Awake () {
+         buttonText = GetComponentInChildren<Text>();
+		 
+		 defaultText = buttonText.text;
+		 // defaultColour = buttonText.color;
+		 
+		 buttonText.color = deselectedColor;
      }
  
-     public void OnPointerEnter (PointerEventData eventData)
+     public void OnSelect (BaseEventData eventData)
      {
-         myText.text = "Hovering";
+        // buttonText.text = " " + defaultText;
+        buttonText.text = defaultText.TrimStart(' ');
+		
+        // buttonText.fontStyle = FontStyle.Bold;
+        buttonText.color = selectedColor;
      }
  
-     public void OnPointerExit (PointerEventData eventData)
+     public void OnDeselect (BaseEventData eventData)
      {
-         myText.text = "Not Hovering";
+        buttonText.text = defaultText;
+		// buttonText.fontStyle = FontStyle.Normal;
+        buttonText.color = deselectedColor;
      }
  }
