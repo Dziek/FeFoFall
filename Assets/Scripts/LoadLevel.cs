@@ -131,7 +131,7 @@ public class LoadLevel : MonoBehaviour {
 						nextLevelQueuePos = Random.Range(0, instance.activeRange);
 					}
 					
-					Debug.Log("Finding suitable level " + "BeforeLast: " + beforeLastLevel.ToString() + 
+					Debug.Log("Finding suitable level " + "BeforeLast: " + beforeLastLevelQueuePos.ToString() + 
 								" Last: " + lastLevelQueuePos.ToString() + " Next: " + nextLevelQueuePos.ToString());
 				}
 			}
@@ -167,19 +167,19 @@ public class LoadLevel : MonoBehaviour {
 		individualLevelStats[lastLevelID].timesCompleted++;
 		
 		#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
-			PlayerPrefsX.SetBool("Level"+levelsInQueue[lastLevel].name+"Completed", true);
+			PlayerPrefsX.SetBool("Level"+levelsInQueue[lastLevelQueuePos].name+"Completed", true);
 			
 			PlayerPrefs.SetInt("TotalLevelsCompleted", totalLevelsCompleted);
-			PlayerPrefs.SetInt("Level"+levelsInQueue[lastLevel].name+"TimesCompleted", individualLevelStats[lastLevelID].timesCompleted);
+			PlayerPrefs.SetInt("Level"+levelsInQueue[lastLevelQueuePos].name+"TimesCompleted", individualLevelStats[lastLevelID].timesCompleted);
 		#endif
 		
 		#if UNITY_WEBGL && !UNITY_EDITOR
-			string levelName = (levelsInQueue[lastLevel].name.Remove(0,5)).TrimStart('0');
+			string levelName = (levelsInQueue[lastLevelQueuePos].name.Remove(0,5)).TrimStart('0');
 			int levelID = levelName.Length > 0 ? int.Parse(levelName) : 0;
 			Application.ExternalCall("UpdateCompletedLevels", levelID, true);
 		#endif
 		
-		levelsInQueue.RemoveAt(lastLevel);
+		levelsInQueue.RemoveAt(lastLevelQueuePos);
 		
 		levelsCompleted++;
 		if (levelsCompleted < numberOfLevels)
@@ -281,8 +281,8 @@ public class LoadLevel : MonoBehaviour {
 			PlayerPrefs.SetInt("CurrentAttempts", currentAttempts);
 			PlayerPrefs.SetInt("TotalAttempts", totalAttempts);
 			
-			PlayerPrefs.SetInt("Level"+levelsInQueue[lastLevel].name+"CurrentAttempts", individualLevelStats[lastLevelID].currentAttempts);
-			PlayerPrefs.SetInt("Level"+levelsInQueue[lastLevel].name+"TotalAttempts", individualLevelStats[lastLevelID].totalAttempts);
+			PlayerPrefs.SetInt("Level"+levelsInQueue[lastLevelQueuePos].name+"CurrentAttempts", individualLevelStats[lastLevelID].currentAttempts);
+			PlayerPrefs.SetInt("Level"+levelsInQueue[lastLevelQueuePos].name+"TotalAttempts", individualLevelStats[lastLevelID].totalAttempts);
 			
 			// Debug.Log("Level"+levelsInQueue[lastLevel].name+"CurrentAttempts: " + individualLevelStats[lastLevelID].currentAttempts);
 			// Debug.Log("Level"+levelsInQueue[lastLevel].name+"TotalAttempts: " + individualLevelStats[lastLevelID].totalAttempts);
