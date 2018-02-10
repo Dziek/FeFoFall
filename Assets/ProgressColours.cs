@@ -19,7 +19,7 @@ public class ProgressColours : MonoBehaviour {
 	void UpdateColour () {
 		
 		float pointValue = LoadLevel.GetPercentageComplete();
-		Debug.Log(pointValue);
+		// Debug.Log(pointValue);
 		
 		Camera.main.backgroundColor = backgroundGradient.Evaluate(pointValue);
 		player.mat.color = player.grad.Evaluate(pointValue);

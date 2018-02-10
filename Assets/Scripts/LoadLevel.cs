@@ -3,35 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class LoadLevel : MonoBehaviour {
-	
-	 // [System.Serializable]
-	 // public class LevelClusterInfo
-	 // {
-		 // public int[] levelInfo = new int[2];
-	 
-	 // }
-	 
-	 // public LevelClusterInfo[] levelClusterInfo;
-	 
+		 
 	 static LoadLevel instance;
 	
-	// public int[][] levelClusterInfo;
-	
-	// public static GameObject[] levels;
-	// public static List<GameObject> levels;
-	public static List<GameObject> levels = new List<GameObject>();
-	// public static List<bool> completedLevels;
+	public static List<GameObject> levelsInQueue = new List<GameObject>();
 	static bool[] completedLevels;
 	
 	static GameObject currentLevel;
 	
-	static int nextLevel;
-	static int lastLevel = -1;
-	static int beforeLastLevel = -1;
+	static int nextLevelQueuePos;
+	static int lastLevelQueuePos = -1;
+	static int beforeLastLevelQueuePos = -1;
 	
-	// static int difficultyStage; // plugs into levelClusterInfo to work out when later levels can load
+	static int lastLevelID = -1;
+	
 	public int activeRange; // how many levels can be 'active' at a time
-	// static int activeLevelCap; // levels
 	
 	static int levelsCompleted;
 	static int currentAttempts;
@@ -47,7 +33,7 @@ public class LoadLevel : MonoBehaviour {
 		public int timesCompleted;
 	}
 	
-	private static LevelStats[] levelStats;
+	private static LevelStats[] individualLevelStats;
 	
 	void Awake () {
 	
@@ -55,53 +41,28 @@ public class LoadLevel : MonoBehaviour {
 		
 		instance = this;
 		
-		// Debug.Log(levelClusterInfo[0].levelInfo[1]);
-		
-		// levels = new List<GameObject>();
-		// levels = Resources.LoadAll<GameObject>("prefabs") as List<GameObject>;
-		List<GameObject> listOfLevels = new List<GameObject>(Resources.LoadAll<GameObject>("prefabs"));
-		numberOfLevels = listOfLevels.Count;
+		List<GameObject> fullListOfLevels = new List<GameObject>(Resources.LoadAll<GameObject>("prefabs"));
+		numberOfLevels = fullListOfLevels.Count;
 		
 		completedLevels = new bool[numberOfLevels];
-		levelStats = new LevelStats[numberOfLevels];
+		individualLevelStats = new LevelStats[numberOfLevels];
 		
-		// int activeLevelCap = activeRange;
 		#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
-			for (int i = 0; i < completedLevels.Length; i++)
-			// for (int i = 0; i < activeLevelCap; i++)
+			for (int i = 0; i < numberOfLevels; i++)
 			{
-				// if (PlayerPrefsX.GetBool("Level"+i+"Completed"))
-				if (PlayerPrefsX.GetBool("Level"+listOfLevels[i].name+"Completed") == false)
+				if (PlayerPrefsX.GetBool("Level"+fullListOfLevels[i].name+"Completed") == false)
 				{
-					// Debug.Log("");
-					// levels.RemoveAt(i);
-					// levelsCompleted++;
-					
-					levels.Add(listOfLevels[i]);
+					levelsInQueue.Add(fullListOfLevels[i]);
 				}else{
 					levelsCompleted++;
-					// activeLevelCap++;
 				}
 				
-				levelStats[i].currentAttempts = PlayerPrefs.GetInt("Level"+levels[i].name+"CurrentAttempts");
-				levelStats[i].totalAttempts = PlayerPrefs.GetInt("Level"+levels[i].name+"TotalAttempts");
-				levelStats[i].timesCompleted = PlayerPrefs.GetInt("Level"+levels[i].name+"TimesCompleted");
+				individualLevelStats[i].currentAttempts = PlayerPrefs.GetInt("Level"+fullListOfLevels[i].name+"CurrentAttempts");
+				individualLevelStats[i].totalAttempts = PlayerPrefs.GetInt("Level"+fullListOfLevels[i].name+"TotalAttempts");
+				individualLevelStats[i].timesCompleted = PlayerPrefs.GetInt("Level"+fullListOfLevels[i].name+"TimesCompleted");
 			}
 			
-			// for (int j = 0; j < levelClusterInfo.Length; j++)
-			// {
-				// // if (levelsCompleted >= LoadLevel.instance.levelClusterInfo[difficultyStage].levelInfo[0])
-				// if (levelsCompleted >= levelClusterInfo[difficultyStage].levelInfo[0])
-				// {
-					// difficultyStage++;
-				// }
-			// }
-			
-			// levelClusterInfo[levelClusterInfo.Length-1].levelInfo[1] = numberOfLevels;
-			
-			// levelsCompleted = PlayerPrefs.GetInt("LevelsCompleted");
 			currentAttempts = PlayerPrefs.GetInt("CurrentAttempts");
-			// numberOfLevels = PlayerPrefs.GetInt("Number");
 			timesCompleted = PlayerPrefs.GetInt("TimesCompleted");
 			bestAttempts = PlayerPrefs.GetInt("BestAttempts");
 			totalAttempts = PlayerPrefs.GetInt("TotalAttempts");
@@ -116,7 +77,7 @@ public class LoadLevel : MonoBehaviour {
 			{
 				if (completedLevels[i] == false)
 				{
-					levels.Add(listOfLevels[i]);
+					levelsInQueue.Add(fullListOfLevels[i]);
 				}else{
 					levelsCompleted++;
 				}
@@ -124,28 +85,7 @@ public class LoadLevel : MonoBehaviour {
 		#endif
 	}
 	
-	// public void GetLevelFromClick () {
-		// if (currentLevel != null)
-		// {
-			// Destroy(currentLevel);
-		// }
-		
-		// while (nextLevel == lastLevel) 
-		// {
-			// nextLevel = Random.Range(0, levels.Count);
-		// }
-		
-		// currentLevel = Instantiate(levels[nextLevel], transform.position, transform.rotation) as GameObject;
-		
-		// lastLevel = nextLevel;
-	// }
-	
 	public static void GetLevel () {
-		// if (c == "Good")
-		// {
-			// levels.RemoveAt(lastLevel);
-		// }
-		// currentAttempts++;
 		
 		Debug.Log("GetLevel");
 		
@@ -154,68 +94,64 @@ public class LoadLevel : MonoBehaviour {
 			Destroy(currentLevel);
 		}
 		
-		if (levels.Count == 0)
+		if (levelsInQueue.Count == 0)
 		{
 			// GameStates.ChangeState("Complete");
-			nextLevel = -1;
+			nextLevelQueuePos = -1;
 			Debug.Log("D");
 			// return null;
-		}else if (levels.Count == 1)
+		}else if (levelsInQueue.Count == 1)
 		{
-			nextLevel = 0;
-		}else if (levels.Count == 2)
+			nextLevelQueuePos = 0;
+		}else if (levelsInQueue.Count == 2)
 		{
-			nextLevel = Random.Range(0, 2);
-		}else if (levels.Count > 2){
-			while (nextLevel == lastLevel || nextLevel == beforeLastLevel) 
+			nextLevelQueuePos = Random.Range(0, 2);
+		}else if (levelsInQueue.Count > 2){
+			while (nextLevelQueuePos == lastLevelQueuePos || nextLevelQueuePos == beforeLastLevelQueuePos) 
 			{	
-				if (levels.Count < instance.activeRange)
+				if (levelsInQueue.Count < instance.activeRange)
 				{
-					nextLevel = Random.Range(0, levels.Count);
+					nextLevelQueuePos = Random.Range(0, levelsInQueue.Count);
 				}else{
 				
-					string lowLevelName = (levels[0].name.Remove(0,5)).TrimStart('0');
-					int lowLevelID = lowLevelName.Length > 0 ? int.Parse(lowLevelName) : 0;
-					string highLevelName = (levels[instance.activeRange-1].name.Remove(0,5)).TrimStart('0');
-					int highLevelID = highLevelName.Length > 0 ? int.Parse(highLevelName) : 0;
+					int bottomOfRangeID = ConvertLevelNameToID(levelsInQueue[0].name);
+					int topOfRangeID = ConvertLevelNameToID(levelsInQueue[instance.activeRange-1].name);
 					
-					if ((highLevelID - lowLevelID) > 10 && lastLevel != 0)
+					if ((topOfRangeID - bottomOfRangeID) > 10 && lastLevelQueuePos != 0)
 					{
 						int r = Random.Range(0,2);
 						if (r == 0)
 						{
-							nextLevel = 0;
+							nextLevelQueuePos = 0;
 							Debug.Log("Set to early level override");
 						}else{
-							nextLevel = Random.Range(0, instance.activeRange);
+							nextLevelQueuePos = Random.Range(0, instance.activeRange);
 						}
 					}else{
-						nextLevel = Random.Range(0, instance.activeRange);
+						nextLevelQueuePos = Random.Range(0, instance.activeRange);
 					}
 					
 					Debug.Log("Finding suitable level " + "BeforeLast: " + beforeLastLevel.ToString() + 
-								" Last: " + lastLevel.ToString() + " Next: " + nextLevel.ToString());
+								" Last: " + lastLevelQueuePos.ToString() + " Next: " + nextLevelQueuePos.ToString());
 				}
-				
-					// nextLevel = Random.Range(0, instance.activeRange);
-				// }
-				// nextLevel = Random.Range(0, LoadLevel.instance.levelClusterInfo[difficultyStage].levelInfo[1]);
 			}
 		}
 		
-		if (nextLevel == lastLevel)
+		if (nextLevelQueuePos == lastLevelQueuePos)
 		{
 			Debug.Log("Well that shouldn't happen");
 			Debug.Break();
 		}
 		
-		if (nextLevel != -1)
+		if (nextLevelQueuePos != -1)
 		{
-			currentLevel = Instantiate(levels[nextLevel], Vector3.zero, Quaternion.identity) as GameObject;
+			currentLevel = Instantiate(levelsInQueue[nextLevelQueuePos], Vector3.zero, Quaternion.identity) as GameObject;
 		}
 		
-		beforeLastLevel = lastLevel;
-		lastLevel = nextLevel;
+		beforeLastLevelQueuePos = lastLevelQueuePos;
+		lastLevelQueuePos = nextLevelQueuePos;
+		
+		lastLevelID = ConvertLevelNameToID(levelsInQueue[nextLevelQueuePos].name);
 	}
 	
 	public static void ClearLevel () {
@@ -227,42 +163,25 @@ public class LoadLevel : MonoBehaviour {
 	
 	public static bool LevelCompleted () {
 		
-		// Debug.Log(levels[lastLevel]);
-		// levels.RemoveAt(lastLevel);
+		totalLevelsCompleted++;
+		individualLevelStats[lastLevelID].timesCompleted++;
 		
 		#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
-			PlayerPrefsX.SetBool("Level"+levels[lastLevel].name+"Completed", true);
+			PlayerPrefsX.SetBool("Level"+levelsInQueue[lastLevel].name+"Completed", true);
+			
+			PlayerPrefs.SetInt("TotalLevelsCompleted", totalLevelsCompleted);
+			PlayerPrefs.SetInt("Level"+levelsInQueue[lastLevel].name+"TimesCompleted", individualLevelStats[lastLevelID].timesCompleted);
 		#endif
 		
 		#if UNITY_WEBGL && !UNITY_EDITOR
-			string levelName = (levels[lastLevel].name.Remove(0,5)).TrimStart('0');
+			string levelName = (levelsInQueue[lastLevel].name.Remove(0,5)).TrimStart('0');
 			int levelID = levelName.Length > 0 ? int.Parse(levelName) : 0;
 			Application.ExternalCall("UpdateCompletedLevels", levelID, true);
 		#endif
 		
-		levels.RemoveAt(lastLevel);
-		
-		// Debug.Log(levels.Count);
+		levelsInQueue.RemoveAt(lastLevel);
 		
 		levelsCompleted++;
-		totalLevelsCompleted++;
-		levelStats[lastLevel].timesCompleted++;
-		
-		#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
-			PlayerPrefs.SetInt("TotalLevelsCompleted", totalLevelsCompleted);
-			PlayerPrefs.SetInt("Level"+levels[lastLevel].name+"TimesCompleted", levelStats[lastLevel].timesCompleted);
-		#endif
-		
-		// if (levelsCompleted >= LoadLevel.instance.levelClusterInfo[difficultyStage].levelInfo[0])
-		// {
-			// difficultyStage++;
-		// }
-		
-		// PlayerPrefs.SetInt("LevelsComple
-		
-		// Debug.Log("Broadcast");
-		
-		// if (levels.Count > 0)
 		if (levelsCompleted < numberOfLevels)
 		{
 			return false;
@@ -273,11 +192,11 @@ public class LoadLevel : MonoBehaviour {
 	
 	public static bool CheckComplete () {
 		
-		// levels.RemoveAt(lastLevel);
-		// Debug.Log(levels[nextLevel]);
-		// Debug.Log(levels.Count);
+		// levelsInQueue.RemoveAt(lastLevel);
+		// Debug.Log(levelsInQueue[nextLevel]);
+		// Debug.Log(levelsInQueue.Count);
 		
-		if (levels.Count > 0)
+		if (levelsInQueue.Count > 0)
 		{
 			return false;
 		}else{
@@ -286,22 +205,22 @@ public class LoadLevel : MonoBehaviour {
 	}
 	
 	public static void Reset () {
-		levels = new List<GameObject>(Resources.LoadAll<GameObject>("prefabs"));
-		numberOfLevels = levels.Count;
+		levelsInQueue = new List<GameObject>(Resources.LoadAll<GameObject>("prefabs"));
+		numberOfLevels = levelsInQueue.Count;
 		completedLevels = new bool[numberOfLevels];
 		for (int i = 0; i < completedLevels.Length; i++)
 		{
 			
-			levelStats[i].currentAttempts = 0;
+			individualLevelStats[i].currentAttempts = 0;
 			
 			// PlayerPrefsX.SetBool("Level"+i+"Completed", false);
 			#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
-				PlayerPrefsX.SetBool("Level"+levels[i].name+"Completed", false);
-				PlayerPrefs.SetInt("Level"+levels[i].name+"CurrentAttempts", levelStats[i].currentAttempts);
+				PlayerPrefsX.SetBool("Level"+levelsInQueue[i].name+"Completed", false);
+				PlayerPrefs.SetInt("Level"+levelsInQueue[i].name+"CurrentAttempts", individualLevelStats[i].currentAttempts);
 			#endif
 	
 			#if UNITY_WEBGL && !UNITY_EDITOR
-				string levelName = (levels[i].name.Remove(0,5)).TrimStart('0');
+				string levelName = (levelsInQueue[i].name.Remove(0,5)).TrimStart('0');
 				int levelID = levelName.Length > 0 ? int.Parse(levelName) : 0;
 				Application.ExternalCall("UpdateCompletedLevels", levelID, false);
 			#endif
@@ -348,8 +267,45 @@ public class LoadLevel : MonoBehaviour {
 		#if UNITY_WEBGL && !UNITY_EDITOR
 			Application.ExternalCall("UpdateTimesCompleted", timesCompleted);
 		#endif
-		// Reset();
 	}
+	
+	public static void AddToCurrentAttempts () {
+		
+		currentAttempts++;
+		totalAttempts++;
+		
+		individualLevelStats[lastLevelID].currentAttempts++;
+		individualLevelStats[lastLevelID].totalAttempts++;
+		
+		#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
+			PlayerPrefs.SetInt("CurrentAttempts", currentAttempts);
+			PlayerPrefs.SetInt("TotalAttempts", totalAttempts);
+			
+			PlayerPrefs.SetInt("Level"+levelsInQueue[lastLevel].name+"CurrentAttempts", individualLevelStats[lastLevelID].currentAttempts);
+			PlayerPrefs.SetInt("Level"+levelsInQueue[lastLevel].name+"TotalAttempts", individualLevelStats[lastLevelID].totalAttempts);
+			
+			// Debug.Log("Level"+levelsInQueue[lastLevel].name+"CurrentAttempts: " + individualLevelStats[lastLevelID].currentAttempts);
+			// Debug.Log("Level"+levelsInQueue[lastLevel].name+"TotalAttempts: " + individualLevelStats[lastLevelID].totalAttempts);
+			// Debug.Log("Level"+levelsInQueue[lastLevel].name+"TimesCompleted: " + individualLevelStats[lastLevelID].timesCompleted);
+		#endif
+		
+		#if UNITY_WEBGL && !UNITY_EDITOR
+			Application.ExternalCall("UpdateCurrentAttempts", currentAttempts);
+		#endif
+		
+		// Debug.Log("ATTEMPTS - ID: " + lastLevelID + " lastLevelQueuePos: " + lastLevel);
+	}
+	
+	static int ConvertLevelNameToID (string levelName) {
+		string trimmedName = levelName.Remove(0,5).TrimStart('0');
+		int ID = trimmedName.Length > 0 ? int.Parse(trimmedName) : 0;
+			
+		return ID;
+	}
+	
+	// static bool CheckForLevelRepeats () {
+		// return false;
+	// }
 	
 	public static int GetLevelsCompleted () {
 		return levelsCompleted;
@@ -357,27 +313,6 @@ public class LoadLevel : MonoBehaviour {
 	
 	public static int GetNumberOfLevels () {
 		return numberOfLevels;
-	}
-	
-	public static void AddToCurrentAttempts () {
-		
-		currentAttempts++;
-		totalAttempts++;
-		levelStats[lastLevel].currentAttempts++;
-		levelStats[lastLevel].totalAttempts++;
-		
-		#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
-			PlayerPrefs.SetInt("CurrentAttempts", currentAttempts);
-			PlayerPrefs.SetInt("TotalAttempts", totalAttempts);
-			PlayerPrefs.SetInt("Level"+levels[lastLevel].name+"CurrentAttempts", levelStats[lastLevel].currentAttempts);
-			PlayerPrefs.SetInt("Level"+levels[lastLevel].name+"TotalAttempts", levelStats[lastLevel].totalAttempts);
-			
-			Debug.Log("Level"+levels[lastLevel].name+"TotalAttempts");
-		#endif
-		
-		#if UNITY_WEBGL && !UNITY_EDITOR
-			Application.ExternalCall("UpdateCurrentAttempts", currentAttempts);
-		#endif
 	}
 	
 	public static int GetCurrentAttempts () {
@@ -404,8 +339,16 @@ public class LoadLevel : MonoBehaviour {
 		return (float)levelsCompleted / (float)numberOfLevels;
 	}
 	
-	public static int GetThisLevelAttempts () {
-		return levelStats[lastLevel].currentAttempts;
+	public static int GetCurrentLevelCurrentAttempts () {
+		return individualLevelStats[lastLevelID].currentAttempts;
+	}
+	
+	public static int GetCurrentLevelTotalAttempts () {
+		return individualLevelStats[lastLevelID].totalAttempts;
+	}
+	
+	public static int GetCurrentLevelTimesCompleted () {
+		return individualLevelStats[lastLevelID].timesCompleted;
 	}
 	
 	#if UNITY_WEBGL

@@ -25,7 +25,7 @@ public class LevelInfoDisplay : MonoBehaviour {
 			lvlName.text = lN;
 			lvlDesc.text = lD;
 			lvlID.text = levelObject.name;
-			lvlAttempts.text = LoadLevel.GetThisLevelAttempts().ToString();
+			lvlAttempts.text = LoadLevel.GetCurrentLevelCurrentAttempts().ToString();
 		}
 		
 		// GameObject.Find("Player").GetComponent<PlayerControl>().UpdateLevelInfoDisplayObject(gameObject);
