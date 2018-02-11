@@ -128,7 +128,8 @@ public class Transition : MonoBehaviour {
 		
 		// levelInfo.SetActive(true);
 		
-		Messenger.Broadcast("UpdateColour");
+		// Messenger.Broadcast("UpdateColour");
+		Messenger.Broadcast("TransitionMiddle");
 		
 		transitionGO.SetActive(false);
 		

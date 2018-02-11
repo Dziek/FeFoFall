@@ -190,6 +190,8 @@ public class PlayerControl : MonoBehaviour {
 		{
 			lvlInfoDisplay.GoAway();
 			canGoAway = false;
+			
+			Messenger.Broadcast("FirstMovement");
 		}
 		
 		if (controlledObjectScript != null)
