@@ -14,13 +14,15 @@ public class CameraShake : MonoBehaviour {
 	private bool shaking;
 	
 	void Awake () {
-		Messenger<float>.AddListener("screenshake", Shake);
+		// Messenger<float>.AddListener("screenshake", Shake);
+		Messenger<float, float>.AddListener("screenshake", Shake);
 		
 		camStartPos = Camera.main.transform.position;
 	}
 	
 	void OnDestroy () {
-		Messenger<float>.RemoveListener("screenshake", Shake);
+		// Messenger<float>.RemoveListener("screenshake", Shake);
+		Messenger<float, float>.RemoveListener("screenshake", Shake);
 	}
 	
 	void Start () {
@@ -49,10 +51,10 @@ public class CameraShake : MonoBehaviour {
 		// Shake(5, 0.2f);
 	}
 	
-	// public void Shake (float intensity = 2, float time = 0.5f) {
-	public void Shake (float intensity = 2) {
+	public void Shake (float intensity = 2, float time = 0.5f) {
+	// public void Shake (float intensity = 2) {
 		
-		float time = 0.5f;
+		// float time = 0.08f;
 		
 		// StopCoroutine(ShakeCamera(intensity, time));
 		// StartCoroutine(ShakeCamera(intensity, time));

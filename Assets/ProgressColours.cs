@@ -30,10 +30,12 @@ public class ProgressColours : MonoBehaviour {
 	
 	void OnEnable () {
 		Messenger.AddListener("TransitionMiddle", UpdateColour);
+		Messenger.AddListener("UpdateColour", UpdateColour);
 	}
 	
 	void OnDisable () {
 		Messenger.RemoveListener("TransitionMiddle", UpdateColour);
+		Messenger.RemoveListener("UpdateColour", UpdateColour);
 	}
 }
 

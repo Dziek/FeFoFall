@@ -247,6 +247,8 @@ public class PlayerControl : MonoBehaviour {
 			   Messenger.Broadcast("Failure");
 			   GameStates.ChangeState("Transition", "Bad");
 			   gameObject.SetActive(false);
+			   
+			   Messenger<float, float>.Broadcast("screenshake", 0.08f, 0.03f);
 		   }
 		   
 		   if(collision.gameObject.tag == "End")
@@ -254,6 +256,8 @@ public class PlayerControl : MonoBehaviour {
 			   Messenger.Broadcast("Success");
 			   GameStates.ChangeState("Transition", "Good");
 			   gameObject.SetActive(false);
+			   
+			   Messenger<float, float>.Broadcast("screenshake", 0.04f, 0.75f);
 		   }
 		}
 	}
