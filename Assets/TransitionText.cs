@@ -21,21 +21,20 @@ public class TransitionText : MonoBehaviour {
 		controller = GetComponent<TransitionController>();
 	}
 	
-	public string ChooseText (TransitionStates tS) {
-		// if (tS == TransitionStates.levelLoad)
-		// {
-			// return loadTextOptions[Random.Range(0, loadTextOptions.Length)];
-		// }
+	public string ChooseText () {
 		
-		Debug.Log("ChoosingText");
-		
-		switch (tS)
+		if (controller.gameCompleted == true)
 		{
-			case TransitionStates.levelLoad:
+			return completeText;
+		}
+		
+		switch (controller.transitionState)
+		{
+			case TransitionState.levelLoad:
 				return loadTextOptions[Random.Range(0, loadTextOptions.Length)];
 			break;
 			
-			case TransitionStates.levelSuccess:
+			case TransitionState.levelSuccess:
 				List<string> options = new List<string>(successTextOptions);
 				
 				int currentLevelAttempts = LoadLevel.GetCurrentLevelCurrentAttempts();
@@ -125,7 +124,7 @@ public class TransitionText : MonoBehaviour {
 				return options[Random.Range(0, options.Count)];
 			break;
 			
-			case TransitionStates.levelFailure:
+			case TransitionState.levelFailure:
 				List<string> optionsF = new List<string>(failureTextOptions);
 				
 				if (LoadLevel.GetCurrentLevelCurrentAttempts() > 1)
@@ -174,14 +173,13 @@ public class TransitionText : MonoBehaviour {
 		return "OH NO SOMETHING HAS GONE WRONG?";
 	}
 	
-	public void UpdateText (TransitionStates tS) {
+	public void UpdateText () {
 		
-		string newText = ChooseText(tS);
+		string newText = ChooseText();
 		
 		while (lastText == newText)
 		{
-			Debug.Log("Repeated");
-			newText = ChooseText(tS);
+			newText = ChooseText();
 		}
 		
 		displayText.text = newText;

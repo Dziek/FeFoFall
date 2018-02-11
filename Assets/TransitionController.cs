@@ -15,7 +15,7 @@ public class TransitionController : MonoBehaviour {
 	// public Vector2 endPointLastPos;
 	
 	[HideInInspector]
-	public TransitionStates transitionState;
+	public TransitionState transitionState;
 	[HideInInspector]
 	public bool gameCompleted;
 	
@@ -30,70 +30,66 @@ public class TransitionController : MonoBehaviour {
 		transitionText = GetComponent<TransitionText>();
 	}
 	
-	void BeginTransition (TransitionStates tS) {
-		Debug.Log("Start Transition");
-		StartCoroutine(Transition(tS));
+	void BeginTransition (TransitionState tS) {
+		
+		transitionState = tS;
+		StartCoroutine("Transition");
 	}
 	
-	// void BeginTransition (TransitionStates tS, Vector2 playerPos, Vector2 endPointPos) {
-		// playerLastPos = playerPos;
-		// endPointLastPos = endPointPos;
+	IEnumerator Transition () {
 		
-		// StartCoroutine(Transition(tS));
-	// }
-	
-	IEnumerator Transition (TransitionStates tS) {
+		if (transitionState == TransitionState.levelSuccess)
+		{
+			// Tells LoadLevel a level has been completed, and returns whether that was the last level
+			gameCompleted = LoadLevel.LevelCompleted();
+		}
 		
-		Debug.Log("Transition");
+		if (transitionState == TransitionState.levelSuccess)
+		{
+			// Reset Game if you start to play and levels are all complete
+			if (LoadLevel.CheckComplete())
+			{
+				LoadLevel.Reset();
+				// Debug.Log("R");
+			}
+		}
 		
-		// Tells LoadLevel a level has been completed, and returns whether that was the last level
-		// gameCompleted = LoadLevel.LevelCompleted();
+		transitionText.UpdateText();
 		
-		// yield return transitionScreen.StartPhaseOne();
-		transitionText.UpdateText(tS);
-		// yield return transitionScreen.StartPhaseTwo();
-		// yield return transitionScreen.StartPhaseThree();
+		yield return transitionScreen.StartPhaseOne();
+		yield return transitionScreen.StartPhaseTwo();
+		yield return transitionScreen.StartPhaseThree();
+		
+		if (gameCompleted == false)
+		{
+			GameStates.ChangeState("Playing");
+		}else{
+			GameStates.ChangeState("Complete");
+		}
 		
 		// Debug.Log("Transition Done");
 		
 		yield return null;
 	}
 	
-	// void FillPlayerGO (GameObject go) {
-		// playerGO = go;
-		
-		// endPointGO = GameObject.Find("EndPoint");
-	// }
-	
-	// void FillEndPointGO (GameObject go) {
-		// endPointGO = go;
-	// }
-	
 	void CloseCallUpdate (bool v) {
 		closeCall = v;
 	}
 	
 	void OnEnable () {
-		// Messenger<TransitionStates, Vector2, Vector2>.AddListener("Transition", BeginTransition);
-		Messenger<TransitionStates>.AddListener("Transition", BeginTransition);
+		Messenger<TransitionState>.AddListener("Transition", BeginTransition);
 		Messenger<bool>.AddListener("CloseCall", CloseCallUpdate);
-		
-		// Messenger<GameObject>.AddListener("FillPlayerGO", FillPlayerGO);
-		// Messenger<GameObject>.AddListener("FillEndPointGO", FillEndPointGO);
 	}
 	
 	void OnDisable () {
-		// Messenger<TransitionStates, Vector2, Vector2>.RemoveListener("Transition", BeginTransition);
-		Messenger<TransitionStates>.RemoveListener("Transition", BeginTransition);
+		Messenger<TransitionState>.RemoveListener("Transition", BeginTransition);
 		Messenger<bool>.RemoveListener("CloseCall", CloseCallUpdate);
-		
-		// Messenger<GameObject>.RemoveListener("FillPlayerGO", FillPlayerGO);
-		// Messenger<GameObject>.RemoveListener("FillEndPointGO", FillEndPointGO);
 	}
 }
 
-public enum TransitionStates {
+public enum TransitionState {
 	levelSuccess,
 	levelFailure,
-	levelLoad
+	levelLoad,
+	levelTest
 }

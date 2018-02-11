@@ -29,8 +29,6 @@ public class Transition : MonoBehaviour {
 	private float scaleHeight;
 	private float scaleWidth;
 	
-	// private string lastText;
-	
 	// Use this for initialization
 	void Start () {
 		zPos = Mathf.Abs(Camera.main.transform.position.z - transform.position.z);
@@ -55,15 +53,12 @@ public class Transition : MonoBehaviour {
 		
 		bool complete = false; // whether the player has completed the main mode
 		
-		string newTransitionText;
-		
 		if (e == "Good")
 		{
 			complete = LoadLevel.LevelCompleted();
 			// transitionText.text = complete == true ? completeText : goodText[Random.Range(0, goodText.Length)];
 			
 		}else if (e == "Bad"){
-			// while (lastText)
 			// transitionText.text = badText[Random.Range(0, badText.Length)];
 		}else if (e == "Load"){
 			// transitionText.text = loadText[Random.Range(0, loadText.Length)];

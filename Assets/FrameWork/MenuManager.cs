@@ -65,9 +65,11 @@ public class MenuManager : MonoBehaviour {
 				if (extra != null)
 				{
 					// transitionScript.StopCoroutine("Go");
-					transitionScript.StartCoroutine("Go", extra);
+					// transitionScript.StartCoroutine("Go", extra);
+					// Messenger<TransitionState>
 				}else{
-					transitionScript.StartCoroutine("Go", "Load");
+					// transitionScript.StartCoroutine("Go", "Load");
+					Messenger<TransitionState>.Broadcast("Transition", TransitionState.levelLoad);
 				}
 				
 				mainMenu.SetActive(false);

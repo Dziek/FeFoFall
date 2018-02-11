@@ -247,11 +247,10 @@ public class PlayerControl : MonoBehaviour {
 		    {
 			    Messenger.Broadcast("Failure");
 			    GameStates.ChangeState("Transition", "Bad");
-			    gameObject.SetActive(false);
 				
 			    Messenger<float, float>.Broadcast("screenshake", 0.08f, 0.03f);
 			   
-			    Messenger<TransitionStates>.Broadcast("Transition", TransitionStates.levelFailure);
+			    Messenger<TransitionState>.Broadcast("Transition", TransitionState.levelFailure);
 			   
 			    Transform endPoint = GameObject.Find("EndPoint").transform;
 			    float distance = Vector2.Distance(transform.position, endPoint.position);
@@ -259,17 +258,20 @@ public class PlayerControl : MonoBehaviour {
 			   
 			    Debug.Log("Distance " + distance + " Converted Distance " + convertedDistance);
 			    Messenger<bool>.Broadcast("CloseCall", convertedDistance < 0.4f);
+				
+				gameObject.SetActive(false);
 		    }
 		   
 		    if(collision.gameObject.tag == "End")
 		    {
 			    Messenger.Broadcast("Success");
 			    GameStates.ChangeState("Transition", "Good");
-			    gameObject.SetActive(false);
 			    
 			    Messenger<float, float>.Broadcast("screenshake", 0.04f, 0.75f);
 			
-			    Messenger<TransitionStates>.Broadcast("Transition", TransitionStates.levelSuccess);
+			    Messenger<TransitionState>.Broadcast("Transition", TransitionState.levelSuccess);
+				
+				gameObject.SetActive(false);
 		    }
 		}
 	}
