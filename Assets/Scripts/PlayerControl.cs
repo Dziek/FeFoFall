@@ -43,6 +43,7 @@ public class PlayerControl : MonoBehaviour {
 			TouchControl.UpdatePlayerObject(this);
 		#endif
 		
+		// Messenger<GameObject>.Broadcast("FillPlayerGO", gameObject);
 		// lvlInfoDisplay = GameObject.Find("LevelInfo");
 	}
 	
@@ -242,23 +243,34 @@ public class PlayerControl : MonoBehaviour {
 				Application.LoadLevel(Application.loadedLevel);
 			}
 		}else{
-		   if(collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Frame")
-		   {
-			   Messenger.Broadcast("Failure");
-			   GameStates.ChangeState("Transition", "Bad");
-			   gameObject.SetActive(false);
+		    if(collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Frame")
+		    {
+			    Messenger.Broadcast("Failure");
+			    GameStates.ChangeState("Transition", "Bad");
+			    gameObject.SetActive(false);
+				
+			    Messenger<float, float>.Broadcast("screenshake", 0.08f, 0.03f);
 			   
-			   Messenger<float, float>.Broadcast("screenshake", 0.08f, 0.03f);
-		   }
+			    Messenger<TransitionStates>.Broadcast("Transition", TransitionStates.levelFailure);
+			   
+			    Transform endPoint = GameObject.Find("EndPoint").transform;
+			    float distance = Vector2.Distance(transform.position, endPoint.position);
+			    float convertedDistance = distance - (transform.localScale.x / 2) - (endPoint.localScale.x / 2);
+			   
+			    Debug.Log("Distance " + distance + " Converted Distance " + convertedDistance);
+			    Messenger<bool>.Broadcast("CloseCall", convertedDistance < 0.4f);
+		    }
 		   
-		   if(collision.gameObject.tag == "End")
-		   {
-			   Messenger.Broadcast("Success");
-			   GameStates.ChangeState("Transition", "Good");
-			   gameObject.SetActive(false);
-			   
-			   Messenger<float, float>.Broadcast("screenshake", 0.04f, 0.75f);
-		   }
+		    if(collision.gameObject.tag == "End")
+		    {
+			    Messenger.Broadcast("Success");
+			    GameStates.ChangeState("Transition", "Good");
+			    gameObject.SetActive(false);
+			    
+			    Messenger<float, float>.Broadcast("screenshake", 0.04f, 0.75f);
+			
+			    Messenger<TransitionStates>.Broadcast("Transition", TransitionStates.levelSuccess);
+		    }
 		}
 	}
 	

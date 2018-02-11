@@ -60,14 +60,14 @@ public class MenuManager : MonoBehaviour {
 			case "Transition":
 				transition.SetActive(true);
 				
-				// transitionScript.Go(extra);
+				// Debug.Log("MM");
+				
 				if (extra != null)
 				{
+					// transitionScript.StopCoroutine("Go");
 					transitionScript.StartCoroutine("Go", extra);
-					// transitionScript.StartCoroutine("GoAlt", extra);
 				}else{
 					transitionScript.StartCoroutine("Go", "Load");
-					// transitionScript.StartCoroutine("GoAlt", "Load");
 				}
 				
 				mainMenu.SetActive(false);

@@ -315,6 +315,10 @@ public class LoadLevel : MonoBehaviour {
 		return numberOfLevels;
 	}
 	
+	public static int GetNumberOfLevelsRemaining () {
+		return numberOfLevels - levelsCompleted;
+	}
+	
 	public static int GetCurrentAttempts () {
 		return currentAttempts;
 	}
