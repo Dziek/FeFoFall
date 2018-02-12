@@ -256,7 +256,7 @@ public class PlayerControl : MonoBehaviour {
 			    float distance = Vector2.Distance(transform.position, endPoint.position);
 			    float convertedDistance = distance - (transform.localScale.x / 2) - (endPoint.localScale.x / 2);
 			   
-			    Debug.Log("Distance " + distance + " Converted Distance " + convertedDistance);
+			    // Debug.Log("Distance " + distance + " Converted Distance " + convertedDistance);
 			    Messenger<bool>.Broadcast("CloseCall", convertedDistance < 0.4f);
 				
 				gameObject.SetActive(false);
@@ -267,7 +267,8 @@ public class PlayerControl : MonoBehaviour {
 			    Messenger.Broadcast("Success");
 			    GameStates.ChangeState("Transition", "Good");
 			    
-			    Messenger<float, float>.Broadcast("screenshake", 0.04f, 0.75f);
+			    // Messenger<float, float>.Broadcast("screenshake", 0.04f, 0.75f);
+			    Messenger<float>.Broadcast("StartConstantShake", 0.04f);
 			
 			    Messenger<TransitionState>.Broadcast("Transition", TransitionState.levelSuccess);
 				

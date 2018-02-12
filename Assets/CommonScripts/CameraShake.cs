@@ -11,11 +11,15 @@ public class CameraShake : MonoBehaviour {
 	
 	private float intensity;
 	
-	private bool shaking;
+	// private bool shaking;
+	
+	private Coroutine constantCoroutine;
 	
 	void Awake () {
 		// Messenger<float>.AddListener("screenshake", Shake);
 		Messenger<float, float>.AddListener("screenshake", Shake);
+		Messenger<float>.AddListener("StartConstantShake", StartConstantShake);
+		Messenger.AddListener("StopConstantShake", StopConstantShake);
 		
 		camStartPos = Camera.main.transform.position;
 	}
@@ -23,6 +27,8 @@ public class CameraShake : MonoBehaviour {
 	void OnDestroy () {
 		// Messenger<float>.RemoveListener("screenshake", Shake);
 		Messenger<float, float>.RemoveListener("screenshake", Shake);
+		Messenger<float>.RemoveListener("StartConstantShake", StartConstantShake);
+		Messenger.RemoveListener("StopConstantShake", StopConstantShake);
 	}
 	
 	void Start () {
@@ -45,7 +51,7 @@ public class CameraShake : MonoBehaviour {
 	
 	void Shake2 () {
 		
-		shaking = true;
+		// shaking = true;
 		
 		Shake(intensity);
 		// Shake(5, 0.2f);
@@ -68,6 +74,19 @@ public class CameraShake : MonoBehaviour {
 		
 		
 	}
+	
+	void StartConstantShake (float intensity) {
+		constantCoroutine = StartCoroutine(ShakeCameraConstantly(intensity));
+	}
+	
+	void StopConstantShake () {
+		if (constantCoroutine != null)
+		{
+			StopCoroutine(constantCoroutine);
+		}
+		
+		constantCoroutine = null;
+	}	
 	
 	IEnumerator ShakeCamera (float intensity, float shakeTime) {
 		
@@ -97,5 +116,25 @@ public class CameraShake : MonoBehaviour {
 		// shaking = false;
 		Camera.main.transform.position = camStartPos;
 		
+	}
+	
+	IEnumerator ShakeCameraConstantly (float intensity) {
+		
+		// shaking = true;
+		
+		camStartPos = Camera.main.transform.position;
+		
+		while (true)
+		{		
+			float shakeAmountX = (Random.value * intensity * 2) - intensity;
+			float shakeAmountY = (Random.value * intensity * 2) - intensity;
+			float shakeAmountZ = (Random.value * intensity * 2) - intensity;
+			
+			Camera.main.transform.position = camStartPos + new Vector3(shakeAmountX, shakeAmountY, shakeAmountZ);
+			yield return null;
+		}
+		
+		// shaking = false;
+		Camera.main.transform.position = camStartPos;	
 	}
 }

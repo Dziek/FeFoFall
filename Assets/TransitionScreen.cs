@@ -53,7 +53,7 @@ public class TransitionScreen : MonoBehaviour {
 		yield return null;
 	}
 	
-	public IEnumerator StartPhaseTwo () {
+	public IEnumerator StartPhaseTwo (float waitTime) {
 		
 		if (controller.gameCompleted == false && controller.transitionState != TransitionState.levelTest)
 		{
@@ -65,7 +65,8 @@ public class TransitionScreen : MonoBehaviour {
 		
 		transitionTextGO.SetActive(true);
 		
-		yield return new WaitForSeconds(0.25f);
+		// yield return new WaitForSeconds(0.25f);
+		yield return new WaitForSeconds(waitTime);
 		
 		// Messenger.Broadcast("UpdateColour");
 		Messenger.Broadcast("TransitionMiddle");

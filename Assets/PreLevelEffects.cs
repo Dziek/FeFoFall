@@ -32,6 +32,8 @@ public class PreLevelEffects : MonoBehaviour {
 	void TurnOff () {
 		profile.vignette.enabled = false;
 		// postProcesses.enabled = false;
+		
+		// StartCoroutine("FadeOutVignette");
 	}
 	
 	IEnumerator FadeInVignette () {
@@ -55,6 +57,28 @@ public class PreLevelEffects : MonoBehaviour {
 		VignetteModel.Settings s = profile.vignette.settings;
 		s.intensity = topIntensity;
 		profile.vignette.settings = s;
+	}
+	
+	IEnumerator FadeOutVignette () {
+		// profile.vignette.enabled = true;
+		
+		float t = 0;
+		float timeToFade = 0.3f;
+		
+		VignetteModel.Settings u = profile.vignette.settings;;
+		float startIntensity = u.intensity;
+		
+		while (t < timeToFade)
+		{
+			VignetteModel.Settings v = profile.vignette.settings;
+			v.intensity = Mathf.Lerp(startIntensity, 0, t / timeToFade);
+			profile.vignette.settings = v;
+			
+			t += Time.deltaTime;
+			yield return null;
+		}
+		
+		profile.vignette.enabled = false;
 	}
 	
 	void OnEnable () {

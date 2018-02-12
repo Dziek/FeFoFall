@@ -56,8 +56,20 @@ public class TransitionController : MonoBehaviour {
 		
 		transitionText.UpdateText();
 		
+		
+		string text = transitionText.GetText();
+		
+		MinMax waitTime = new MinMax(0.25f, 0.45f);
+		MinMax stringLength = new MinMax(8, 20);
+		
+		float lerpValue = Mathf.InverseLerp(stringLength.min, stringLength.max, text.Length);
+		
+		float actualWaitTime = Mathf.Lerp(waitTime.min, waitTime.max, lerpValue);
+		
+		Debug.Log("Wait Time: " + actualWaitTime);
+		
 		yield return transitionScreen.StartPhaseOne();
-		yield return transitionScreen.StartPhaseTwo();
+		yield return transitionScreen.StartPhaseTwo(actualWaitTime);
 		yield return transitionScreen.StartPhaseThree();
 		
 		if (gameCompleted == false)
@@ -67,6 +79,7 @@ public class TransitionController : MonoBehaviour {
 			GameStates.ChangeState("Complete");
 		}
 		
+		Messenger.Broadcast("StopConstantShake");
 		// Debug.Log("Transition Done");
 		
 		yield return null;
@@ -92,4 +105,14 @@ public enum TransitionState {
 	levelFailure,
 	levelLoad,
 	levelTest
+}
+
+public struct MinMax {
+	public float min;
+	public float max;
+	
+	public MinMax (float mi, float ma) {
+		min = mi;
+		max = ma;
+	}
 }

@@ -221,4 +221,8 @@ public class TransitionText : MonoBehaviour {
 		
 		return number.ToString() + suffix;
 	}
+	
+	public string GetText () {
+		return displayText.text;
+	}
 }

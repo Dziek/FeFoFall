@@ -87,7 +87,7 @@ public class LoadLevel : MonoBehaviour {
 	
 	public static void GetLevel () {
 		
-		Debug.Log("GetLevel");
+		// Debug.Log("GetLevel");
 		
 		if (currentLevel != null)
 		{
@@ -123,7 +123,7 @@ public class LoadLevel : MonoBehaviour {
 						if (r == 0)
 						{
 							nextLevelQueuePos = 0;
-							Debug.Log("Set to early level override");
+							// Debug.Log("Set to early level override");
 						}else{
 							nextLevelQueuePos = Random.Range(0, instance.activeRange);
 						}
@@ -131,8 +131,8 @@ public class LoadLevel : MonoBehaviour {
 						nextLevelQueuePos = Random.Range(0, instance.activeRange);
 					}
 					
-					Debug.Log("Finding suitable level " + "BeforeLast: " + beforeLastLevelQueuePos.ToString() + 
-								" Last: " + lastLevelQueuePos.ToString() + " Next: " + nextLevelQueuePos.ToString());
+					// Debug.Log("Finding suitable level " + "BeforeLast: " + beforeLastLevelQueuePos.ToString() + 
+								// " Last: " + lastLevelQueuePos.ToString() + " Next: " + nextLevelQueuePos.ToString());
 				}
 			}
 		}
