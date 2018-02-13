@@ -16,6 +16,7 @@ public class Navigation : MonoBehaviour {
 		{
 			if (GameStates.GetState() != "MainMenu")
 			{
+				Messenger.Broadcast("MainMenu");
 				LoadLevel.ClearLevel();
 				GameStates.ChangeState("MainMenu");
 			}else{
