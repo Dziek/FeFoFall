@@ -13,6 +13,8 @@ public class CameraShake : MonoBehaviour {
 	
 	// private bool shaking;
 	
+	// private Vector3 startCameraPos;
+	
 	private Coroutine constantCoroutine;
 	
 	void Awake () {
@@ -22,6 +24,7 @@ public class CameraShake : MonoBehaviour {
 		Messenger.AddListener("StopConstantShake", StopConstantShake);
 		
 		camStartPos = Camera.main.transform.position;
+		// startCameraPos = Camera.main.transform.position;
 	}
 	
 	void OnDestroy () {
@@ -86,6 +89,8 @@ public class CameraShake : MonoBehaviour {
 		}
 		
 		constantCoroutine = null;
+		Camera.main.transform.position = camStartPos;
+		// Camera.main.transform.position = startCameraPos;
 	}	
 	
 	IEnumerator ShakeCamera (float intensity, float shakeTime) {
@@ -123,6 +128,7 @@ public class CameraShake : MonoBehaviour {
 		// shaking = true;
 		
 		camStartPos = Camera.main.transform.position;
+		// startCameraPos = Camera.main.transform.position;
 		
 		while (true)
 		{		

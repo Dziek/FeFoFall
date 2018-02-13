@@ -42,6 +42,7 @@ public class TransitionText : MonoBehaviour {
 				if (currentLevelAttempts == 1)
 				{
 					options.Add("First Time Lucky!");
+					options.Add("Beginner's Luck!");
 					options.Add("Hole In One!");
 				}
 				
@@ -69,7 +70,7 @@ public class TransitionText : MonoBehaviour {
 					break;
 					
 					default:
-						options.Add((LoadLevel.GetPercentageComplete() * 100).ToString() + "% Done!");
+						options.Add((LoadLevel.GetPercentageComplete() * 100).ToString("f2") + "% Done!");
 					break;
 				}
 				

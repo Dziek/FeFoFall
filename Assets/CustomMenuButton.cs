@@ -26,14 +26,14 @@
         // buttonText.text = " " + defaultText;
         buttonText.text = defaultText.TrimStart(' ');
 		
-        // buttonText.fontStyle = FontStyle.Bold;
+        buttonText.fontStyle = FontStyle.Bold;
         buttonText.color = selectedColor;
      }
  
      public void OnDeselect (BaseEventData eventData)
      {
         buttonText.text = defaultText;
-		// buttonText.fontStyle = FontStyle.Normal;
+		buttonText.fontStyle = FontStyle.Normal;
         buttonText.color = deselectedColor;
      }
  }

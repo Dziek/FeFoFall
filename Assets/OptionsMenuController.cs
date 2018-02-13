@@ -18,6 +18,13 @@ public class OptionsMenuController : MonoBehaviour {
 		selectedButtonGO = null;
 	}
 	
+	// void Update () {
+		// if (Input.GetButtonDown("Cancel"))
+		// {
+			// Debug.Log("");
+		// }
+	// }
+	
 	public void LoadOptionsMenu () {
 		optionsMenu.menuScreenGO.SetActive(true);
 		resetMenu.menuScreenGO.SetActive(false);

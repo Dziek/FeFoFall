@@ -70,12 +70,13 @@ public class TransitionScreen : MonoBehaviour {
 		
 		// Messenger.Broadcast("UpdateColour");
 		Messenger.Broadcast("TransitionMiddle");
-		transitionTextGO.SetActive(false);
+		// transitionTextGO.SetActive(false);
 		
 		yield return null;
 	}
 	
 	public IEnumerator StartPhaseThree () {
+		
 		
 		GameObject endPoint;
 		
@@ -88,6 +89,8 @@ public class TransitionScreen : MonoBehaviour {
 		}else{
 			endPoint = GameObject.Find("Play");	
 		}		
+		
+		transitionTextGO.SetActive(false);
 		
 		expandPanel.transform.position = new Vector3 (endPoint.transform.position.x, endPoint.transform.position.y, expandPanel.transform.position.z);
 		
