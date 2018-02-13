@@ -6,10 +6,6 @@ using UnityEngine.UI;
 public class Watermark : MonoBehaviour {
 	
 	public Sprite[] sprites;
-	// public Color[] colours;
-	
-	// public float minAlpha = 10;
-	// public float maxAlpha = 90;
 	
 	[System.Serializable]
 	public struct ColorMark {
@@ -41,7 +37,10 @@ public class Watermark : MonoBehaviour {
 		newColour.a = Mathf.InverseLerp(0, 255, Random.Range(colourMarks[rand].minAlpha, colourMarks[rand].maxAlpha));
 		
 		image.color = newColour;
-		Debug.Log(image.color.a);
+		
+		float x = Random.Range(0, 2) == 0 ? 1 : -1;
+		float y = Random.Range(0, 2) == 0 ? 1 : -1;
+		transform.localScale = new Vector3(x, y, 1);
 	}
 	
 	void EnableImage () {
