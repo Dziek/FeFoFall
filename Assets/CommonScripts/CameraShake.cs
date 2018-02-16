@@ -97,7 +97,7 @@ public class CameraShake : MonoBehaviour {
 		
 		// shaking = true;
 		
-		camStartPos = Camera.main.transform.position;
+		// camStartPos = Camera.main.transform.position;
 		
 		float t = 0;
 		
@@ -127,7 +127,7 @@ public class CameraShake : MonoBehaviour {
 		
 		// shaking = true;
 		
-		camStartPos = Camera.main.transform.position;
+		// camStartPos = Camera.main.transform.position;
 		// startCameraPos = Camera.main.transform.position;
 		
 		while (true)

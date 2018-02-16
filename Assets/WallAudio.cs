@@ -1,14 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
-public class AudioTest : MonoBehaviour {
+public class WallAudio : MonoBehaviour {
 
 	public int position = 0;
     public int sampleRate = 44100;
     public float frequency = 440;
 	
-	private WaveType waveType;
+	public WaveType waveType = WaveType.Noise;
 	
 	private float minFrequency = 44;
 	private float maxFrequency = 880;
@@ -24,41 +25,35 @@ public class AudioTest : MonoBehaviour {
 	
 	private AudioSource audioSource;
 	
-	private float transpose = -4;  // transpose in semitones
+	private AudioMixer mixer;
+	private AudioMixerSnapshot[] snapshots;
 	
     void Start()
     {
 		// Create(string name, int lengthSamples, int channels, int frequency, bool stream, AudioClip.PCMReaderCallback pcmreadercallback, AudioClip.PCMSetPositionCallback pcmsetpositioncallback);
         AudioClip myClip = AudioClip.Create("MySinusoid", sampleRate * 2, 1, sampleRate, true, OnAudioRead, OnAudioSetPosition);
         // AudioClip myClip = AudioClip.Create("MySinusoid", 5000, 1, sampleRate, true, OnAudioRead, OnAudioSetPosition);
-        audioSource = GetComponent<AudioSource>();
+        
+		audioSource = gameObject.AddComponent<AudioSource>();
+		audioSource.loop = true;
         audioSource.clip = myClip;
         audioSource.Play();
+		
+		
+		mixer = Resources.Load("PreLevelMix") as AudioMixer;
+		string _OutputMixer = "Stationary";        
+		audioSource.outputAudioMixerGroup = mixer.FindMatchingGroups(_OutputMixer)[0];
+		
+		snapshots = new AudioMixerSnapshot[3];
+		snapshots[0] = mixer.FindSnapshot("PreLevel");
+		snapshots[1] = mixer.FindSnapshot("Level");
+		snapshots[2] = mixer.FindSnapshot("Default");
+		
+		ChangeSnapshotToPre();
     }
 	
-	void Update () {
-		if (Input.GetKeyDown("p"))
-		{
-			audioSource.Play();
-		}
-		
-		float note = -1; // invalid value to detect when note is pressed
-		if (Input.GetKeyDown("a")) note = 0;  // C
-		if (Input.GetKeyDown("s")) note = 2;  // D
-		if (Input.GetKeyDown("d")) note = 4;  // E
-		if (Input.GetKeyDown("f")) note = 5;  // F
-		if (Input.GetKeyDown("g")) note = 7;  // G
-		if (Input.GetKeyDown("h")) note = 9;  // A
-		if (Input.GetKeyDown("j")) note = 11; // B
-		if (Input.GetKeyDown("k")) note = 12; // C
-		if (Input.GetKeyDown("l")) note = 14; // D
-		 
-		if (note >= 0){ // if some key pressed...
-			audioSource.pitch = Mathf.Pow(2, (note + transpose) / 12);
-			audioSource.Play();
-		}
-		
-		// PositionAudio();
+	void Update () {	
+		PositionAudio();
 	}
 	
 	void OnAudioRead(float[] data)
@@ -106,6 +101,38 @@ public class AudioTest : MonoBehaviour {
 		
 		audioSource.volume = Mathf.Lerp(0, 1, lerpValue);
 		
+	}
+	
+	void ChangeSnapshotToPre () {
+		float[] weights = new float[3];
+		
+		weights[0] = 1;
+		weights[1] = 0;
+		weights[2] = 0;
+		
+		mixer.TransitionToSnapshots(snapshots, weights, 0.5f);
+	}
+	
+	void ChangeSnapshotToLevel () {
+		float[] weights = new float[3];
+		
+		weights[0] = 0;
+		weights[1] = 1;
+		weights[2] = 0;
+		
+		mixer.TransitionToSnapshots(snapshots, weights, 0.1f);
+	}
+	
+	void OnEnable () {
+		// Messenger.AddListener("TransitionMiddle", CreateAudio);
+		Messenger.AddListener("FirstMovement", ChangeSnapshotToLevel);
+		// Messenger.AddListener("MainMenu", DisableImage);
+	}
+	
+	void OnDisable () {
+		// Messenger.RemoveListener("TransitionMiddle", CreateAudio);
+		Messenger.RemoveListener("FirstMovement", ChangeSnapshotToLevel);
+		// Messenger.RemoveListener("MainMenu", DisableImage);
 	}
 	
 	[System.Serializable]

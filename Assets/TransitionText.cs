@@ -133,10 +133,16 @@ public class TransitionText : MonoBehaviour {
 					optionsF.Add("Again?");
 				}
 				
-				if (LoadLevel.GetCurrentLevelCurrentAttempts() > 5)
+				if (LoadLevel.GetCurrentLevelCurrentAttempts() > 4)
 				{
 					optionsF.Add(LoadLevel.GetCurrentLevelCurrentAttempts().ToString() + " Tries Already?");
 					optionsF.Add("Level Attempts: " + LoadLevel.GetCurrentLevelCurrentAttempts().ToString());
+					optionsF.Add("Tricky isn't it?");
+				}
+				
+				if (LoadLevel.GetCurrentLevelCurrentAttempts() > 6)
+				{
+					optionsF.Add("Ha");
 				}
 				
 				if (LoadLevel.GetCurrentAttempts() > 20)
