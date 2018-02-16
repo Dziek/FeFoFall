@@ -40,7 +40,7 @@ public class WallAudio : MonoBehaviour {
         audioSource.Play();
 		
 		
-		mixer = Resources.Load("PreLevelMix") as AudioMixer;
+		mixer = Resources.Load("LevelAudioMixer") as AudioMixer;
 		string _OutputMixer = "Stationary";        
 		audioSource.outputAudioMixerGroup = mixer.FindMatchingGroups(_OutputMixer)[0];
 		
