@@ -1,11 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class Testing : MonoBehaviour {
 	
+	public AudioMixerGroup audioMixerGroup;
+	
 	private int sNum = 0;
 	private string sFolder = "Promotional/InGame/";
+	
+	private bool muted;
 	
 	// Update is called once per frame
 	void Update () {
@@ -24,6 +29,16 @@ public class Testing : MonoBehaviour {
 		{
 			TakeScreenshot();
 		}
+		
+		if (Input.GetButtonDown("Fire3"))
+		{
+			MuteLevelAudio();
+		}
+		
+		if (Input.GetButtonDown("Jump"))
+		{
+			ResetCameraSettings();
+		}
 	}
 	
 	public void Restart () {
@@ -40,5 +55,20 @@ public class Testing : MonoBehaviour {
 	
 		ScreenCapture.CaptureScreenshot(screenshotFilename, 6);
 		Debug.Log("Screenshot " + sNum + " Captured!");
+	}
+	
+	public void MuteLevelAudio () {
+		if (muted == false)
+		{
+			audioMixerGroup.audioMixer.SetFloat("LevelVolume", -80f);
+		}else{
+			audioMixerGroup.audioMixer.SetFloat("LevelVolume", 0f);
+		}
+		
+		muted = !muted;
+	}
+	
+	public void ResetCameraSettings () {
+		Camera.main.orthographicSize = 5;
 	}
 }

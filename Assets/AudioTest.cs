@@ -8,7 +8,7 @@ public class AudioTest : MonoBehaviour {
     public int sampleRate = 44100;
     public float frequency = 440;
 	
-	private WaveType waveType;
+	public WaveType waveType;
 	
 	private float minFrequency = 44;
 	private float maxFrequency = 880;
