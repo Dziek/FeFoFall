@@ -45,6 +45,12 @@ public class PlayerControl : MonoBehaviour {
 		
 		// Messenger<GameObject>.Broadcast("FillPlayerGO", gameObject);
 		// lvlInfoDisplay = GameObject.Find("LevelInfo");
+		
+		normalMat = Resources.Load("Materials/PlayerTile") as Material;
+		boostMat = Resources.Load("Materials/PlayerBoostTile") as Material;
+		regainMat = Resources.Load("Materials/PlayerNoBoostTile") as Material;
+		
+		gameObject.AddComponent<MatOffset>();
 	}
 	
 	// Use this for initialization
@@ -54,13 +60,15 @@ public class PlayerControl : MonoBehaviour {
 		
 		pR = GetComponent<Renderer>();
 		
+		pR.material = normalMat;
+		
 		startingPos = transform.position;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		// if (GameStates.State == GameStates.States.Playing) 
-		if (GameStates.GetState() == "Playing")
+		// if (GameStates.GetState() == "Playing")
 		{
 			CheckControls();
 			// CheckBoost();
