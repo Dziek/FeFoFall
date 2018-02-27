@@ -48,7 +48,7 @@ public class TransitionText : MonoBehaviour {
 				
 				if (currentLevelAttempts >= 3)
 				{
-					options.Add(GetNumberSuffix(currentLevelAttempts) + " Times Lucky");
+					options.Add(GetNumberSuffix(currentLevelAttempts) + " Time Lucky");
 				}
 				
 				if (currentLevelAttempts >= 10)

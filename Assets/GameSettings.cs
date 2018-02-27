@@ -36,6 +36,8 @@ public class GameSettings : MonoBehaviour {
 		GameObject currentSelected = mainEventSystem.currentSelectedGameObject;
 		mainEventSystem.enabled = false;
 		
+		float startSize = Camera.main.orthographicSize;
+		
 		while (Input.GetButton("Submit"))
 		{
 			yield return null;
@@ -51,17 +53,30 @@ public class GameSettings : MonoBehaviour {
 			
 			if (Input.GetButtonDown("Submit"))
 			{
-				screenBoundsScreenGO.SetActive(false);
-				borderSR.color = Color.white;
+				CloseMenu(currentSelected);
 				
-				mainEventSystem.enabled = true;
-				mainEventSystem.SetSelectedGameObject(currentSelected);
+				yield break;
+			}
+			
+			if (Input.GetButtonDown("Cancel"))
+			{
+				Camera.main.orthographicSize = startSize;
+				
+				CloseMenu(currentSelected);
 				
 				yield break;
 			}
 			
 			yield return null;
 		}
+	}
+	
+	void CloseMenu (GameObject currentSelected) {
+		screenBoundsScreenGO.SetActive(false);
+		borderSR.color = Color.white;
+		
+		mainEventSystem.enabled = true;
+		mainEventSystem.SetSelectedGameObject(currentSelected);
 	}
 	
 	void SaveCameraSize () {

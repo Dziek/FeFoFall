@@ -19,6 +19,11 @@ public class Trigger : MonoBehaviour {
 	void Awake () {
 		receiver.SendMessage("WaitForTrigger");
 		activated = GetComponent<Renderer>().material;
+		
+		if (GetComponent<Renderer>().enabled == false)
+		{
+			playAudio = false;
+		}
 	}
 	
 	// Update is called once per frame

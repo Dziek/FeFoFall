@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TransitionScreen : MonoBehaviour {
 	
@@ -17,8 +18,16 @@ public class TransitionScreen : MonoBehaviour {
 	private float startingXScale;
 	private float growthSpeed = 0.1f;
 	
+	private Color defaultColour;
+	private Color playerColour;
+	private Color obstacleColour;
+	
+	private Color nextColour;
+	
 	void Awake () {
 		controller = GetComponent<TransitionController>();
+		
+		defaultColour = expandPanel.GetComponent<Image>().color;
 	}
 	
 	public IEnumerator StartPhaseOne () {
@@ -29,6 +38,42 @@ public class TransitionScreen : MonoBehaviour {
 		{
 			// startPoint = GameObject.Find("Player").transform.position;
 			startPoint = GameObject.Find("Player");
+			
+			if (controller.transitionState == TransitionState.levelSuccess)
+			{
+				expandPanel.GetComponent<Image>().color = new Color32(238, 60, 209, 255);
+			}else{
+				int r = Random.Range(0, 3);
+				
+				switch(r)
+				{
+					// case 0:
+						// expandPanel.GetComponent<Image>().color = startPoint.GetComponent<Renderer>().material.color;
+						// Debug.Log("Case 0");
+						// break;
+						
+					case 1:
+						expandPanel.GetComponent<Image>().color = new Color32(240, 106, 41, 255);
+						Debug.Log("Case 1");
+						break;
+						
+					// case 2:
+						// expandPanel.GetComponent<Image>().color = new Color32(52, 87, 134, 255);
+						// Debug.Log("Case 2");
+						// break;
+						
+					// case 3:
+						// expandPanel.GetComponent<Image>().color = new Color32(44, 80, 125, 255);
+						// Debug.Log("Case 3");
+						// break;
+						
+					default:
+						expandPanel.GetComponent<Image>().color = defaultColour;
+						Debug.Log("Case Default");
+						break;
+				}
+			}
+			
 		}else{
 			// startPoint = GameObject.Find("Play").transform.position;
 			startPoint = GameObject.Find("Play");

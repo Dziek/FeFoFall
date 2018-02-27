@@ -12,28 +12,26 @@ public class PreLevelEffects : MonoBehaviour {
 	void Awake () {
 		profile = postProcesses.profile;
 		
-		// profile.vignette.color = Color.red;
-		// VignetteModel v = profile.vignette;
-		
-		profile.vignette.enabled = false;
-		// VignetteModel.Settings g = profile.vignette.settings;
-		// g.color = Color.red;
-		// g.intensity = 1;
-		// profile.vignette.settings = g;
+		TurnOff();
 	}
 	
 	void TurnOn () {
 		// postProcesses.enabled = true;
 		
 		// profile.vignette.enabled = true;
-		StartCoroutine("FadeInVignette");
+		
+		if (profile.vignette.enabled == false)
+		{
+			StartCoroutine("FadeInVignette");
+		}
+		
+		StartCoroutine("FadeInGrain");
 	}
 	
 	void TurnOff () {
-		profile.vignette.enabled = false;
+		profile.grain.enabled = false;
+		// profile.vignette.enabled = false;
 		// postProcesses.enabled = false;
-		
-		// StartCoroutine("FadeOutVignette");
 	}
 	
 	IEnumerator FadeInVignette () {
@@ -59,26 +57,27 @@ public class PreLevelEffects : MonoBehaviour {
 		profile.vignette.settings = s;
 	}
 	
-	IEnumerator FadeOutVignette () {
-		// profile.vignette.enabled = true;
+	IEnumerator FadeInGrain () {
+		profile.grain.enabled = true;
 		
 		float t = 0;
 		float timeToFade = 0.3f;
 		
-		VignetteModel.Settings u = profile.vignette.settings;;
-		float startIntensity = u.intensity;
+		float topIntensity = 0.75f;
 		
 		while (t < timeToFade)
 		{
-			VignetteModel.Settings v = profile.vignette.settings;
-			v.intensity = Mathf.Lerp(startIntensity, 0, t / timeToFade);
-			profile.vignette.settings = v;
+			GrainModel.Settings v = profile.grain.settings;
+			v.intensity = Mathf.Lerp(0, topIntensity, t / timeToFade);
+			profile.grain.settings = v;
 			
 			t += Time.deltaTime;
 			yield return null;
 		}
 		
-		profile.vignette.enabled = false;
+		GrainModel.Settings s = profile.grain.settings;
+		s.intensity = topIntensity;
+		profile.grain.settings = s;
 	}
 	
 	void OnEnable () {

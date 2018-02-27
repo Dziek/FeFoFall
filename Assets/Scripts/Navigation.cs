@@ -1,32 +1,40 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class Navigation : MonoBehaviour {
+	
+	private EventSystem mainEventSystem;
 	
 	void Awake () {
 		// UI.orientation = UIOrientation.AutoRotation;
 		// UIOrientation = UIOrientation.AutoRotation;
+		
+		mainEventSystem = EventSystem.current;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
-		if (Input.GetButtonDown("Cancel"))
+		if (mainEventSystem.enabled == true)
 		{
-			if (GameStates.GetState() != "MainMenu")
+			if (Input.GetButtonDown("Cancel"))
 			{
-				Messenger.Broadcast("MainMenu");
-				LoadLevel.ClearLevel();
-				GameStates.ChangeState("MainMenu");
-			}else{
-				
-				GameObject buttonGO = GameObject.Find("Back");
-				
-				if (buttonGO != null)
+				if (GameStates.GetState() != "MainMenu")
 				{
-					Button backButton = buttonGO.GetComponent<Button>();
-					backButton.onClick.Invoke();
+					Messenger.Broadcast("MainMenu");
+					LoadLevel.ClearLevel();
+					GameStates.ChangeState("MainMenu");
+				}else{
+					
+					GameObject buttonGO = GameObject.Find("Back");
+					
+					if (buttonGO != null)
+					{
+						Button backButton = buttonGO.GetComponent<Button>();
+						backButton.onClick.Invoke();
+					}
 				}
 			}
 		}
