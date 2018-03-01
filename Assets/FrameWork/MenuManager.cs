@@ -72,7 +72,7 @@ public class MenuManager : MonoBehaviour {
 					Messenger<TransitionState>.Broadcast("Transition", TransitionState.levelLoad);
 				}
 				
-				mainMenu.SetActive(false);
+				// mainMenu.SetActive(false);
 				
 				#if UNITY_ANDROID
 					changeControls.SetActive(false);
@@ -114,5 +114,17 @@ public class MenuManager : MonoBehaviour {
 			break;
 		}
 		
+	}
+	
+	void DisableMenu () {
+		mainMenu.SetActive(false);
+	}
+	
+	void OnEnable () {
+		Messenger.AddListener("TransitionMiddle", DisableMenu);
+	}
+	
+	void OnDisable () {
+		Messenger.RemoveListener("TransitionMiddle", DisableMenu);
 	}
 }

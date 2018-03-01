@@ -28,6 +28,9 @@ public class BackgroundParticleController : MonoBehaviour {
 			
 			ParticleSystem nextPS = particleSystems[arrayPos];
 			
+			// var main = nextPS.main;
+			// main.simulationSpeed = Mathf.InverseLerp(0.5f, 1.2f, LoadLevel.GetPercentageComplete());
+			
 			currentPS = nextPS;
 			currentPS.Play();
 		}
@@ -46,6 +49,9 @@ public class BackgroundParticleController : MonoBehaviour {
 			}
 			
 			ParticleSystem nextPS = particleSystems[arrayPos];
+			
+			// var main = nextPS.main;
+			// main.simulationSpeed = Mathf.InverseLerp(0.5f, 1.2f, LoadLevel.GetPercentageComplete());
 			
 			currentPS = nextPS;
 			currentPS.Play();
@@ -73,6 +79,9 @@ public class BackgroundParticleController : MonoBehaviour {
 			{
 				nextPS = particleSystems[Random.Range(0, particleSystems.Length)];
 			}
+			
+			// var main = nextPS.main;
+			// main.simulationSpeed = Mathf.InverseLerp(0.5f, 1.2f, LoadLevel.GetPercentageComplete());
 			
 			currentPS = nextPS;
 			currentPS.Play();

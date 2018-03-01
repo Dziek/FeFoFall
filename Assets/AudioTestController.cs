@@ -7,16 +7,15 @@ public class AudioTestController : MonoBehaviour {
 	
 	
 	void CreateAudio () {
-		GameObject[] go = GameObject.FindGameObjectsWithTag("Wall");
+		// GameObject[] go = GameObject.FindGameObjectsWithTag("Wall");
 		
-		for (int i = 0; i < go.Length; i++)
-		{
-			if (go[i].GetComponent<WallAudio>() == null)
-			{
-				WallAudio wAudio = go[i].AddComponent<WallAudio>();
-				// wAudio.wallType = WallType.
-			}
-		}
+		// for (int i = 0; i < go.Length; i++)
+		// {
+			// if (go[i].GetComponent<WallAudio>() == null)
+			// {
+				// WallAudio wAudio = go[i].AddComponent<WallAudio>();
+			// }
+		// }
 	}
 	
 	void OnEnable () {

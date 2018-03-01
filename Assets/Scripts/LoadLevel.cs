@@ -146,6 +146,10 @@ public class LoadLevel : MonoBehaviour {
 		if (nextLevelQueuePos != -1)
 		{
 			currentLevel = Instantiate(levelsInQueue[nextLevelQueuePos], Vector3.zero, Quaternion.identity) as GameObject;
+			
+			// float x = Random.Range(0, 2) == 0 ? 1 : -1;
+			// float y = Random.Range(0, 2) == 0 ? 1 : -1;
+			// currentLevel.transform.localScale = new Vector3(x, y, 1);
 		}
 		
 		beforeLastLevelQueuePos = lastLevelQueuePos;

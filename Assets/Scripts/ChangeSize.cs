@@ -26,6 +26,10 @@ public class ChangeSize : MonoBehaviour {
 	// private GameObject player;
 	private PlayerControl playerScript;
 	
+	void Awake () {
+		endSize = new Vector3(endSize.x, endSize.y, 1);
+	}
+	
 	// Use this for initialization
 	void Start () {
 		startSize = transform.localScale;

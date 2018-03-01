@@ -2,7 +2,7 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
  
-public class CustomMenuButton : MonoBehaviour, ISelectHandler, IDeselectHandler  {
+public class CustomMenuButton : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnterHandler, IPointerExitHandler {
  
     private Text buttonText;
 	 
@@ -34,9 +34,13 @@ public class CustomMenuButton : MonoBehaviour, ISelectHandler, IDeselectHandler 
 		buttonText.fontStyle = FontStyle.Normal;
         buttonText.color = deselectedColor;
 	}
-	 
+	
 	void OnDisable () {
 		Deselect();
+	}
+	
+	public void ClearSelected () {
+		EventSystem.current.SetSelectedGameObject(null);
 	}
  
     public void OnSelect (BaseEventData eventData) {
@@ -44,6 +48,14 @@ public class CustomMenuButton : MonoBehaviour, ISelectHandler, IDeselectHandler 
     }
  
     public void OnDeselect (BaseEventData eventData) {
+        Deselect();
+    }
+	
+	public void OnPointerEnter (PointerEventData eventData) {
+		Select();
+	}
+	
+	public void OnPointerExit (PointerEventData eventData) {
         Deselect();
     }
 }

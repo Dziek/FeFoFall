@@ -9,10 +9,13 @@ public class PreLevelEffects : MonoBehaviour {
 	
 	private PostProcessingProfile profile;
 	
+	// private float grainTopIntensity = 0.35f;
+	private float grainDefaultIntensity = 0.25f;
+	
 	void Awake () {
 		profile = postProcesses.profile;
 		
-		TurnOff();
+		// TurnOff();
 	}
 	
 	void TurnOn () {
@@ -32,6 +35,12 @@ public class PreLevelEffects : MonoBehaviour {
 		profile.grain.enabled = false;
 		// profile.vignette.enabled = false;
 		// postProcesses.enabled = false;
+	}
+	
+	void TurnDown () {
+		GrainModel.Settings s = profile.grain.settings;
+		s.intensity = grainDefaultIntensity;
+		profile.grain.settings = s;
 	}
 	
 	IEnumerator FadeInVignette () {
@@ -63,12 +72,12 @@ public class PreLevelEffects : MonoBehaviour {
 		float t = 0;
 		float timeToFade = 0.3f;
 		
-		float topIntensity = 0.75f;
+		float topIntensity = 0.5f;
 		
 		while (t < timeToFade)
 		{
 			GrainModel.Settings v = profile.grain.settings;
-			v.intensity = Mathf.Lerp(0, topIntensity, t / timeToFade);
+			v.intensity = Mathf.Lerp(grainDefaultIntensity, topIntensity, t / timeToFade);
 			profile.grain.settings = v;
 			
 			t += Time.deltaTime;
@@ -82,12 +91,16 @@ public class PreLevelEffects : MonoBehaviour {
 	
 	void OnEnable () {
 		Messenger.AddListener("TransitionMiddle", TurnOn);
-		Messenger.AddListener("FirstMovement", TurnOff);
+		// Messenger.AddListener("FirstMovement", TurnOff);
+		Messenger.AddListener("FirstMovement", TurnDown);
+		Messenger.AddListener("MainMenu", TurnDown);
 	}
 	
 	void OnDisable () {
 		Messenger.RemoveListener("TransitionMiddle", TurnOn);
-		Messenger.RemoveListener("FirstMovement", TurnOff);
+		// Messenger.RemoveListener("FirstMovement", TurnOff);
+		Messenger.RemoveListener("FirstMovement", TurnDown);
+		Messenger.RemoveListener("MainMenu", TurnDown);
 		
 		TurnOff();
 	}

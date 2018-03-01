@@ -25,6 +25,8 @@ public class TransitionController : MonoBehaviour {
 	private TransitionScreen transitionScreen;
 	private TransitionText transitionText;
 	
+	private bool transitioning;
+	
 	void Awake () {
 		transitionScreen = GetComponent<TransitionScreen>();
 		transitionText = GetComponent<TransitionText>();
@@ -32,11 +34,16 @@ public class TransitionController : MonoBehaviour {
 	
 	void BeginTransition (TransitionState tS) {
 		
-		transitionState = tS;
-		StartCoroutine("Transition");
+		if (transitioning == false)
+		{
+			transitionState = tS;
+			StartCoroutine("Transition");
+		}
 	}
 	
 	IEnumerator Transition () {
+		
+		transitioning = true;
 		
 		if (transitionState == TransitionState.levelSuccess)
 		{
@@ -66,7 +73,7 @@ public class TransitionController : MonoBehaviour {
 		
 		float actualWaitTime = Mathf.Lerp(waitTime.min, waitTime.max, lerpValue);
 		
-		Debug.Log("Wait Time: " + actualWaitTime);
+		// Debug.Log("Wait Time: " + actualWaitTime);
 		
 		yield return transitionScreen.StartPhaseOne();
 		yield return transitionScreen.StartPhaseTwo(actualWaitTime);
@@ -82,6 +89,10 @@ public class TransitionController : MonoBehaviour {
 		Messenger.Broadcast("StopConstantShake");
 		// Debug.Log("Transition Done");
 		
+		// Debug.Log("T Still running y'all");
+		
+		transitioning = false;
+		
 		yield return null;
 	}
 	
@@ -89,14 +100,24 @@ public class TransitionController : MonoBehaviour {
 		closeCall = v;
 	}
 	
+	void Cancel () {
+		transitioning = false;
+		StopCoroutine("Transition");
+		transitionScreen.Cancel();
+		Messenger.Broadcast("StopConstantShake");
+		StopAllCoroutines();
+	}
+	
 	void OnEnable () {
 		Messenger<TransitionState>.AddListener("Transition", BeginTransition);
 		Messenger<bool>.AddListener("CloseCall", CloseCallUpdate);
+		Messenger.AddListener("MainMenu", Cancel);
 	}
 	
 	void OnDisable () {
 		Messenger<TransitionState>.RemoveListener("Transition", BeginTransition);
 		Messenger<bool>.RemoveListener("CloseCall", CloseCallUpdate);
+		Messenger.RemoveListener("MainMenu", Cancel);
 	}
 }
 

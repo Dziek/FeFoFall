@@ -40,14 +40,22 @@ public class WallAudio : MonoBehaviour {
         audioSource.Play();
 		
 		
-		mixer = Resources.Load("LevelAudioMixer") as AudioMixer;
-		string _OutputMixer = "Stationary";        
+		// mixer = Resources.Load("LevelAudioMixer") as AudioMixer;
+		// string _OutputMixer = "Stationary";        
+		// audioSource.outputAudioMixerGroup = mixer.FindMatchingGroups(_OutputMixer)[0];
+		
+		// snapshots = new AudioMixerSnapshot[3];
+		// snapshots[0] = mixer.FindSnapshot("PreLevel");
+		// snapshots[1] = mixer.FindSnapshot("Level");
+		// snapshots[2] = mixer.FindSnapshot("Default");
+		
+		mixer = Resources.Load("MasterMixer") as AudioMixer;
+		string _OutputMixer = "LevelAudioGroup";        
 		audioSource.outputAudioMixerGroup = mixer.FindMatchingGroups(_OutputMixer)[0];
 		
-		snapshots = new AudioMixerSnapshot[3];
-		snapshots[0] = mixer.FindSnapshot("PreLevel");
-		snapshots[1] = mixer.FindSnapshot("Level");
-		snapshots[2] = mixer.FindSnapshot("Default");
+		snapshots = new AudioMixerSnapshot[2];
+		snapshots[0] = mixer.FindSnapshot("Default");
+		snapshots[1] = mixer.FindSnapshot("PreLevel");
 		
 		ChangeSnapshotToPre();
     }
@@ -104,21 +112,29 @@ public class WallAudio : MonoBehaviour {
 	}
 	
 	void ChangeSnapshotToPre () {
-		float[] weights = new float[3];
+		float[] weights = new float[2];
 		
-		weights[0] = 1;
-		weights[1] = 0;
-		weights[2] = 0;
+		weights[0] = 0;
+		weights[1] = 1;
+		// weights[2] = 0;
+		
+		// weights[0] = 1;
+		// weights[1] = 0;
+		// weights[2] = 0;
 		
 		mixer.TransitionToSnapshots(snapshots, weights, 0.5f);
 	}
 	
 	void ChangeSnapshotToLevel () {
-		float[] weights = new float[3];
+		float[] weights = new float[2];
 		
-		weights[0] = 0;
-		weights[1] = 1;
-		weights[2] = 0;
+		weights[0] = 1;
+		weights[1] = 0;
+		// weights[2] = 0;
+		
+		// weights[0] = 0;
+		// weights[1] = 1;
+		// weights[2] = 0;
 		
 		mixer.TransitionToSnapshots(snapshots, weights, 0.1f);
 	}

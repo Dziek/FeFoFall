@@ -26,6 +26,8 @@ public class Navigation : MonoBehaviour {
 					Messenger.Broadcast("MainMenu");
 					LoadLevel.ClearLevel();
 					GameStates.ChangeState("MainMenu");
+					
+					// Debug.Break();
 				}else{
 					
 					GameObject buttonGO = GameObject.Find("Back");
