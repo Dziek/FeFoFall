@@ -39,6 +39,8 @@ public class LoadLevel : MonoBehaviour {
 	
 		// PlayerPrefs.DeleteAll();
 		
+		// Debug.Log(Time.time);
+		
 		instance = this;
 		
 		List<GameObject> fullListOfLevels = new List<GameObject>(Resources.LoadAll<GameObject>("prefabs"));
@@ -83,6 +85,8 @@ public class LoadLevel : MonoBehaviour {
 				}
 			}
 		#endif
+		
+		// Debug.Log(Time.time);
 	}
 	
 	public static void GetLevel () {
