@@ -6,8 +6,10 @@ public class LevelInfoDisplay : MonoBehaviour {
 	
 	public Text lvlName;
 	public Text lvlDesc;
+	
 	public Text lvlID;
 	public Text lvlAttempts;
+	public Text lvlBestTime;
 	
 	// public string completeDesc;
 	
@@ -25,7 +27,8 @@ public class LevelInfoDisplay : MonoBehaviour {
 			lvlName.text = lN;
 			lvlDesc.text = lD;
 			lvlID.text = levelObject.name;
-			lvlAttempts.text = LoadLevel.GetCurrentLevelCurrentAttempts().ToString();
+			lvlAttempts.text = "Attempts: " + LoadLevel.GetCurrentLevelCurrentAttempts().ToString();
+			lvlBestTime.text = "Level Best Time: " + LoadLevel.GetCurrentLevelBestTime().ToString("f2");
 		}
 		
 		// GameObject.Find("Player").GetComponent<PlayerControl>().UpdateLevelInfoDisplayObject(gameObject);

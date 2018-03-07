@@ -102,6 +102,6 @@ public class PreLevelEffects : MonoBehaviour {
 		Messenger.RemoveListener("FirstMovement", TurnDown);
 		Messenger.RemoveListener("MainMenu", TurnDown);
 		
-		TurnOff();
+		TurnDown();
 	}
 }

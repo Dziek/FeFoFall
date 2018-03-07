@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class LoadLevel : MonoBehaviour {
 		 
-	 static LoadLevel instance;
+	public static LoadLevel instance;
 	
 	public static List<GameObject> levelsInQueue = new List<GameObject>();
 	static bool[] completedLevels;
@@ -16,21 +16,48 @@ public class LoadLevel : MonoBehaviour {
 	static int beforeLastLevelQueuePos = -1;
 	
 	static int lastLevelID = -1;
+	static bool timerRunning;
+	static float timeValue;
 	
-	public int activeRange; // how many levels can be 'active' at a time
+	public int activeRange = 5; // how many levels can be 'active' at a time
+	
+	static bool goodStreakBreak;
+	static bool badStreakBreak;
+	
+	static int bestAttemptsLast;
+	static float secondsPlayedLast;
+	static float bestTimeLast;
 	
 	static int levelsCompleted;
 	static int currentAttempts;
 	static int numberOfLevels;
+	static int timesStarted;
 	static int timesCompleted;
 	static int bestAttempts;
 	static int totalAttempts;
 	static int totalLevelsCompleted;
 	
+	static int numberOfSessions;
+	
+	// static bool onStreak;
+	static int currentGoodStreak;
+	static int currentBadStreak;
+	static int bestGoodStreak;
+	static int bestBadStreak;
+	
+	static float secondsPlayedTotal;
+	static float secondsPlayedCurrent;
+	static float secondsPlayedBest;
+	
 	public struct LevelStats {
 		public int currentAttempts;
 		public int totalAttempts;
 		public int timesCompleted;
+		public int bestAttempts;
+		
+		public float secondsPlayedCurrent;
+		public float secondsPlayedTotal;
+		public float bestTime;
 	}
 	
 	private static LevelStats[] individualLevelStats;
@@ -62,13 +89,30 @@ public class LoadLevel : MonoBehaviour {
 				individualLevelStats[i].currentAttempts = PlayerPrefs.GetInt("Level"+fullListOfLevels[i].name+"CurrentAttempts");
 				individualLevelStats[i].totalAttempts = PlayerPrefs.GetInt("Level"+fullListOfLevels[i].name+"TotalAttempts");
 				individualLevelStats[i].timesCompleted = PlayerPrefs.GetInt("Level"+fullListOfLevels[i].name+"TimesCompleted");
+				individualLevelStats[i].bestAttempts = PlayerPrefs.GetInt("Level"+fullListOfLevels[i].name+"BestAttempts");
+				
+				individualLevelStats[i].secondsPlayedCurrent = PlayerPrefs.GetFloat("Level"+fullListOfLevels[i].name+"SecondsPlayedCurrent");
+				individualLevelStats[i].secondsPlayedTotal = PlayerPrefs.GetFloat("Level"+fullListOfLevels[i].name+"SecondsPlayedTotal");
+				individualLevelStats[i].bestTime = PlayerPrefs.GetFloat("Level"+fullListOfLevels[i].name+"BestTime");
 			}
 			
 			currentAttempts = PlayerPrefs.GetInt("CurrentAttempts");
+			timesStarted = PlayerPrefs.GetInt("TimesStarted", 1);
 			timesCompleted = PlayerPrefs.GetInt("TimesCompleted");
 			bestAttempts = PlayerPrefs.GetInt("BestAttempts");
 			totalAttempts = PlayerPrefs.GetInt("TotalAttempts");
 			totalLevelsCompleted = PlayerPrefs.GetInt("TotalLevelsCompleted");
+			
+			numberOfSessions = PlayerPrefs.GetInt("NumberOfSessions");
+			
+			currentGoodStreak = PlayerPrefs.GetInt("CurrentGoodStreak");
+			currentBadStreak = PlayerPrefs.GetInt("CurrentBadStreak");
+			bestGoodStreak = PlayerPrefs.GetInt("BestGoodStreak");
+			bestBadStreak = PlayerPrefs.GetInt("BestBadStreak");
+			
+			secondsPlayedTotal = PlayerPrefs.GetFloat("SecondsPlayedTotal");
+			secondsPlayedCurrent = PlayerPrefs.GetFloat("SecondsPlayedCurrent");
+			secondsPlayedBest = PlayerPrefs.GetFloat("SecondsPlayedBest");
 		#endif
 		
 		#if UNITY_WEBGL && !UNITY_EDITOR
@@ -87,6 +131,9 @@ public class LoadLevel : MonoBehaviour {
 		#endif
 		
 		// Debug.Log(Time.time);
+		
+		numberOfSessions++;
+		PlayerPrefs.SetInt("NumberOfSessions", numberOfSessions);
 	}
 	
 	public static void GetLevel () {
@@ -169,16 +216,80 @@ public class LoadLevel : MonoBehaviour {
 		}
 	}
 	
+	public static void LevelFailed () {
+		currentBadStreak++;
+		
+		if (currentGoodStreak > 4)
+		{
+			goodStreakBreak = true;
+		}
+		
+		currentGoodStreak = 0;
+		
+		if (currentBadStreak > bestBadStreak)
+		{
+			bestBadStreak = currentBadStreak;
+		}
+		
+		#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
+			PlayerPrefs.SetInt("CurrentGoodStreak", currentGoodStreak);
+			PlayerPrefs.SetInt("CurrentBadStreak", currentBadStreak);
+			PlayerPrefs.SetInt("bestBadStreak", bestBadStreak);
+		#endif
+	}
+	
 	public static bool LevelCompleted () {
+		
+		// StopTimer();
+		
+		currentGoodStreak++;
+		
+		if (currentBadStreak > 9)
+		{
+			badStreakBreak = true;
+		}
+		
+		currentBadStreak = 0;
+		
+		if (currentGoodStreak > bestGoodStreak)
+		{
+			bestGoodStreak = currentGoodStreak;
+		}
 		
 		totalLevelsCompleted++;
 		individualLevelStats[lastLevelID].timesCompleted++;
+		
+		bestAttemptsLast = individualLevelStats[lastLevelID].bestAttempts;
+		
+		// Debug.Log("Recorded Time");
+		
+		if (individualLevelStats[lastLevelID].bestAttempts == 0 || individualLevelStats[lastLevelID].currentAttempts < individualLevelStats[lastLevelID].bestAttempts)
+		{
+			individualLevelStats[lastLevelID].bestAttempts = individualLevelStats[lastLevelID].currentAttempts;
+		}
+		
+		bestTimeLast = individualLevelStats[lastLevelID].bestTime;
+		
+		if (individualLevelStats[lastLevelID].bestTime == 0 || secondsPlayedLast < individualLevelStats[lastLevelID].bestTime)
+		{
+			individualLevelStats[lastLevelID].bestTime = secondsPlayedLast;
+			Debug.Log("Setting Level " + lastLevelID + "'s Best Time To " + secondsPlayedLast);
+		}
+		
+		// Debug.Log(secondsPlayedLast);
 		
 		#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
 			PlayerPrefsX.SetBool("Level"+levelsInQueue[lastLevelQueuePos].name+"Completed", true);
 			
 			PlayerPrefs.SetInt("TotalLevelsCompleted", totalLevelsCompleted);
 			PlayerPrefs.SetInt("Level"+levelsInQueue[lastLevelQueuePos].name+"TimesCompleted", individualLevelStats[lastLevelID].timesCompleted);
+			PlayerPrefs.SetInt("Level"+levelsInQueue[lastLevelQueuePos].name+"BestAttempts", individualLevelStats[lastLevelID].bestAttempts);
+			
+			PlayerPrefs.SetFloat("Level"+levelsInQueue[lastLevelQueuePos].name+"BestTime", individualLevelStats[lastLevelID].bestTime);
+			
+			PlayerPrefs.SetInt("CurrentGoodStreak", currentGoodStreak);
+			PlayerPrefs.SetInt("CurrentBadStreak", currentBadStreak);
+			PlayerPrefs.SetInt("bestGoodStreak", bestBadStreak);
 		#endif
 		
 		#if UNITY_WEBGL && !UNITY_EDITOR
@@ -220,11 +331,13 @@ public class LoadLevel : MonoBehaviour {
 		{
 			
 			individualLevelStats[i].currentAttempts = 0;
+			individualLevelStats[i].secondsPlayedCurrent = 0;
 			
 			// PlayerPrefsX.SetBool("Level"+i+"Completed", false);
 			#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
 				PlayerPrefsX.SetBool("Level"+levelsInQueue[i].name+"Completed", false);
 				PlayerPrefs.SetInt("Level"+levelsInQueue[i].name+"CurrentAttempts", individualLevelStats[i].currentAttempts);
+				PlayerPrefs.SetFloat("Level"+levelsInQueue[i].name+"SecondsPlayedCurrent", individualLevelStats[i].secondsPlayedCurrent);
 			#endif
 	
 			#if UNITY_WEBGL && !UNITY_EDITOR
@@ -236,14 +349,19 @@ public class LoadLevel : MonoBehaviour {
 		
 		levelsCompleted = 0;
 		currentAttempts = 0;
+		timesStarted++;	
+		secondsPlayedCurrent = 0;
 		
-		// difficultyStage = 0;
-		
-		// PlayerPrefs.SetInt("LevelsCompleted", 0);
-		
+		currentGoodStreak = 0;
+		currentBadStreak = 0;
 		
 		#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
 			PlayerPrefs.SetInt("CurrentAttempts", 0);
+			PlayerPrefs.SetInt("TimesStarted", timesStarted);
+			PlayerPrefs.SetFloat("SecondsPlayedCurrent", secondsPlayedCurrent);
+			
+			PlayerPrefs.SetInt("CurrentGoodStreak", currentGoodStreak);
+			PlayerPrefs.SetInt("CurrentBadStreak", currentBadStreak);
 		#endif
 
 		#if UNITY_WEBGL && !UNITY_EDITOR
@@ -254,7 +372,7 @@ public class LoadLevel : MonoBehaviour {
 	}
 	
 	public static void Completed () {
-		timesCompleted++;
+		
 		if (bestAttempts == 0 || currentAttempts < bestAttempts)
 		{
 			bestAttempts = currentAttempts;
@@ -268,6 +386,21 @@ public class LoadLevel : MonoBehaviour {
 			#endif
 		}
 		
+		if (secondsPlayedBest == 0 || secondsPlayedCurrent < secondsPlayedBest)
+		{
+			secondsPlayedBest = secondsPlayedCurrent;
+			
+			#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
+				PlayerPrefs.SetFloat("SecondsPlayedBest", secondsPlayedBest);
+			#endif
+			
+			#if UNITY_WEBGL && !UNITY_EDITOR
+				Application.ExternalCall("UpdateBestAttempts", secondsPlayedBest);
+			#endif
+		}
+		
+		timesCompleted++;
+		
 		#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
 			PlayerPrefs.SetInt("TimesCompleted", timesCompleted);
 		#endif
@@ -278,6 +411,9 @@ public class LoadLevel : MonoBehaviour {
 	}
 	
 	public static void AddToCurrentAttempts () {
+		
+		goodStreakBreak = false;
+		badStreakBreak = false;
 		
 		currentAttempts++;
 		totalAttempts++;
@@ -302,6 +438,50 @@ public class LoadLevel : MonoBehaviour {
 		#endif
 		
 		// Debug.Log("ATTEMPTS - ID: " + lastLevelID + " lastLevelQueuePos: " + lastLevel);
+	}
+	
+	public static void StartTimer () {
+		instance.StartCoroutine(Timer());
+		Debug.Log("StartTimer");
+	}
+	
+	public static void StopTimer () {
+		// instance.StopAllCoroutines();
+		
+		if (timerRunning == true)
+		{
+			timerRunning = false;
+			Debug.Log("StopTimer");
+			
+			secondsPlayedTotal += timeValue;
+			secondsPlayedCurrent += timeValue;
+			
+			individualLevelStats[lastLevelID].secondsPlayedCurrent += timeValue;
+			individualLevelStats[lastLevelID].secondsPlayedTotal += timeValue;
+			
+			secondsPlayedLast = timeValue;
+			Debug.Log("Setting Seconds Last Played To " + timeValue);
+			
+			#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
+				PlayerPrefs.SetFloat("SecondsPlayedTotal", secondsPlayedTotal);
+				PlayerPrefs.SetFloat("SecondsPlayedCurrent", secondsPlayedCurrent);
+						
+				PlayerPrefs.SetFloat("Level"+levelsInQueue[lastLevelQueuePos].name+"SecondsPlayedCurrent", individualLevelStats[lastLevelID].secondsPlayedCurrent);
+				PlayerPrefs.SetFloat("Level"+levelsInQueue[lastLevelQueuePos].name+"SecondsPlayedTotal", individualLevelStats[lastLevelID].secondsPlayedTotal);
+			#endif
+		}
+	}
+	
+	public static IEnumerator Timer () {
+		timeValue = 0;
+		
+		timerRunning = true;
+		
+		while (timerRunning == true)
+		{
+			timeValue += Time.deltaTime;
+			yield return null;
+		}
 	}
 	
 	static int ConvertLevelNameToID (string levelName) {
@@ -335,6 +515,10 @@ public class LoadLevel : MonoBehaviour {
 		return bestAttempts;
 	}
 	
+	public static int GetTimesStarted () {
+		return timesStarted;
+	}
+	
 	public static int GetTimesCompleted () {
 		return timesCompleted;
 	}
@@ -347,6 +531,59 @@ public class LoadLevel : MonoBehaviour {
 		return totalAttempts;
 	}
 	
+	public static int GetNumberOfSessions () {
+		return numberOfSessions;
+	}
+	
+	public static int GetCurrentGoodStreak () {
+		return currentGoodStreak;
+	}
+	
+	public static int GetCurrentBadStreak () {
+		return currentBadStreak;
+	}
+	
+	public static int GetBestGoodStreak () {
+		return bestGoodStreak;
+	}
+	
+	public static int GetBestBadStreak () {
+		return bestBadStreak;
+	}
+	
+	public static bool GetGoodStreakBreak () {
+		return goodStreakBreak;
+	}
+	
+	public static bool GetBadStreakBreak () {
+		return badStreakBreak;
+	}
+	
+	public static float GetTotalSeconds () {
+		return secondsPlayedTotal;
+	}
+	
+	public static float GetCurrentSeconds () {
+		return secondsPlayedCurrent;
+	}
+	
+	public static float GetBestSeconds () {
+		return secondsPlayedBest;
+	}
+	
+	public static float GetLastSeconds () {
+		return secondsPlayedLast;
+	}
+	
+	public static float GetLastBestTime () {
+		return bestTimeLast;
+	}
+	
+	// returns difference between best and last time
+	public static float GetLastTimeDifference () {
+		return bestTimeLast - secondsPlayedLast;
+	}
+	
 	public static float GetPercentageComplete () {
 		return (float)levelsCompleted / (float)numberOfLevels;
 	}
@@ -355,12 +592,36 @@ public class LoadLevel : MonoBehaviour {
 		return individualLevelStats[lastLevelID].currentAttempts;
 	}
 	
+	public static int GetBestAttemptsLast () {
+		return bestAttemptsLast;
+	}
+	
+	public static int GetLastAttemptsDifference () {
+		return bestAttemptsLast - individualLevelStats[lastLevelID].currentAttempts;
+	}
+	
 	public static int GetCurrentLevelTotalAttempts () {
 		return individualLevelStats[lastLevelID].totalAttempts;
 	}
 	
 	public static int GetCurrentLevelTimesCompleted () {
 		return individualLevelStats[lastLevelID].timesCompleted;
+	}
+	
+	public static float GetCurrentLevelBestTime () {		
+		return individualLevelStats[lastLevelID].bestTime;
+	}
+	
+	public static int GetCurrentLevelBestAttempts () {
+		return individualLevelStats[lastLevelID].bestAttempts;
+	}
+	
+	public static float GetCurrentLevelCurrentSeconds () {
+		return individualLevelStats[lastLevelID].secondsPlayedCurrent;
+	}
+	
+	public static float GetCurrentLevelTotalSeconds () {
+		return individualLevelStats[lastLevelID].secondsPlayedTotal;
 	}
 	
 	#if UNITY_WEBGL

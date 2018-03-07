@@ -201,6 +201,7 @@ public class PlayerControl : MonoBehaviour {
 			canGoAway = false;
 			
 			Messenger.Broadcast("FirstMovement");
+			LoadLevel.StartTimer();
 		}
 		
 		if (controlledObjectScript != null)
@@ -253,6 +254,8 @@ public class PlayerControl : MonoBehaviour {
 		}else{
 		    if(collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Frame")
 		    {
+				LoadLevel.StopTimer();
+				
 			    Messenger.Broadcast("Failure");
 			    GameStates.ChangeState("Transition", "Bad");
 				
@@ -272,6 +275,8 @@ public class PlayerControl : MonoBehaviour {
 		   
 		    if(collision.gameObject.tag == "End")
 		    {
+				LoadLevel.StopTimer();
+				
 			    Messenger.Broadcast("Success");
 			    GameStates.ChangeState("Transition", "Good");
 			    
@@ -288,6 +293,13 @@ public class PlayerControl : MonoBehaviour {
 	public string GetDirection () {
 		// Debug.Log(direction.ToString());
 		return direction.ToString();
+	}
+	
+	void OnDisable () {
+		if (LoadLevel.instance != null)
+		{
+			LoadLevel.StopTimer();
+		}
 	}
 	
 }

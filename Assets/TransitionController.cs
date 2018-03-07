@@ -51,6 +51,11 @@ public class TransitionController : MonoBehaviour {
 			gameCompleted = LoadLevel.LevelCompleted();
 		}
 		
+		if (transitionState == TransitionState.levelFailure)
+		{
+			LoadLevel.LevelFailed();
+		}
+		
 		if (transitionState == TransitionState.levelSuccess)
 		{
 			// Reset Game if you start to play and levels are all complete
@@ -61,13 +66,17 @@ public class TransitionController : MonoBehaviour {
 			}
 		}
 		
+		yield return transitionScreen.StartPhaseOne();
+		
 		transitionText.UpdateText();
-		
-		
 		string text = transitionText.GetText();
+		// Debug.Log("Got Text");
 		
-		MinMax waitTime = new MinMax(0.25f, 0.45f);
-		MinMax stringLength = new MinMax(8, 20);
+		// MinMax waitTime = new MinMax(0.25f, 0.45f);
+		// MinMax stringLength = new MinMax(8, 20);
+		
+		MinMax waitTime = new MinMax(0.25f, 1f);
+		MinMax stringLength = new MinMax(8, 30);
 		
 		float lerpValue = Mathf.InverseLerp(stringLength.min, stringLength.max, text.Length);
 		
@@ -75,7 +84,7 @@ public class TransitionController : MonoBehaviour {
 		
 		// Debug.Log("Wait Time: " + actualWaitTime);
 		
-		yield return transitionScreen.StartPhaseOne();
+		// yield return transitionScreen.StartPhaseOne();
 		yield return transitionScreen.StartPhaseTwo(actualWaitTime);
 		yield return transitionScreen.StartPhaseThree();
 		
