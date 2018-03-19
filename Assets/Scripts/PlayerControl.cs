@@ -3,15 +3,21 @@ using System.Collections;
 
 public class PlayerControl : MonoBehaviour {
 
+	public GameObject playerGraphicsGO;
+
 	public float standardSpeed; // standard speed
 	public float boostSpeed; // speed when boosting
 	public float boostLength; // how long boost lasts
 	public float boostCooldown; // how long until boost can be used again
-	public float colourFadeTime; // how long it takes to change colour
+	private float colourFadeTime = 0.2f; // how long it takes to change colour
 	
 	public Material normalMat; // how the player looks at normal speed
 	public Material boostMat; // how the player looks when boosting
 	public Material regainMat; // how the player looks when regaining boost
+	
+	public Color normalColour = new Color32(255, 255, 0, 255); // how the player looks at normal speed
+	public Color boostColour = new Color32(250, 75, 60, 255);  // how the player looks when boosting
+	public Color regainColour = new Color32(234, 234, 105, 255);  // how the player looks when regaining boost
 	
 	public ControlledMovement controlledObjectScript; // the object to be controlled as well
 	
@@ -23,6 +29,7 @@ public class PlayerControl : MonoBehaviour {
 	// private float boostCooldownL; // how long until boost can be used again (local)
 	
 	private Renderer pR; // player renderer
+	private SpriteRenderer sR; // player renderer
 	
 	private LevelInfoDisplay lvlInfoDisplay; // the level info display, to be removed on first movement
 	private bool canGoAway = true; // a check to make sure movement doesn't register multiple game attempts
@@ -46,11 +53,21 @@ public class PlayerControl : MonoBehaviour {
 		// Messenger<GameObject>.Broadcast("FillPlayerGO", gameObject);
 		// lvlInfoDisplay = GameObject.Find("LevelInfo");
 		
-		normalMat = Resources.Load("Materials/PlayerTile") as Material;
-		boostMat = Resources.Load("Materials/PlayerBoostTile") as Material;
-		regainMat = Resources.Load("Materials/PlayerNoBoostTile") as Material;
+		// normalMat = Resources.Load("Materials/PlayerTile") as Material;
+		// boostMat = Resources.Load("Materials/PlayerBoostTile") as Material;
+		// regainMat = Resources.Load("Materials/PlayerNoBoostTile") as Material;
 		
-		gameObject.AddComponent<MatOffset>();
+		// gameObject.AddComponent<MatOffset>();
+		
+		// GetComponent<SpriteRenderer>().enabled = false;
+		
+		if (playerGraphicsGO)
+		{
+			GameObject go = Instantiate(playerGraphicsGO, transform.position, transform.rotation) as GameObject;
+			go.transform.SetParent(transform);
+			
+			go.transform.localScale = Vector2.one;
+		}
 	}
 	
 	// Use this for initialization
@@ -59,8 +76,10 @@ public class PlayerControl : MonoBehaviour {
 		// boostCooldownL = boostCooldown;
 		
 		pR = GetComponent<Renderer>();
+		sR = GetComponent<SpriteRenderer>();
 		
-		pR.material = normalMat;
+		// pR.material = normalMat;
+		sR.color = normalColour;
 		
 		startingPos = transform.position;
 	}
@@ -126,7 +145,8 @@ public class PlayerControl : MonoBehaviour {
 	
 	IEnumerator Boost () {
 		speedL = boostSpeed;
-		StartCoroutine("ChangeColour", boostMat);
+		// StartCoroutine("ChangeColour", boostMat);
+		StartCoroutine("ChangeColour", boostColour);
 		
 		float boostLengthL = boostLength;
 		
@@ -137,7 +157,8 @@ public class PlayerControl : MonoBehaviour {
 		}
 		
 		speedL = standardSpeed;
-		StartCoroutine("ChangeColour", regainMat);
+		// StartCoroutine("ChangeColour", regainMat);
+		StartCoroutine("ChangeColour", regainColour);
 		boosting = false;
 		StartCoroutine("RegainBoost");
 	}
@@ -152,29 +173,42 @@ public class PlayerControl : MonoBehaviour {
 		}
 		
 		boostReady = true;
-		StartCoroutine("ChangeColour", normalMat);
+		// StartCoroutine("ChangeColour", normalMat);
+		StartCoroutine("ChangeColour", normalColour);
 		
 		// yield return StartCoroutine("ChangeColour", normalMat);
 		// boostReady = true;
 	}
 	
-	IEnumerator ChangeColour (Material mat) {
+	// IEnumerator ChangeColour (Material mat) {
+	IEnumerator ChangeColour (Color newColour) {
 		
 		float cFT = 0;
-		Material startingMat = pR.material;
+		// Material startingMat = pR.material;
+		Color startingColour = sR.color;
 		// Debug.Log(Time.time);
 		
 		while (cFT < colourFadeTime) 
 		{	
-			// cFT += Time.deltaTime;
-			cFT += colourFadeTime/10;
-			pR.material.Lerp(startingMat, mat, 0.1f);
-
-			yield return new WaitForSeconds(colourFadeTime/10);
+			cFT += Time.deltaTime;
+			// cFT += colourFadeTime/10;
+			// pR.material.Lerp(startingMat, mat, 0.1f);
+			
+			float lerpValue = cFT/colourFadeTime;
+			// float lerpValue = colourFadeTime/cFT;
+			
+			sR.color = Color.Lerp(startingColour, newColour, lerpValue);
+			
+			// Debug.Log(lerpValue);
+			
+			yield return null;
+			
+			// yield return new WaitForSeconds(colourFadeTime/10);
 		}
 		
 		// Debug.Log(Time.time);
-		pR.material = mat;
+		// pR.material = mat;
+		sR.color = newColour;
 		yield return null;
 	}
 	
@@ -201,7 +235,11 @@ public class PlayerControl : MonoBehaviour {
 			canGoAway = false;
 			
 			Messenger.Broadcast("FirstMovement");
-			LoadLevel.StartTimer();
+			
+			if (Application.loadedLevelName != "LevelTesting")
+			{
+				LoadLevel.StartTimer();
+			}
 		}
 		
 		if (controlledObjectScript != null)

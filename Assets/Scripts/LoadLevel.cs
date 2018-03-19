@@ -198,6 +198,8 @@ public class LoadLevel : MonoBehaviour {
 		{
 			currentLevel = Instantiate(levelsInQueue[nextLevelQueuePos], Vector3.zero, Quaternion.identity) as GameObject;
 			
+			// Debug.Log("Created New Level");
+			
 			// float x = Random.Range(0, 2) == 0 ? 1 : -1;
 			// float y = Random.Range(0, 2) == 0 ? 1 : -1;
 			// currentLevel.transform.localScale = new Vector3(x, y, 1);
@@ -442,7 +444,7 @@ public class LoadLevel : MonoBehaviour {
 	
 	public static void StartTimer () {
 		instance.StartCoroutine(Timer());
-		Debug.Log("StartTimer");
+		// Debug.Log("StartTimer");
 	}
 	
 	public static void StopTimer () {
@@ -451,7 +453,7 @@ public class LoadLevel : MonoBehaviour {
 		if (timerRunning == true)
 		{
 			timerRunning = false;
-			Debug.Log("StopTimer");
+			// Debug.Log("StopTimer");
 			
 			secondsPlayedTotal += timeValue;
 			secondsPlayedCurrent += timeValue;
@@ -460,7 +462,7 @@ public class LoadLevel : MonoBehaviour {
 			individualLevelStats[lastLevelID].secondsPlayedTotal += timeValue;
 			
 			secondsPlayedLast = timeValue;
-			Debug.Log("Setting Seconds Last Played To " + timeValue);
+			// Debug.Log("Setting Seconds Last Played To " + timeValue);
 			
 			#if UNITY_STANDALONE || UNITY_EDITOR || UNITY_ANDROID || UNITY_WSA_10_0
 				PlayerPrefs.SetFloat("SecondsPlayedTotal", secondsPlayedTotal);

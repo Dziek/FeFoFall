@@ -110,6 +110,8 @@ public class TransitionScreen : MonoBehaviour {
 			// yield break;
 		// }
 		
+		// Debug.Log(startPoint.transform.position);
+		
 		startingXScale = startPoint.transform.localScale.x * 0.058f;
 		startingScale = startPoint.transform.localScale * 0.058f;
 		
@@ -172,6 +174,12 @@ public class TransitionScreen : MonoBehaviour {
 	
 	public IEnumerator StartPhaseTwo (float waitTime) {
 		
+		// if (controller.gameCompleted == false)
+		// {
+			// completeScreenGO.SetActive(false);
+			// levelInfoScreenGO.SetActive(true);
+		// }
+		
 		if (controller.gameCompleted == false && controller.transitionState != TransitionState.levelTest)
 		{
 			LoadLevel.GetLevel();
@@ -203,7 +211,6 @@ public class TransitionScreen : MonoBehaviour {
 		
 		if (controller.gameCompleted == false)
 		{
-			
 			completeScreenGO.SetActive(false);
 			levelInfoScreenGO.SetActive(true);
 			endPoint = GameObject.Find("Player");

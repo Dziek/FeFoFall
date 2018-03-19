@@ -33,10 +33,9 @@ public class DynamicShadowsAlt : MonoBehaviour {
 	private GameObject frame;
 	private GameObject level;
 	
+	private Vector2 screenBounds = new Vector2(8.86f, 4.969642f);
+	
 	void Awake () {
-		
-		Vector2 adjustedScale = new Vector2(1 / transform.parent.localScale.x, 1 / transform.parent.localScale.y);
-		transform.localScale = adjustedScale;
 		
 		hitPoints = new Vector2[amount];
 		
@@ -51,10 +50,17 @@ public class DynamicShadowsAlt : MonoBehaviour {
 		}
 		
 		// Debug.Log(System.Enviroment.Version);
+		
+		// GetComponent<Renderer>().sortingLayerName = "Background";
 	}
 	
     void Start() {
         
+		Transform playerParent = transform.parent.parent;
+		
+		Vector2 adjustedScale = new Vector2(1 / playerParent.localScale.x, 1 / playerParent.localScale.y);
+		transform.localScale = adjustedScale;
+		
 		mesh = new Mesh();
 		
         GetComponent<MeshFilter>().mesh = mesh;
@@ -65,8 +71,12 @@ public class DynamicShadowsAlt : MonoBehaviour {
 		
 		mesh.RecalculateNormals();
 		
+		// Debug.Break();
+		
 		frame = GameObject.Find("FrameSprites"); //TODO: Make it so if can't find GameFrame then get DefaultFrame
-		level = GameObject.FindWithTag("Level");
+		level = gameObject.FindParentWithTag("Level");
+		
+		// Debug.Log("Shadows " + level);
 		
 		GetCorners();
 		Cast();
@@ -75,8 +85,24 @@ public class DynamicShadowsAlt : MonoBehaviour {
 		Draw();
     }
 	
+	// void StartCastingShadow (GameObject levelGO) {
+		// // Debug.Break();
+		
+		// frame = GameObject.Find("FrameSprites"); //TODO: Make it so if can't find GameFrame then get DefaultFrame
+		// // level = GameObject.FindWithTag("Level");
+		// level = levelGO;
+		
+		// // Debug.Log("Shadows " + level);
+		
+		// GetCorners();
+		// Cast();
+		// SortHitPointsQuick();
+		// MakeTriangles();
+		// Draw();
+	// }
+	
 	// Update is called once per frame
-	void Update () {
+	void LateUpdate () {
 		
 		// calculatedVertices.Clear();
 		// calculatedUV.Clear();
@@ -84,12 +110,15 @@ public class DynamicShadowsAlt : MonoBehaviour {
 		
 		// corners.Clear();
 		
-		GetCorners();
-		// DummyCast();
-		Cast();
-		SortHitPointsQuick();
-		MakeTriangles();
-		Draw();
+		if (level != null)
+		{
+			GetCorners();
+			// DummyCast();
+			Cast();
+			SortHitPointsQuick();
+			MakeTriangles();
+			Draw();
+		}
 	}
 	
 	void GetCorners () {
@@ -99,18 +128,16 @@ public class DynamicShadowsAlt : MonoBehaviour {
 		AddScreen();
 		// AddFrame();
 		GetLevelBits();
+		GetFrameInterruptions();
 		// SortCorners();
 	}
 	
 	void AddScreen () {
-		// float x = 9;
-		// float y = 5;
+		// float x = 8.86f;
+		// float y = 4.969642f;
 		
-		// float x = 8.625f;
-		// float y = 4.75f;
-		
-		float x = 8.86f;
-		float y = 4.969642f;
+		float x = screenBounds.x;
+		float y = screenBounds.y;
 		
 		corners.Add(new Vector2(-x, -y));
 		corners.Add(new Vector2(-x, y));
@@ -202,7 +229,8 @@ public class DynamicShadowsAlt : MonoBehaviour {
 			box.transform.rotation = q;
 			
 			pos = box.transform.TransformPoint(pos);
-			corners.Add(pos);
+			// corners.Add(pos);
+			AddCornerPos(pos);
 			
 			// top right
 			box.transform.rotation = Quaternion.identity;
@@ -213,7 +241,8 @@ public class DynamicShadowsAlt : MonoBehaviour {
 			box.transform.rotation = q;
 			
 			pos = box.transform.TransformPoint(pos);
-			corners.Add(pos);
+			// corners.Add(pos);
+			AddCornerPos(pos);
 			
 			// bottom right
 			box.transform.rotation = Quaternion.identity;
@@ -224,7 +253,8 @@ public class DynamicShadowsAlt : MonoBehaviour {
 			box.transform.rotation = q;
 			
 			pos = box.transform.TransformPoint(pos);
-			corners.Add(pos);
+			// corners.Add(pos);
+			AddCornerPos(pos);
 			
 			// top left
 			box.transform.rotation = Quaternion.identity;
@@ -235,9 +265,26 @@ public class DynamicShadowsAlt : MonoBehaviour {
 			box.transform.rotation = q;
 			
 			pos = box.transform.TransformPoint(pos);
-			corners.Add(pos);
+			// corners.Add(pos);
+			AddCornerPos(pos);
 			
 		}
+	}
+	
+	void GetFrameInterruptions () {
+		// Debug.Log("D");
+	}
+	
+	void AddCornerPos (Vector2 pos) {
+		
+		float x = screenBounds.x;
+		float y = screenBounds.y;
+		
+		// Vector2 clampedPos = pos;
+		
+		Vector2 clampedPos = new Vector2(Mathf.Clamp(pos.x, -x, x), Mathf.Clamp(pos.y, -y, y));
+		
+		corners.Add(clampedPos);
 	}
 	
 	void SortCorners () {
@@ -496,5 +543,13 @@ public class DynamicShadowsAlt : MonoBehaviour {
 		mesh.uv = calculatedUV.ToArray();
         mesh.triangles = calculatedTriangles.ToArray();
 	}
-
+	
+	
+	// void OnEnable () {
+		// Messenger<GameObject>.AddListener("NewLevelLoaded", StartCastingShadow);
+	// }
+	
+	// void OnDisable () {
+		// Messenger<GameObject>.RemoveListener("NewLevelLoaded", StartCastingShadow);
+	// }
 }

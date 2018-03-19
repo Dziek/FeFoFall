@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Trigger : MonoBehaviour {
 	
+	public GameObject triggerGraphicsGO;
+	
 	public float timeActive;
 	public GameObject receiver;
 	public bool oneShot;
@@ -12,6 +14,11 @@ public class Trigger : MonoBehaviour {
 	
 	public Material deactivated;
 	private Material activated;
+	
+	private Color notActiveColour = new Color32(0, 251, 106, 255);
+	private Color activeColour = new Color32(69, 217, 212, 255);
+	
+	private SpriteRenderer sR;
 	
 	private bool active = true;
 	
@@ -24,11 +31,24 @@ public class Trigger : MonoBehaviour {
 		{
 			playAudio = false;
 		}
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+		
+		bool rendererEnabled = GetComponent<SpriteRenderer>().enabled;
+		
+		if (triggerGraphicsGO)
+		{
+			GetComponent<SpriteRenderer>().enabled = false;
+			
+			GameObject go = Instantiate(triggerGraphicsGO, transform.position, transform.rotation) as GameObject;
+			go.transform.SetParent(transform);
+			
+			go.transform.localScale = Vector2.one;
+			
+			// sR = GetComponentInChildren<SpriteRenderer>();
+		}
+		
+		sR = GetComponentsInChildren<SpriteRenderer>()[1];
+		sR.color = activeColour;
+		sR.enabled = rendererEnabled;
 	}
 	
 	void OnTriggerEnter2D(Collider2D collision)
@@ -37,6 +57,7 @@ public class Trigger : MonoBehaviour {
 		{
 			receiver.SendMessage("TriggerActivated", timeActive);
 			GetComponent<Renderer>().material = deactivated;
+			sR.color = notActiveColour;
 			active = false;
 			// Debug.Log("H");
 			if (oneShotDestroy)
@@ -69,6 +90,7 @@ public class Trigger : MonoBehaviour {
 		
 		yield return null;
 		GetComponent<Renderer>().material = activated;
+		sR.color = activeColour;
 		active = true;
 	}
 }

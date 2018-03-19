@@ -7,8 +7,8 @@ public class Testing : MonoBehaviour {
 	
 	public AudioMixerGroup audioMixerGroup;
 	
-	private int sNum = 0;
-	private string sFolder = "Promotional/InGame/";
+	// private int sNum = 0;
+	// private string sFolder = "Promotional/InGame/";
 	
 	private bool muted;
 	
@@ -25,10 +25,10 @@ public class Testing : MonoBehaviour {
 			// Application.Quit();
 		}
 		
-		if (Input.GetKeyDown("f9"))
-		{
-			TakeScreenshot();
-		}
+		// if (Input.GetKeyDown("f9"))
+		// {
+			// TakeScreenshot();
+		// }
 		
 		if (Input.GetButtonDown("Fire3"))
 		{
@@ -45,17 +45,17 @@ public class Testing : MonoBehaviour {
 		// Application.LoadLevel(Application.loadedLevel);
 	}
 	
-	public void TakeScreenshot () {
-		string screenshotFilename = sFolder + "Screenshot" + sNum + ".png";
-		while (System.IO.File.Exists(screenshotFilename))
-		{
-			sNum++;
-			screenshotFilename = sFolder + "Screenshot" + sNum + ".png";
-		}
+	// public void TakeScreenshot () {
+		// string screenshotFilename = sFolder + "Screenshot" + sNum + ".png";
+		// while (System.IO.File.Exists(screenshotFilename))
+		// {
+			// sNum++;
+			// screenshotFilename = sFolder + "Screenshot" + sNum + ".png";
+		// }
 	
-		ScreenCapture.CaptureScreenshot(screenshotFilename, 6);
-		Debug.Log("Screenshot " + sNum + " Captured!");
-	}
+		// ScreenCapture.CaptureScreenshot(screenshotFilename, 2);
+		// Debug.Log("Screenshot " + sNum + " Captured!");
+	// }
 	
 	public void MuteLevelAudio () {
 		if (muted == false)

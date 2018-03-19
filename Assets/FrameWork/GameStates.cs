@@ -24,6 +24,11 @@ public class GameStates : MonoBehaviour {
 	void Start () {
 		ChangeState("MainMenu");
 		
+		if (Application.loadedLevelName == "LevelTesting")
+		{
+			ChangeState("Playing");
+		}
+		
 		// Application.targetFrameRate = 60;
 	}
 

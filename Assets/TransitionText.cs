@@ -438,7 +438,7 @@ public class TransitionText : MonoBehaviour {
 				if (LoadLevel.GetCurrentLevelBestAttempts() < LoadLevel.GetCurrentLevelCurrentAttempts())
 				{
 					optionsF.Add("No Record For You");
-					optionsF.Add("Taken " + LoadLevel.GetLastAttemptsDifference().ToString("f2") + " More Attempts Already");
+					optionsF.Add("Taken " + Mathf.Abs(LoadLevel.GetLastAttemptsDifference()).ToString() + " More Attempts Already");
 				}
 				
 				optionsF.Add(LoadLevel.GetLastSeconds().ToString("f2") + " Seconds Wasted");
