@@ -155,8 +155,13 @@ public class Movement : MonoBehaviour {
 			if (GameStates.GetState() == "Playing")
 			{
 				playerScript = GameObject.Find("Player").GetComponent<PlayerControl>();
-				StartCoroutine("CheckForPlayerMovement");
-				yield break;
+				// Debug.Log(playerScript);
+				
+				// if (playerScript != null)
+				// {
+					StartCoroutine("CheckForPlayerMovement");
+					yield break;
+				// }
 			}
 			yield return null;
 		}

@@ -68,6 +68,8 @@ public class PlayerControl : MonoBehaviour {
 			
 			go.transform.localScale = Vector2.one;
 		}
+		
+		// Debug.Log("Here");
 	}
 	
 	// Use this for initialization
