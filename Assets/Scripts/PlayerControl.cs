@@ -4,6 +4,7 @@ using System.Collections;
 public class PlayerControl : MonoBehaviour {
 
 	public GameObject playerGraphicsGO;
+	public bool noLeft = false;
 
 	public float standardSpeed; // standard speed
 	public float boostSpeed; // speed when boosting
@@ -117,7 +118,7 @@ public class PlayerControl : MonoBehaviour {
 			horizontalInputReset = false;
 		}
 		// if (Input.GetKeyDown("a")||Input.GetKeyDown("left")) 
-		if (Input.GetAxisRaw("Horizontal") < -0.5f && horizontalInputReset == true) 
+		if (Input.GetAxisRaw("Horizontal") < -0.5f && horizontalInputReset == true && noLeft == false) 
 		{
 			RegisterInput("Left");
 			horizontalInputReset = false;

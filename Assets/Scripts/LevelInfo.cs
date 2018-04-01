@@ -7,6 +7,9 @@ public class LevelInfo : MonoBehaviour {
 	public string name;
 	public string description;
 	
+	[TextArea(5, 10)]
+	public string notes;
+	
 	public bool canFlip = false;
 	
 	public Color background;

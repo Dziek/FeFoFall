@@ -90,6 +90,7 @@ public class Movement : MonoBehaviour {
 				{
 					if (oneWay)
 					{
+						// Debug.Log(Time.time);
 						yield break;
 					}
 					if (oneCircuit)
