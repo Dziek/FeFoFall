@@ -47,12 +47,12 @@ public class ObjectManipulation <T> : MonoBehaviour{
 	[HideInInspector()] public int noOfLoopsCompleted;
 	
 	void OnEnable () {
-		Messenger.AddListener("levelStarted", LevelStarted);
+		Messenger.AddListener("FirstMovement", LevelStarted);
 		Messenger<bool>.AddListener("levelOver", LevelOver);
 	}
 	
 	void OnDisable () {
-		Messenger.RemoveListener("levelStarted", LevelStarted);
+		Messenger.RemoveListener("FirstMovement", LevelStarted);
 		Messenger<bool>.RemoveListener("levelOver", LevelOver);
 		
 		StopCoroutine("CalculateUpdate");
@@ -267,4 +267,6 @@ public class ObjectManipulation <T> : MonoBehaviour{
 	public void GetRelevantValue () {
 		// return ;
 	}
+	
+	
 }
