@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MoveBasic : ObjectManipulation<Vector2> {
 	
+	private float zPos;
+	
 	public override void DestinationPointsSetUp () {
 		ReverseProtection(destinationPoints, Vector2.zero);
 		
@@ -18,7 +20,9 @@ public class MoveBasic : ObjectManipulation<Vector2> {
 	
 	public override void SetUp () {
 		// for setting up starting values
-		   
+		
+		zPos = transform.position.z;
+		
 		startPoint = GetRelevantValue();
 		   
 		currentPoint = GetRelevantValue();
@@ -36,6 +40,7 @@ public class MoveBasic : ObjectManipulation<Vector2> {
 		}else{
 			
 			transform.position = Vector2.Lerp(currentPoint, nextPoint, lerpAmount); 
+			transform.position = transform.position + Vector3.forward * zPos;
 		}
 		
 		lastFramePoint = GetRelevantValue();

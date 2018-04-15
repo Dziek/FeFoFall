@@ -5,6 +5,7 @@ public class PlayerControl : MonoBehaviour {
 
 	public GameObject playerGraphicsGO;
 	public bool noLeft = false;
+	public bool reverseControls = false; // should reverse controls?
 
 	public float standardSpeed; // standard speed
 	public float boostSpeed; // speed when boosting
@@ -253,20 +254,40 @@ public class PlayerControl : MonoBehaviour {
 	}
 	
 	void Move () {
-		switch (direction)
+		
+		if (reverseControls == false)
 		{
-			case directions.Up:
-				transform.Translate(Vector3.up * (Time.deltaTime * speedL), Space.World);
-			break;
-			case directions.Down:
-				transform.Translate(Vector3.up * (-Time.deltaTime * speedL), Space.World);
-			break;
-			case directions.Right:
-				transform.Translate(Vector3.right * (Time.deltaTime * speedL), Space.World);
-			break;
-			case directions.Left:
-				transform.Translate(Vector3.right * (-Time.deltaTime * speedL), Space.World);
-			break;
+			switch (direction)
+			{
+				case directions.Up:
+					transform.Translate(Vector3.up * (Time.deltaTime * speedL), Space.World);
+				break;
+				case directions.Down:
+					transform.Translate(Vector3.up * (-Time.deltaTime * speedL), Space.World);
+				break;
+				case directions.Right:
+					transform.Translate(Vector3.right * (Time.deltaTime * speedL), Space.World);
+				break;
+				case directions.Left:
+					transform.Translate(Vector3.right * (-Time.deltaTime * speedL), Space.World);
+				break;
+			}
+		}else{
+			switch (direction)
+			{
+				case directions.Up:
+					transform.Translate(Vector3.up * (Time.deltaTime * -speedL), Space.World);
+				break;
+				case directions.Down:
+					transform.Translate(Vector3.up * (Time.deltaTime * speedL), Space.World);
+				break;
+				case directions.Right:
+					transform.Translate(Vector3.right * (Time.deltaTime * -speedL), Space.World);
+				break;
+				case directions.Left:
+					transform.Translate(Vector3.right * (Time.deltaTime * speedL), Space.World);
+				break;
+			}
 		}
 	}
 
@@ -341,6 +362,28 @@ public class PlayerControl : MonoBehaviour {
 		{
 			LoadLevel.StopTimer();
 		}
+	}
+	
+	public void ReverseControls (float time) {
+		reverseControls = !reverseControls;
+	}
+	
+	public void ReverseControlsTime (float time) {
+		StopCoroutine("ReverseControlCountdown");
+		StartCoroutine("ReverseControlCountdown", time);
+	}
+	
+	IEnumerator ReverseControlCountdown (float reverseTime) {
+		float t = 0;
+		reverseControls = true;
+		
+		while (t < reverseTime)
+		{
+			t += Time.deltaTime;
+			yield return null;
+		}
+		
+		reverseControls = false;
 	}
 	
 }

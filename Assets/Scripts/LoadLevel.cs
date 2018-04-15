@@ -82,6 +82,12 @@ public class LoadLevel : MonoBehaviour {
 				if (PlayerPrefsX.GetBool("Level"+fullListOfLevels[i].name+"Completed") == false)
 				{
 					levelsInQueue.Add(fullListOfLevels[i]);
+					
+					// GameObject levelGO = fullListOfLevels[i];
+					
+					// levelGO.name = "Level" + i.ToString("00000");
+					
+					// levelsInQueue.Add(levelGO);
 				}else{
 					levelsCompleted++;
 				}
@@ -122,8 +128,13 @@ public class LoadLevel : MonoBehaviour {
 			for (int i = 0; i < completedLevels.Length; i++)
 			{
 				if (completedLevels[i] == false)
-				{
-					levelsInQueue.Add(fullListOfLevels[i]);
+				{	
+					// GameObject levelGO = fullListOfLevels[i];
+					
+					// levelGO.name = "Level" + i.ToString("00000");
+					
+					// levelsInQueue.Add(levelGO);
+					// Debug.Log(levelsInQueue[i].name);
 				}else{
 					levelsCompleted++;
 				}
@@ -487,6 +498,9 @@ public class LoadLevel : MonoBehaviour {
 	}
 	
 	static int ConvertLevelNameToID (string levelName) {
+		
+		Debug.Log(levelName);
+		
 		string trimmedName = levelName.Remove(0,5).TrimStart('0');
 		int ID = trimmedName.Length > 0 ? int.Parse(trimmedName) : 0;
 			

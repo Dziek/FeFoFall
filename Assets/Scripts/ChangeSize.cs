@@ -9,6 +9,7 @@ public class ChangeSize : MonoBehaviour {
 	
 	public float speed;
 	public float pause; // time to pause when reaching either point
+	public float delay;
 	
 	public bool waitForPlayerMovement;
 	public bool oneWay; // if want to use this pause must be at least 0.1f
@@ -55,6 +56,12 @@ public class ChangeSize : MonoBehaviour {
 	
 	IEnumerator Change () {
 		// while (GameStates.GetState() == "Playing")
+			
+		if (delay > 0)
+		{
+			yield return new WaitForSeconds(delay);
+		}
+		
 		while (true)
 		{
 			if (GameStates.GetState() == "Playing")

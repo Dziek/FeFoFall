@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class NewLevelLoad : MonoBehaviour {
 	
+	public static NewLevelLoad instance;
+	
 	public string[] levelFolderNames = new string[] {"Unused"};
 	public int activeRange = 5; // how many levels can be 'active' at a time
 	
 	public static List<GameObject> levelsInQueue = new List<GameObject>();
 	
 	void Awake () {
+		
+		instance = this;
+		
 		FetchLevels();
 	}
 	

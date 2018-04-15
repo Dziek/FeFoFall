@@ -7,7 +7,7 @@ public class Movement : MonoBehaviour {
 	private	Vector3 startPoint;
 	public Vector3 endPoint;
 	
-	public float speed;
+	public float speed = 1;
 	public float pause; // time to pause when reaching either point
 	public float delay;
 	
