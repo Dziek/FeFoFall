@@ -182,9 +182,10 @@ public class TransitionScreen : MonoBehaviour {
 		
 		if (controller.gameCompleted == false && controller.transitionState != TransitionState.levelTest)
 		{
-			LoadLevel.GetLevel();
+			// LoadLevel.GetLevel();
+			controller.levelManager.SwitchLevel();
 		}else{
-			LoadLevel.ClearLevel();
+			// LoadLevel.ClearLevel();
 			completeScreenGO.SetActive(true);
 		}
 		

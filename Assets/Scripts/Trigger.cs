@@ -15,8 +15,11 @@ public class Trigger : MonoBehaviour {
 	public Material deactivated;
 	private Material activated;
 	
-	private Color notActiveColour = new Color32(0, 251, 106, 255);
+	// private Color notActiveColour = new Color32(0, 251, 106, 255);
+	// private Color activeColour = new Color32(69, 217, 212, 255);
+	
 	private Color activeColour = new Color32(69, 217, 212, 255);
+	private Color notActiveColour = new Color32(69, 217, 63, 255);
 	
 	private SpriteRenderer sR;
 	
@@ -49,6 +52,8 @@ public class Trigger : MonoBehaviour {
 		sR = GetComponentsInChildren<SpriteRenderer>()[1];
 		sR.color = activeColour;
 		sR.enabled = rendererEnabled;
+		
+		gameObject.layer = LayerMask.NameToLayer("Trigger");
 	}
 	
 	void OnTriggerEnter2D(Collider2D collision)

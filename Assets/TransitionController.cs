@@ -22,6 +22,8 @@ public class TransitionController : MonoBehaviour {
 	[HideInInspector]
 	public bool closeCall;
 	
+	public LevelManager levelManager;
+	
 	private TransitionScreen transitionScreen;
 	private TransitionText transitionText;
 	
@@ -48,32 +50,33 @@ public class TransitionController : MonoBehaviour {
 		if (transitionState == TransitionState.levelSuccess)
 		{
 			// Tells LoadLevel a level has been completed, and returns whether that was the last level
-			gameCompleted = LoadLevel.LevelCompleted();
+			// gameCompleted = LoadLevel.LevelCompleted();
+			gameCompleted = levelManager.CheckForGameOver();
+			levelManager.LevelCompleted();
 		}
 		
-		if (transitionState == TransitionState.levelFailure)
-		{
-			LoadLevel.LevelFailed();
-		}
+		// if (transitionState == TransitionState.levelFailure)
+		// {
+			// LoadLevel.LevelFailed();
+		// }
 		
-		if (transitionState == TransitionState.levelSuccess)
-		{
-			// Reset Game if you start to play and levels are all complete
-			if (LoadLevel.CheckComplete())
-			{
-				LoadLevel.Reset();
-				// Debug.Log("R");
-			}
-		}
+		// if (transitionState == TransitionState.levelSuccess)
+		// {
+			// // Reset Game if you start to play and levels are all complete
+			// if (LoadLevel.CheckComplete())
+			// {
+				// LoadLevel.Reset();
+				// // Debug.Log("R");
+			// }
+		// }
 		
 		yield return transitionScreen.StartPhaseOne();
 		
-		transitionText.UpdateText();
-		string text = transitionText.GetText();
-		// Debug.Log("Got Text");
+		// transitionText.UpdateText();
+		// string text = transitionText.GetText();
 		
-		// MinMax waitTime = new MinMax(0.25f, 0.45f);
-		// MinMax stringLength = new MinMax(8, 20);
+		string text = "Hello There";
+		
 		
 		MinMax waitTime = new MinMax(0.25f, 1f);
 		MinMax stringLength = new MinMax(8, 30);

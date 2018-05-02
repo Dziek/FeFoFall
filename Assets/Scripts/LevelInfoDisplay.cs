@@ -34,8 +34,8 @@ public class LevelInfoDisplay : MonoBehaviour {
 			if (Application.loadedLevelName != "LevelTesting")
 			{
 				lvlID.text = levelObject.name;
-				lvlAttempts.text = "Attempts: " + LoadLevel.GetCurrentLevelCurrentAttempts().ToString();
-				lvlBestTime.text = "Level Best Time: " + LoadLevel.GetCurrentLevelBestTime().ToString("f2");
+				// lvlAttempts.text = "Attempts: " + LoadLevel.GetCurrentLevelCurrentAttempts().ToString();
+				// lvlBestTime.text = "Level Best Time: " + LoadLevel.GetCurrentLevelBestTime().ToString("f2");
 			}
 		}
 		
@@ -77,8 +77,8 @@ public class LevelInfoDisplay : MonoBehaviour {
 			if (Application.loadedLevelName != "LevelTesting")
 			{
 				lvlID.text = levelObject.name;
-				lvlAttempts.text = "Attempts: " + LoadLevel.GetCurrentLevelCurrentAttempts().ToString();
-				lvlBestTime.text = "Level Best Time: " + LoadLevel.GetCurrentLevelBestTime().ToString("f2");
+				// lvlAttempts.text = "Attempts: " + LoadLevel.GetCurrentLevelCurrentAttempts().ToString();
+				// lvlBestTime.text = "Level Best Time: " + LoadLevel.GetCurrentLevelBestTime().ToString("f2");
 			}
 		}
 		
@@ -108,7 +108,7 @@ public class LevelInfoDisplay : MonoBehaviour {
 	public void GoAway () {
 		if (Application.loadedLevelName != "LevelTesting")
 		{
-			LoadLevel.AddToCurrentAttempts();
+			// LoadLevel.AddToCurrentAttempts();
 		}
 		gameObject.SetActive(false);
 	}

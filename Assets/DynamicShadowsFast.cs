@@ -95,7 +95,7 @@ public class DynamicShadowsFast : MonoBehaviour {
 		
 		for (int i = 0; i < temp.Length; i++)
 		{
-			if (temp[i].gameObject.tag != "Player")
+			if (temp[i].gameObject.tag != "Player" && temp[i].gameObject.tag != "Trigger")
 			// if (temp[i].gameObject != transform.parent.parent)
 			{
 				tempList.Add(temp[i]);
@@ -255,7 +255,7 @@ public class DynamicShadowsFast : MonoBehaviour {
 		Vector2 dir;
 		// float distance = Mathf.Infinity;
 		float distance = 36;
-		int layerMask = LayerMask.GetMask("Player");
+		int layerMask = LayerMask.GetMask("Player") | LayerMask.GetMask("Trigger");
 		// int layerMask = LayerMask.GetMask("UI");
 		
 		hitPointDataList.Clear();

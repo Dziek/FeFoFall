@@ -7,8 +7,35 @@ public class LevelInfo : MonoBehaviour {
 	public string name;
 	public string description;
 	
+	[TextArea(2, 3)]
+	public string info;
+	
 	[TextArea(5, 10)]
 	public string notes;
+	
+	public enum Rating {
+		S,
+		A,
+		B,
+		C,
+		D,
+		F,
+		Unrated
+	} public Rating levelRating = Rating.Unrated;
+	
+	public enum Difficulty {
+		Beginner,
+		BeginnerPlus,
+		Easy,
+		EasyPlus,
+		Intermediate,
+		IntermediatePlus,
+		Hard,
+		Devilish,
+		Tricky,
+		TooMuch,
+		Unrated
+	} public Difficulty levelDifficulty = Difficulty.Unrated;
 	
 	public bool canFlip = false;
 	

@@ -242,7 +242,7 @@ public class PlayerControl : MonoBehaviour {
 			
 			if (Application.loadedLevelName != "LevelTesting")
 			{
-				LoadLevel.StartTimer();
+				// LoadLevel.StartTimer();
 			}
 		}
 		
@@ -302,7 +302,7 @@ public class PlayerControl : MonoBehaviour {
 	
 	void OnTriggerEnter2D(Collider2D collision)
 	{
-		if (Application.loadedLevelName == "LevelTesting")
+		if (Application.loadedLevelName == "LevelTesting" || Application.loadedLevelName == "GraphicsTesting" )
 		{
 			if(collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Frame")
 			{
@@ -316,7 +316,7 @@ public class PlayerControl : MonoBehaviour {
 		}else{
 		    if(collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Frame")
 		    {
-				LoadLevel.StopTimer();
+				// LoadLevel.StopTimer();
 				
 			    Messenger.Broadcast("Failure");
 			    GameStates.ChangeState("Transition", "Bad");
@@ -337,7 +337,7 @@ public class PlayerControl : MonoBehaviour {
 		   
 		    if(collision.gameObject.tag == "End")
 		    {
-				LoadLevel.StopTimer();
+				// LoadLevel.StopTimer();
 				
 			    Messenger.Broadcast("Success");
 			    GameStates.ChangeState("Transition", "Good");
@@ -360,7 +360,7 @@ public class PlayerControl : MonoBehaviour {
 	void OnDisable () {
 		if (LoadLevel.instance != null)
 		{
-			LoadLevel.StopTimer();
+			// LoadLevel.StopTimer();
 		}
 	}
 	

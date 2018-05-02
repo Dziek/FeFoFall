@@ -38,7 +38,7 @@ public class MenuManager : MonoBehaviour {
 					touchControls.SetActive(true);
 				#endif
 				
-				Camera.main.backgroundColor = cameraColor;
+				// Camera.main.backgroundColor = cameraColor;
 				EventSystem.current.SetSelectedGameObject(mainMenuButton);
 				
 				// playing.SetActive(false);
