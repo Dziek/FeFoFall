@@ -39,13 +39,12 @@ public class LevelInfo : MonoBehaviour {
 	
 	public bool canFlip = false;
 	
-	public Color background;
+	// public Modes mode = Modes.Unassigned;
+	
+	// [HideInInspector]
+	// public LevelStats levelStats = new LevelStats();
 	
 	void OnEnable () {
-		// if (background != null)
-		// {
-			// Camera.main.backgroundColor = background;
-		// }
 		
 		if (canFlip == true)
 		{
@@ -54,27 +53,14 @@ public class LevelInfo : MonoBehaviour {
 			transform.localScale = new Vector3(x, y, 1);
 		}
 		
-		// Messenger<GameObject>.Broadcast("NewLevelLoaded", gameObject);
-		
-		// Messenger.AddListener("FirstMovement", ClearCanvas);
+		// Messenger.AddListener("Success", LevelComplete);
 	}
 	
-	// void OnDisable() {
-		
-		// Messenger.RemoveListener("FirstMovement", ClearCanvas);
-		
+	// void OnDisable () {
+		// Messenger.RemoveListener("Success", LevelComplete);
 	// }
 	
-	// void ClearCanvas () {
-		// gameObject.GetComponentInChildren<Canvas>().gameObject.SetActive(false);
-		// Debug.Log("Clear");
+	// void LevelComplete () {
+		// levelStats.isCompleted = true;
 	// }
-	
-	public void GetInfo (out string n, out string d) {
-		// return description;
-		// return "W";
-		n = name;
-		d = description;
-		// return;
-	}
 }

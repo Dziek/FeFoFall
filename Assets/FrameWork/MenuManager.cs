@@ -39,7 +39,10 @@ public class MenuManager : MonoBehaviour {
 				#endif
 				
 				// Camera.main.backgroundColor = cameraColor;
-				EventSystem.current.SetSelectedGameObject(mainMenuButton);
+				// EventSystem.current.SetSelectedGameObject(mainMenuButton);
+				
+				// invoking because updating statsDisplay (which happens OnSelect) needs to be delayed until all stats are loaded in
+				// Invoke("SelectPlayButton", 0.0f);
 				
 				// playing.SetActive(false);
 				levelInfo.SetActive(false);
@@ -66,10 +69,10 @@ public class MenuManager : MonoBehaviour {
 				{
 					// transitionScript.StopCoroutine("Go");
 					// transitionScript.StartCoroutine("Go", extra);
-					// Messenger<TransitionState>
+					// Messenger<TransitionReason>
 				}else{
 					// transitionScript.StartCoroutine("Go", "Load");
-					Messenger<TransitionState>.Broadcast("Transition", TransitionState.levelLoad);
+					Messenger<TransitionReason>.Broadcast("Transition", TransitionReason.levelLoad);
 				}
 				
 				// mainMenu.SetActive(false);
@@ -116,15 +119,23 @@ public class MenuManager : MonoBehaviour {
 		
 	}
 	
+	void SelectPlayButton () {
+		EventSystem.current.SetSelectedGameObject(mainMenuButton);
+	}
+	
 	void DisableMenu () {
 		mainMenu.SetActive(false);
 	}
 	
 	void OnEnable () {
 		Messenger.AddListener("TransitionMiddle", DisableMenu);
+		// Messenger.AddListener("TransitionStart", DisableMenu);
+		// Messenger.AddListener("Transition", DisableMenu);
 	}
 	
 	void OnDisable () {
 		Messenger.RemoveListener("TransitionMiddle", DisableMenu);
+		// Messenger.RemoveListener("TransitionStart", DisableMenu);
+		// Messenger.RemoveListener("Transition", DisableMenu);
 	}
 }

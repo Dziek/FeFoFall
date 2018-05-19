@@ -23,8 +23,8 @@ public class Navigation : MonoBehaviour {
 			{
 				if (GameStates.GetState() != "MainMenu")
 				{
-					Messenger.Broadcast("MainMenu");
-					LoadLevel.ClearLevel();
+					Messenger.Broadcast("BackToMenu");
+					// LoadLevel.ClearLevel();
 					GameStates.ChangeState("MainMenu");
 					
 					// Debug.Break();

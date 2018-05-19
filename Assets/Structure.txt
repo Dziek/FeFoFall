@@ -1,0 +1,17 @@
+Play
+	TransitionStart / Transition / StartTransition
+	TransitionMiddle
+		- LevelSwitch
+	TransitionEnd
+	TransititionOver / TransitionComplete
+	LevelStarted
+		- StartTimer
+	LevelOver
+		- StopTimer
+		* LevelCompleted
+			- ConstantCameraShake
+			? GameCompleteCheck
+		* LevelFailed
+			- CameraShake
+		* LevelQuit
+BackToMenu

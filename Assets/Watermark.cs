@@ -54,12 +54,12 @@ public class Watermark : MonoBehaviour {
 	void OnEnable () {
 		Messenger.AddListener("TransitionMiddle", SwitchImage);
 		// Messenger.AddListener("FirstMovement", EnableImage);
-		Messenger.AddListener("MainMenu", DisableImage);
+		Messenger.AddListener("BackToMenu", DisableImage);
 	}
 	
 	void OnDisable () {
 		Messenger.RemoveListener("TransitionMiddle", SwitchImage);
 		// Messenger.RemoveListener("FirstMovement", EnableImage);
-		Messenger.RemoveListener("MainMenu", DisableImage);
+		Messenger.RemoveListener("BackToMenu", DisableImage);
 	}
 }

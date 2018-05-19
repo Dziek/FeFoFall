@@ -36,6 +36,8 @@ public class PlayerControl : MonoBehaviour {
 	private LevelInfoDisplay lvlInfoDisplay; // the level info display, to be removed on first movement
 	private bool canGoAway = true; // a check to make sure movement doesn't register multiple game attempts
 	
+	// private bool canMove = false; // GameStates.Playing check does this too
+	
 	public enum directions{
 		Up,
 		Down,
@@ -91,7 +93,7 @@ public class PlayerControl : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		// if (GameStates.State == GameStates.States.Playing) 
-		// if (GameStates.GetState() == "Playing")
+		if (GameStates.GetState() == "Playing")
 		{
 			CheckControls();
 			// CheckBoost();
@@ -239,6 +241,7 @@ public class PlayerControl : MonoBehaviour {
 			canGoAway = false;
 			
 			Messenger.Broadcast("FirstMovement");
+			Messenger.Broadcast("LevelStarted");
 			
 			if (Application.loadedLevelName != "LevelTesting")
 			{
@@ -300,30 +303,42 @@ public class PlayerControl : MonoBehaviour {
 		lvlInfoDisplay = lID;
 	}
 	
-	void OnTriggerEnter2D(Collider2D collision)
+	void OnTriggerEnter2D(Collider2D other)
 	{
 		if (Application.loadedLevelName == "LevelTesting" || Application.loadedLevelName == "GraphicsTesting" )
 		{
-			if(collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Frame")
+			if(other.gameObject.tag == "Wall" || other.gameObject.tag == "Frame")
 			{
 				Application.LoadLevel(Application.loadedLevel);
 			}
 		   
-			if(collision.gameObject.tag == "End")
+			if(other.gameObject.tag == "End")
 			{
 				Application.LoadLevel(Application.loadedLevel);
 			}
 		}else{
-		    if(collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Frame")
+		    if(other.gameObject.tag == "Wall" || other.gameObject.tag == "Frame")
 		    {
 				// LoadLevel.StopTimer();
 				
+			    Messenger.Broadcast("LevelOver");
 			    Messenger.Broadcast("Failure");
 			    GameStates.ChangeState("Transition", "Bad");
 				
-			    Messenger<float, float>.Broadcast("screenshake", 0.08f, 0.03f);
+				// modify intensity and shake duration based on playerSpeed
+		
+				MinMax playerSpeedValues = new MinMax(1, 16);
+				MinMax intensityValues = new MinMax(0.05f, 0.16f);
+				MinMax durationValues = new MinMax(0.05f, 0.12f);
+				
+				float l = Mathf.InverseLerp(playerSpeedValues.min, playerSpeedValues.max, speedL);
+				float shakeIntensity = Mathf.Lerp(intensityValues.min, intensityValues.max, l);
+				float shakeDuration = Mathf.Lerp(durationValues.min, durationValues.max, l);
+				
+			    Messenger<float, float>.Broadcast("screenshake", shakeIntensity, shakeDuration);
+			    // Messenger<float, float>.Broadcast("screenshake", 0.08f, 0.03f);
 			   
-			    Messenger<TransitionState>.Broadcast("Transition", TransitionState.levelFailure);
+			    Messenger<TransitionReason>.Broadcast("Transition", TransitionReason.levelFailure);
 			   
 			    Transform endPoint = GameObject.Find("EndPoint").transform;
 			    float distance = Vector2.Distance(transform.position, endPoint.position);
@@ -335,17 +350,22 @@ public class PlayerControl : MonoBehaviour {
 				gameObject.SetActive(false);
 		    }
 		   
-		    if(collision.gameObject.tag == "End")
+		    if(other.gameObject.tag == "End")
 		    {
 				// LoadLevel.StopTimer();
 				
+			    Messenger.Broadcast("LevelOver");
 			    Messenger.Broadcast("Success");
 			    GameStates.ChangeState("Transition", "Good");
 			    
 			    // Messenger<float, float>.Broadcast("screenshake", 0.04f, 0.75f);
 			    Messenger<float>.Broadcast("StartConstantShake", 0.04f);
 			
-			    Messenger<TransitionState>.Broadcast("Transition", TransitionState.levelSuccess);
+			    Messenger<TransitionReason>.Broadcast("Transition", TransitionReason.levelSuccess);
+				
+				Vector2 v = other.gameObject.GetComponent<Collider2D>().bounds.ClosestPoint(transform.position);
+				
+				GameObject.Find("LevelCompletePS").GetComponent<LevelCompletePS>().Fire(v);
 				
 				gameObject.SetActive(false);
 		    }
@@ -357,12 +377,16 @@ public class PlayerControl : MonoBehaviour {
 		return direction.ToString();
 	}
 	
-	void OnDisable () {
-		if (LoadLevel.instance != null)
-		{
-			// LoadLevel.StopTimer();
-		}
+	public float GetSpeed () {
+		return speedL;
 	}
+	
+	// void OnDisable () {
+		// if (LoadLevel.instance != null)
+		// {
+			// LoadLevel.StopTimer();
+		// }
+	// }
 	
 	public void ReverseControls (float time) {
 		reverseControls = !reverseControls;
@@ -385,6 +409,18 @@ public class PlayerControl : MonoBehaviour {
 		
 		reverseControls = false;
 	}
+	
+	// void UpdateCanMove () {
+		// canMove = true;
+	// }
+	
+	// void OnEnable () {
+		// Messenger.AddListener("TransitionComplete", UpdateCanMove);
+	// }
+	
+	// void OnDisable () {
+		// Messenger.RemoveListener("TransitionComplete", UpdateCanMove);
+	// }
 	
 }
 

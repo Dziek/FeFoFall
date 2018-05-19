@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestLevelScript : MonoBehaviour {
+public class LevelGroup : MonoBehaviour {
 	
 	public string folderName = "C0";
 	public List<GameObject> levels = new List<GameObject>();	

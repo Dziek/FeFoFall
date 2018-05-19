@@ -10,14 +10,49 @@ public class MainMenuController : MonoBehaviour {
 	public MenuScreen statsSubMenu;
 	public MenuScreen extrasSubMenu;
 	
-	private GameObject selectedButtonGO;
+	// [HideInInspector]
+	public GameObject selectedButtonGO;
+	
+	public GameObject onDisableButtonGO;
+	[HideInInspector]
+	public List<GameObject> previousSelectedGOs = new List<GameObject>();
+	
+	public GameObject currentButtonGO;
+	
+	void Update () {
+		currentButtonGO = EventSystem.current.currentSelectedGameObject;
+	}
 	
 	void OnEnable () {
-		LoadMainSub();
+		Invoke("D", 0.0f);
+		
+	}
+	
+	void D () {
+		Debug.Log(EventSystem.current.alreadySelecting);
+		
+		if (onDisableButtonGO != null)
+		{
+			EventSystem.current.SetSelectedGameObject(onDisableButtonGO);
+			// Debug.Log("Setting to: " + EventSystem.current.currentSelectedGameObject);
+			Debug.Log("Setting to: " + onDisableButtonGO);
+		}
+	}
+	
+	void Start () {
+		// LoadMainSub();
+		Invoke("LoadMainSub", 0.0f);
 	}
 	
 	void OnDisable () {
-		selectedButtonGO = null;
+		// selectedButtonGO = null;
+		// selectedButtonGO = EventSystem.current.currentSelectedGameObject;
+		
+		onDisableButtonGO = EventSystem.current.currentSelectedGameObject;
+		// Debug.Log(EventSystem.current.currentSelectedGameObject);
+		Debug.Log(onDisableButtonGO);
+		
+		EventSystem.current.SetSelectedGameObject(null);
 	}
 	
 	public void LoadMainSub () {
@@ -32,6 +67,8 @@ public class MainMenuController : MonoBehaviour {
 		if (selectedButtonGO != null)
 		{
 			EventSystem.current.SetSelectedGameObject(selectedButtonGO);
+		}else{
+			EventSystem.current.SetSelectedGameObject(mainSubMenu.defaultSelectedGO);
 		}
 	}
 	
@@ -42,7 +79,7 @@ public class MainMenuController : MonoBehaviour {
 		extrasSubMenu.menuScreenGO.SetActive(false);
 		
 		selectedButtonGO = EventSystem.current.currentSelectedGameObject;
-		EventSystem.current.SetSelectedGameObject(optionsSubMenu.firstSelectedGO);
+		EventSystem.current.SetSelectedGameObject(optionsSubMenu.defaultSelectedGO);
 	}
 	
 	public void OpenStatsSub () {
@@ -52,7 +89,7 @@ public class MainMenuController : MonoBehaviour {
 		extrasSubMenu.menuScreenGO.SetActive(false);
 		
 		selectedButtonGO = EventSystem.current.currentSelectedGameObject;
-		EventSystem.current.SetSelectedGameObject(statsSubMenu.firstSelectedGO);
+		EventSystem.current.SetSelectedGameObject(statsSubMenu.defaultSelectedGO);
 	}
 	
 	public void OpenExtrasSub () {
@@ -62,12 +99,12 @@ public class MainMenuController : MonoBehaviour {
 		extrasSubMenu.menuScreenGO.SetActive(true);
 		
 		selectedButtonGO = EventSystem.current.currentSelectedGameObject;
-		EventSystem.current.SetSelectedGameObject(extrasSubMenu.firstSelectedGO);
+		EventSystem.current.SetSelectedGameObject(extrasSubMenu.defaultSelectedGO);
 	}
 }
 
 [System.Serializable]
 	public struct MenuScreen {
 		public GameObject menuScreenGO;
-		public GameObject firstSelectedGO;
+		public GameObject defaultSelectedGO;
 	} 

@@ -11,92 +11,42 @@ public class LevelInfoDisplay : MonoBehaviour {
 	public Text lvlAttempts;
 	public Text lvlBestTime;
 	
-	// public string completeDesc;
-	
-	// private bool canRid = true; // whether can move buttons to get rid of screen
-	
 	void OnEnable () {
+		// Messenger<GameObject>.AddListener("NewLevel", UpdateDisplay);
 		
-		// Messenger<GameObject>.AddListener("NewLevelLoaded", UpdateLevel);
-		// Messenger.AddListener("LevelCanvasPresent", GetRidOfText);
+		UpdateDisplay(GameObject.FindWithTag("Level"));
+	}
+	
+	void OnDisable () {
+		// Messenger<GameObject>.RemoveListener("NewLevel", UpdateDisplay);
+	}
+	
+	void UpdateDisplay (GameObject levelGO) {
 		
-		GameObject levelObject = GameObject.FindWithTag("Level");
-		
-		if (levelObject != null)
+		if (levelGO != null)
 		{
-			// lvlDesc.text = levelObject.GetComponent<LevelInfo>().GetDesc();
-			string lN, lD;
-			levelObject.GetComponent<LevelInfo>().GetInfo(out lN, out lD);
+			LevelInfo levelInfo = levelGO.GetComponent<LevelInfo>();
 			
-			lvlName.text = lN;
-			lvlDesc.text = lD;
+			lvlName.text = levelInfo.name;
+			lvlDesc.text = levelInfo.description;
 			
 			if (Application.loadedLevelName != "LevelTesting")
 			{
-				lvlID.text = levelObject.name;
+				lvlID.text = levelGO.name;
 				// lvlAttempts.text = "Attempts: " + LoadLevel.GetCurrentLevelCurrentAttempts().ToString();
 				// lvlBestTime.text = "Level Best Time: " + LoadLevel.GetCurrentLevelBestTime().ToString("f2");
 			}
 		}
 		
-		if (levelObject.GetComponentInChildren<Canvas>() != null)
+		if (levelGO.GetComponentInChildren<Canvas>() != null)
 		{
-			GetRidOfText();
+			ClearText();
 		}
-		
-		// GameObject.Find("Player").GetComponent<PlayerControl>().UpdateLevelInfoDisplayObject(gameObject);
-		
-		//At Some Point change this to send this script, not this gameObject
-		// Debug.Log("Level Display " + levelObject);
-		levelObject.GetComponentInChildren<PlayerControl>().UpdateLevelInfoDisplayObject(this);
-		
-		// if (lvlDesc.text == null)
-		// {
-			// lvlDesc.text = completeDesc;
-			// canRid = false;
-		// }
+
+		levelGO.GetComponentInChildren<PlayerControl>().UpdateLevelInfoDisplayObject(this);
 	}
 	
-	// void OnDisable () {
-		// Messenger.RemoveListener("LevelCanvasPresent", GetRidOfText);
-		// Messenger<GameObject>.RemoveListener("NewLevelLoaded", UpdateLevel);
-	// }
-	
-	void UpdateLevel (GameObject levelGO) {
-		GameObject levelObject = levelGO;
-		
-		if (levelObject != null)
-		{
-			// lvlDesc.text = levelObject.GetComponent<LevelInfo>().GetDesc();
-			string lN, lD;
-			levelObject.GetComponent<LevelInfo>().GetInfo(out lN, out lD);
-			
-			lvlName.text = lN;
-			lvlDesc.text = lD;
-			
-			if (Application.loadedLevelName != "LevelTesting")
-			{
-				lvlID.text = levelObject.name;
-				// lvlAttempts.text = "Attempts: " + LoadLevel.GetCurrentLevelCurrentAttempts().ToString();
-				// lvlBestTime.text = "Level Best Time: " + LoadLevel.GetCurrentLevelBestTime().ToString("f2");
-			}
-		}
-		
-		// GameObject.Find("Player").GetComponent<PlayerControl>().UpdateLevelInfoDisplayObject(gameObject);
-		
-		//At Some Point change this to send this script, not this gameObject
-		Debug.Log("Level Display " + levelObject);
-		levelObject.GetComponentInChildren<PlayerControl>().UpdateLevelInfoDisplayObject(this);
-	}
-	
-	void GetRidOfText () {
-		// lvlName.enabled = false;
-		// lvlDesc.enabled = false;
-			
-		// lvlID.enabled = false;
-		// lvlAttempts.enabled = false;
-		// lvlBestTime.enabled = false;
-		
+	void ClearText () {	
 		lvlName.text = "";
 		lvlDesc.text = "";
 			

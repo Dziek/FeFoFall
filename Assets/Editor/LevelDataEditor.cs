@@ -4,7 +4,7 @@ using UnityEditorInternal;
 
 //http://va.lent.in/unity-make-your-lists-functional-with-reorderablelist/
 
-[CustomEditor(typeof(TestLevelScript))]
+[CustomEditor(typeof(LevelGroup))]
 // [CustomEditor(typeof(DummyScript))]
 
 public class LevelDataEditor : Editor {  
@@ -50,7 +50,7 @@ public class LevelDataEditor : Editor {
 		list.DoLayoutList();
         serializedObject.ApplyModifiedProperties();
 		
-		TestLevelScript myScript = (TestLevelScript)target;
+		LevelGroup myScript = (LevelGroup)target;
         myScript.folderName = EditorGUILayout.TextField("Folder Name", myScript.folderName);
 		if(GUILayout.Button("Sync List"))
         {

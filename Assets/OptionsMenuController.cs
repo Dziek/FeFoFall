@@ -42,7 +42,7 @@ public class OptionsMenuController : MonoBehaviour {
 		resetMenu.menuScreenGO.SetActive(true);
 		
 		selectedButtonGO = EventSystem.current.currentSelectedGameObject;
-		EventSystem.current.SetSelectedGameObject(resetMenu.firstSelectedGO);
+		EventSystem.current.SetSelectedGameObject(resetMenu.defaultSelectedGO);
 	}
 	
 	public void ResetGame () {

@@ -93,14 +93,14 @@ public class PreLevelEffects : MonoBehaviour {
 		Messenger.AddListener("TransitionMiddle", TurnOn);
 		// Messenger.AddListener("FirstMovement", TurnOff);
 		Messenger.AddListener("FirstMovement", TurnDown);
-		Messenger.AddListener("MainMenu", TurnDown);
+		Messenger.AddListener("BackToMenu", TurnDown);
 	}
 	
 	void OnDisable () {
 		Messenger.RemoveListener("TransitionMiddle", TurnOn);
 		// Messenger.RemoveListener("FirstMovement", TurnOff);
 		Messenger.RemoveListener("FirstMovement", TurnDown);
-		Messenger.RemoveListener("MainMenu", TurnDown);
+		Messenger.RemoveListener("BackToMenu", TurnDown);
 		
 		TurnDown();
 	}

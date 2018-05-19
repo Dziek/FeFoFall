@@ -31,6 +31,9 @@ public class TransitionScreen : MonoBehaviour {
 	
 	private Color nextColour;
 	
+	private float playerSpeed;
+	private Vector3 playerScale;
+	
 	void Awake () {
 		controller = GetComponent<TransitionController>();
 		
@@ -55,54 +58,60 @@ public class TransitionScreen : MonoBehaviour {
 		
 		GameObject startPoint;
 		
-		if (controller.transitionState != TransitionState.levelLoad)
+		if (controller.transitionReason != TransitionReason.levelLoad)
 		{
 			// startPoint = GameObject.Find("Player").transform.position;
 			startPoint = GameObject.Find("Player");
+			playerSpeed = startPoint.GetComponent<PlayerControl>().GetSpeed();
+			playerScale = startPoint.transform.localScale;
 			
-			if (controller.transitionState == TransitionState.levelSuccess)
+			if (controller.transitionReason == TransitionReason.levelSuccess)
 			{
 				expandPanelImage.color = endColour;
 			}else{
-				int r = Random.Range(0, 3);
-				// int r = 0;
+				// int r = Random.Range(0, 3);
+				// // int r = 0;
 				
-				switch(r)
-				{
-					case 0:
-						expandPanelImage.color = startPoint.GetComponent<Renderer>().material.color * new Color32(255, 255, 255, 40);
-						// expandPanelImage.color = playerColour;
+				// switch(r)
+				// {
+					// case 0:
+						// expandPanelImage.color = startPoint.GetComponent<Renderer>().material.color * new Color32(255, 255, 255, 40);
+						// // expandPanelImage.color = playerColour;
 						// Debug.Log("Case 0");
-						break;
-						
-					case 1:
-						expandPanelImage.color = startPoint.GetComponent<Renderer>().material.color;
-						// expandPanelImage.color = new Color32(240, 106, 41, 255);
-						// // nextColour = new Color32(240, 106, 41, 255);
-						// // Debug.Log("Case 1");
-						break;
-						
-					// case 2:
-						// expandPanelImage.color = new Color32(52, 87, 134, 255);
-						// Debug.Log("Case 2");
 						// break;
 						
-					// case 3:
-						// expandPanelImage.color = new Color32(44, 80, 125, 255);
-						// Debug.Log("Case 3");
+					// case 1:
+						// expandPanelImage.color = startPoint.GetComponent<Renderer>().material.color;
+						// // expandPanelImage.color = new Color32(240, 106, 41, 255);
+						// // // nextColour = new Color32(240, 106, 41, 255);
+						// Debug.Log("Case 1");
 						// break;
 						
-					default:
-						expandPanelImage.color = defaultColour;
-						// nextColour = defaultColour;
+					// // case 2:
+						// // expandPanelImage.color = new Color32(52, 87, 134, 255);
+						// // Debug.Log("Case 2");
+						// // break;
+						
+					// // case 3:
+						// // expandPanelImage.color = new Color32(44, 80, 125, 255);
+						// // Debug.Log("Case 3");
+						// // break;
+						
+					// default:
+						// expandPanelImage.color = defaultColour;
+						// // nextColour = defaultColour;
 						// Debug.Log("Case Default");
-						break;
-				}
+						// break;
+				// }
+				
+				expandPanelImage.color = Color.white;
 			}
 			
 		}else{
 			// startPoint = GameObject.Find("Play").transform.position;
 			startPoint = GameObject.Find("Play");
+			expandPanelGO.transform.localScale = new Vector2(2, 2);
+			yield break;
 		}
 		
 		// if (startPoint == null)
@@ -131,6 +140,14 @@ public class TransitionScreen : MonoBehaviour {
 		
 		float t = 0;
 		float timeToGrow = 0.5f;
+		
+		// modify timeToGrow based on playerSpeed
+		
+		MinMax playerSpeedValues = new MinMax(1, 16);
+		MinMax timeToGrowValues = new MinMax(0.1f, 0.7f);
+		
+		float l = Mathf.InverseLerp(playerSpeedValues.min, playerSpeedValues.max, playerSpeed);
+		timeToGrow = Mathf.Lerp(timeToGrowValues.min, timeToGrowValues.max, 1-l);
 		
 		// float changeColourDelay = 0.2f; 0.06f 0.18f
 		float changeColourDelay = Random.Range(0, 0.15f);
@@ -180,7 +197,7 @@ public class TransitionScreen : MonoBehaviour {
 			// levelInfoScreenGO.SetActive(true);
 		// }
 		
-		if (controller.gameCompleted == false && controller.transitionState != TransitionState.levelTest)
+		if (controller.gameCompleted == false && controller.transitionReason != TransitionReason.levelTest)
 		{
 			// LoadLevel.GetLevel();
 			controller.levelManager.SwitchLevel();

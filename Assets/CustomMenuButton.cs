@@ -11,14 +11,19 @@ public class CustomMenuButton : MonoBehaviour, ISelectHandler, IDeselectHandler,
 	 
 	private string defaultText;
 	// private Color defaultColour;
+	
+	// private MainMenuController mainMenuController;
  
     void Awake () {
         buttonText = GetComponentInChildren<Text>();
-		 
+		
 		defaultText = buttonText.text;
 		// defaultColour = buttonText.color;
 		 
 		buttonText.color = deselectedColor;
+		
+		// mainMenuController = GameObject.Find("MainMenu").GetComponent<MainMenuController>();
+		GetComponent<Button>().onClick.AddListener(OnClick);
     }
 	 
 	void Select () {
@@ -27,6 +32,10 @@ public class CustomMenuButton : MonoBehaviour, ISelectHandler, IDeselectHandler,
 		
         buttonText.fontStyle = FontStyle.Bold;
         buttonText.color = selectedColor;
+		
+		// mainMenuController.selectedButtonGO = this.gameObject;
+		
+		// Debug.Log("Selected");
 	}
 	
 	void Deselect () {
@@ -40,7 +49,12 @@ public class CustomMenuButton : MonoBehaviour, ISelectHandler, IDeselectHandler,
 	}
 	
 	public void ClearSelected () {
-		EventSystem.current.SetSelectedGameObject(null);
+		// EventSystem.current.SetSelectedGameObject(null);
+	}
+	
+	void OnClick () {
+		// mainMenuController.previousSelectedGOs.Add(this.gameObject);
+		// EventSystem.current.SetSelectedGameObject(null);
 	}
  
     public void OnSelect (BaseEventData eventData) {

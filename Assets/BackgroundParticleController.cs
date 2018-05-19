@@ -105,12 +105,12 @@ public class BackgroundParticleController : MonoBehaviour {
 	void OnEnable () {
 		Messenger.AddListener("TransitionMiddle", SwitchEffect);
 		// Messenger.AddListener("FirstMovement", EnableEffect);
-		Messenger.AddListener("MainMenu", DisableEffect);
+		Messenger.AddListener("BackToMenu", DisableEffect);
 	}
 	
 	void OnDisable () {
 		Messenger.RemoveListener("TransitionMiddle", SwitchEffect);
 		// Messenger.RemoveListener("FirstMovement", EnableEffect);
-		Messenger.RemoveListener("MainMenu", DisableEffect);
+		Messenger.RemoveListener("BackToMenu", DisableEffect);
 	}
 }

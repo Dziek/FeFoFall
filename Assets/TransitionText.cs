@@ -16,32 +16,60 @@ public class TransitionText : MonoBehaviour {
 	// private string newText;
 	
 	private TransitionController controller;
+	private StatsManager statsManager;
+	private ModeManager modeManager;
 	
 	void Awake () {
 		controller = GetComponent<TransitionController>();
+		statsManager = GameObject.Find("StatsManager").GetComponent<StatsManager>();
+		modeManager = GameObject.Find("ModeManager").GetComponent<ModeManager>();
 	}
 	
 	public string ChooseText () {
+		
+		Debug.Log("Choosing Text");
 		
 		if (controller.gameCompleted == true)
 		{
 			return completeText;
 		}
 		
-		switch (controller.transitionState)
+		// GameObject levelGO = GameObject.FindGameObjectWithTag("Level");
+		// if (levelGO != null)
+		// {
+			// LevelText levelText = levelGO.GetComponent<LevelText>();
+			// if (levelText != null)
+			// {
+				// Debug.Log("Woop");
+			// }
+		// }
+		
+		switch (controller.transitionReason)
 		{
-			case TransitionState.levelLoad:
+			case TransitionReason.levelLoad:
 				return loadTextOptions[Random.Range(0, loadTextOptions.Length)];
-			break;
+			// break;
 			
-			case TransitionState.levelSuccess:
+			case TransitionReason.levelSuccess:	
+				// Check for Unique Level Text
+				if (0 == 0) // this if statement is just to keep it tidier
+				{
+					float r = Random.Range(0.0f, 1f);
+					bool doThis = r < 0.8f ? true : false;
+					
+					List<string> uniqueLevelOptions = new List<string>(GetUniqueLevelOptions("Success"));
+					
+					if (doThis && uniqueLevelOptions.Count > 0) return uniqueLevelOptions[Random.Range(0, uniqueLevelOptions.Count)];
+				}
+				
+				// Start of normal text options
 				List<string> options = new List<string>(successTextOptions);
 				
-				int currentLevelAttempts = LoadLevel.GetCurrentLevelCurrentAttempts();
+				int currentLevelAttempts = statsManager.GetCurrentLevelCurrentAttempts();
 				
 				if (currentLevelAttempts == 1)
 				{
-					float r = Random.Range(0.0f, 1f) - LoadLevel.GetPercentageComplete();
+					float r = Random.Range(0.0f, 1f) - statsManager.GetPercentageComplete(modeManager.GetMode());
 					bool doThis = r < 0.02f ? true : false;
 					
 					if (doThis) options.Clear();
@@ -69,7 +97,7 @@ public class TransitionText : MonoBehaviour {
 					options.Add("Knew You Could Do It");
 				}
 				
-				switch (LoadLevel.GetPercentageComplete().ToString()) {
+				switch (statsManager.GetPercentageComplete(modeManager.GetMode()).ToString()) {
 					case "0.25":
 						// options.Add("Quarter Done!");
 						return "Quarter Done!";
@@ -86,23 +114,23 @@ public class TransitionText : MonoBehaviour {
 					break;
 					
 					default:
-						options.Add((LoadLevel.GetPercentageComplete() * 100).ToString("f2") + "% Done!");
+						options.Add((statsManager.GetPercentageComplete(modeManager.GetMode()) * 100).ToString("f2") + "% Done!");
 					break;
 				}
 				
-				if (LoadLevel.GetPercentageComplete() > 0.45f && LoadLevel.GetPercentageComplete() < 0.5f)
+				if (statsManager.GetPercentageComplete(modeManager.GetMode()) > 0.45f && statsManager.GetPercentageComplete(modeManager.GetMode()) < 0.5f)
 				{
 					options.Add("Nearly Halfway There!");
 				}
 				
-				if (LoadLevel.GetPercentageComplete() > 0.92f && LoadLevel.GetPercentageComplete() < 0.98f)
+				if (statsManager.GetPercentageComplete(modeManager.GetMode()) > 0.92f && statsManager.GetPercentageComplete(modeManager.GetMode()) < 0.98f)
 				{
 					options.Add("Not Long To Go Now");
 					options.Add("Just A Few More");
 					options.Add("Nearly There");
 				}
 				
-				if (LoadLevel.GetPercentageComplete() < 0.1f)
+				if (statsManager.GetPercentageComplete(modeManager.GetMode()) < 0.1f)
 				{			
 					options.Add("Just Getting Started");
 					options.Add("Hope You Got Snacks");
@@ -111,7 +139,7 @@ public class TransitionText : MonoBehaviour {
 					options.Add("Pfft, That Was Easy");
 				}
 				
-				if (LoadLevel.GetPercentageComplete() > 0.5f)
+				if (statsManager.GetPercentageComplete(modeManager.GetMode()) > 0.5f)
 				{
 					options.Add("Way To Go Slugger");
 					options.Add("CHAMPION");
@@ -126,27 +154,27 @@ public class TransitionText : MonoBehaviour {
 					options.Add("I Don't Believe It");
 				}
 				
-				if (LoadLevel.GetPercentageComplete() > 0.75f)
+				if (statsManager.GetPercentageComplete(modeManager.GetMode()) > 0.75f)
 				{
 					options.Add("Getting There");
 					options.Add(":D");
 				}
 				
-				if (LoadLevel.GetPercentageComplete() > 0.85f)
-				{
-					if (LoadLevel.GetCurrentAttempts() < LoadLevel.GetBestAttempts() 
-						&& LoadLevel.GetCurrentAttempts() - LoadLevel.GetBestAttempts() >= LoadLevel.GetNumberOfLevelsRemaining())
-					{
-						options.Add("Can Still Beat Your Time Record!");
-					}
+				// if (statsManager.GetPercentageComplete(modeManager.GetMode()) > 0.85f)
+				// {
+					// if (statsManager.GetCurrentAttempts(modeManager.GetMode()) < statsManager.GetBestAttempts(modeManager.GetMode()) 
+						// && statsManager.GetCurrentAttempts(modeManager.GetMode()) - statsManager.GetBestAttempts(modeManager.GetMode()) >= statsManager.GetNumberOfLevelsRemaining(modeManager.GetMode()))
+					// {
+						// options.Add("Can Still Beat Your Attempts Record!");
+					// }
 					
-					if (LoadLevel.GetCurrentSeconds() < LoadLevel.GetBestSeconds())
-					{
-						options.Add("Can Still Beat Your Attempts Record!");
-					}
-				}
+					// if (statsManager.GetCurrentSeconds() < statsManager.GetBestSeconds())
+					// {
+						// options.Add("Can Still Beat Your Time Record!");
+					// }
+				// }
 				
-				switch (LoadLevel.GetNumberOfLevelsRemaining()) {
+				switch (statsManager.GetNumberOfLevelsRemaining(modeManager.GetMode())) {
 					case 5:
 						options.Add("Final Five");
 					break;
@@ -168,15 +196,15 @@ public class TransitionText : MonoBehaviour {
 					break;
 					
 					default:
-						options.Add("Just " + LoadLevel.GetNumberOfLevelsRemaining().ToString() + " Levels To Go");
-						options.Add("Only " + LoadLevel.GetNumberOfLevelsRemaining().ToString() + " Levels Remaining");
-						options.Add("Now Do That " + LoadLevel.GetNumberOfLevelsRemaining().ToString() + " More Times");
+						options.Add("Just " + statsManager.GetNumberOfLevelsRemaining(modeManager.GetMode()).ToString() + " Levels To Go");
+						options.Add("Only " + statsManager.GetNumberOfLevelsRemaining(modeManager.GetMode()).ToString() + " Levels Remaining");
+						options.Add("Now Do That " + statsManager.GetNumberOfLevelsRemaining(modeManager.GetMode()).ToString() + " More Times");
 					break;
 				}
 				
-				if (LoadLevel.GetCurrentGoodStreak() > 9)
+				if (statsManager.GetCurrentStreak() > 9)
 				{
-					float r = Random.Range(0.0f, 1f) - LoadLevel.GetPercentageComplete();
+					float r = Random.Range(0.0f, 1f) - statsManager.GetPercentageComplete(modeManager.GetMode());
 					bool doThis = r < 0.02f ? true : false;
 					
 					if (doThis) options.Clear();
@@ -189,9 +217,9 @@ public class TransitionText : MonoBehaviour {
 					if (doThis) return options[Random.Range(0, options.Count)];
 				}
 				
-				if (LoadLevel.GetCurrentGoodStreak() > 4)
+				if (statsManager.GetCurrentStreak() > 4)
 				{
-					float r = Random.Range(0.0f, 1f) - LoadLevel.GetPercentageComplete();
+					float r = Random.Range(0.0f, 1f) - statsManager.GetPercentageComplete(modeManager.GetMode());
 					bool doThis = r < 0.02f ? true : false;
 					
 					if (doThis) options.Clear();
@@ -204,20 +232,20 @@ public class TransitionText : MonoBehaviour {
 					options.Add("Surely You Can't Keep This Up");
 					options.Add("Show Off");
 					
-					options.Add(LoadLevel.GetCurrentGoodStreak().ToString() + " Done And No Signs Of Slowing");
-					options.Add(LoadLevel.GetCurrentGoodStreak().ToString() + " In A Row!");
+					options.Add(statsManager.GetCurrentStreak().ToString() + " Done And No Signs Of Slowing");
+					options.Add(statsManager.GetCurrentStreak().ToString() + " In A Row!");
 					
-					if (LoadLevel.GetBestGoodStreak() == LoadLevel.GetCurrentGoodStreak())
-					{
-						options.Add("Best Streak Yet!");
-					}
+					// if (LoadLevel.GetBestGoodStreak() == LoadLevel.GetCurrentGoodStreak())
+					// {
+						// options.Add("Best Streak Yet!");
+					// }
 					
 					if (doThis) return options[Random.Range(0, options.Count)];
 				}
 				
-				if (LoadLevel.GetBadStreakBreak() == true)
+				if (statsManager.GetStreakBreak() == true)
 				{
-					float r = Random.Range(0.0f, 1f) - LoadLevel.GetPercentageComplete();
+					float r = Random.Range(0.0f, 1f) - statsManager.GetPercentageComplete(modeManager.GetMode());
 					bool doThis = r < 0.02f ? true : false;
 					
 					if (doThis) options.Clear();
@@ -234,95 +262,106 @@ public class TransitionText : MonoBehaviour {
 					if (doThis) return options[Random.Range(0, options.Count)];
 				}
 				
-				Debug.Log("Best Time: " + LoadLevel.GetCurrentLevelBestTime() + " Last Time: " + LoadLevel.GetLastSeconds()
-				+ " Last Best Time: " + LoadLevel.GetLastBestTime());
+				// Debug.Log("Best Time: " + LoadLevel.GetCurrentLevelBestTime() + " Last Time: " + LoadLevel.GetLastSeconds()
+				// + " Last Best Time: " + LoadLevel.GetLastBestTime());
 				
-				if (LoadLevel.GetCurrentLevelBestTime() == LoadLevel.GetLastSeconds() && LoadLevel.GetLastBestTime() != 0)
-				{
-					options.Add("Best Time!");
-					options.Add("New Record!");
-					options.Add("Better Than Last Time!");
-					options.Add(Mathf.Abs(LoadLevel.GetLastTimeDifference()).ToString("f2") + " Seconds Faster!");
+				// if (LoadLevel.GetCurrentLevelBestTime() == LoadLevel.GetLastSeconds() && LoadLevel.GetLastBestTime() != 0)
+				// {
+					// options.Add("Best Time!");
+					// options.Add("New Record!");
+					// options.Add("Better Than Last Time!");
+					// options.Add(Mathf.Abs(LoadLevel.GetLastTimeDifference()).ToString("f2") + " Seconds Faster!");
 					
-					// return Mathf.Abs(LoadLevel.GetLastTimeDifference()).ToString("f2") + " Seconds Faster!";
-				}
+					// // return Mathf.Abs(LoadLevel.GetLastTimeDifference()).ToString("f2") + " Seconds Faster!";
+				// }
 				
-				if (LoadLevel.GetCurrentLevelBestTime() < LoadLevel.GetLastSeconds())
-				{
-					options.Add("Not Your Best Time");
-					options.Add(Mathf.Abs(LoadLevel.GetLastTimeDifference()).ToString("f2") + " Seconds Slower");
+				// if (LoadLevel.GetCurrentLevelBestTime() < LoadLevel.GetLastSeconds())
+				// {
+					// options.Add("Not Your Best Time");
+					// options.Add(Mathf.Abs(LoadLevel.GetLastTimeDifference()).ToString("f2") + " Seconds Slower");
 					
-					// return Mathf.Abs(LoadLevel.GetLastTimeDifference()).ToString("f2") + " Seconds Slower";
-				}
+					// // return Mathf.Abs(LoadLevel.GetLastTimeDifference()).ToString("f2") + " Seconds Slower";
+				// }
 				
-				if (LoadLevel.GetCurrentLevelBestAttempts() == LoadLevel.GetCurrentLevelCurrentAttempts() && LoadLevel.GetBestAttemptsLast() != 0)
-				{
-					options.Add("Best Effort!");
-					options.Add("New Record!");
-					options.Add("Better Than Last Time!");
-					options.Add(Mathf.Abs(LoadLevel.GetLastAttemptsDifference()).ToString() + " Attempts Better!");
+				// if (LoadLevel.GetCurrentLevelBestAttempts() == LoadLevel.GetCurrentLevelCurrentAttempts() && LoadLevel.GetBestAttemptsLast() != 0)
+				// {
+					// options.Add("Best Effort!");
+					// options.Add("New Record!");
+					// options.Add("Better Than Last Time!");
+					// options.Add(Mathf.Abs(LoadLevel.GetLastAttemptsDifference()).ToString() + " Attempts Better!");
 					
-					// return Mathf.Abs(LoadLevel.GetLastAttemptsDifference()).ToString() + " Attempts Better!";
-				}
+					// // return Mathf.Abs(LoadLevel.GetLastAttemptsDifference()).ToString() + " Attempts Better!";
+				// }
 				
-				if (LoadLevel.GetCurrentLevelBestAttempts() < LoadLevel.GetCurrentLevelCurrentAttempts())
-				{
-					options.Add("Not Your Best Effort");
-					options.Add("Took " + LoadLevel.GetLastAttemptsDifference() + " More Attempts");
-				}
+				// if (LoadLevel.GetCurrentLevelBestAttempts() < LoadLevel.GetCurrentLevelCurrentAttempts())
+				// {
+					// options.Add("Not Your Best Effort");
+					// options.Add("Took " + LoadLevel.GetLastAttemptsDifference() + " More Attempts");
+				// }
 					
-				if (LoadLevel.GetLevelsCompleted() > 1)
+				if (statsManager.GetLevelsCompleted(modeManager.GetMode()) > 1)
 				{			
-					options.Add(LoadLevel.GetLevelsCompleted().ToString() + " Levels Completed");
+					options.Add(statsManager.GetLevelsCompleted(modeManager.GetMode()).ToString() + " Levels Completed");
 				}
 				
-				options.Add(LoadLevel.GetLevelsCompleted().ToString() + " Down, " + LoadLevel.GetNumberOfLevelsRemaining().ToString() + " To Go");
-				options.Add(LoadLevel.GetLevelsCompleted().ToString() + " / " + LoadLevel.GetNumberOfLevels().ToString());
+				options.Add(statsManager.GetLevelsCompleted(modeManager.GetMode()).ToString() + " Down, " + statsManager.GetNumberOfLevelsRemaining(modeManager.GetMode()).ToString() + " To Go");
+				options.Add(statsManager.GetLevelsCompleted(modeManager.GetMode()).ToString() + " / " + statsManager.GetNumberOfLevels(modeManager.GetMode()).ToString());
 				
-				if (LoadLevel.GetLastSeconds() > 10)
+				if (statsManager.GetLastSeconds() > 10)
 				{
 					options.Add("Took Your Time");
 					options.Add("Slowpoke");
 					options.Add("Well That Wasn't Very Fast");
 				}
 				
-				options.Add("In Only " + LoadLevel.GetLastSeconds().ToString("f2") + " Seconds");
+				options.Add("In Only " + statsManager.GetLastSeconds().ToString("f2") + " Seconds");
 				
-				options.Add("Your " + GetNumberSuffix(LoadLevel.GetLevelsCompleted()) + " Success");
+				options.Add("Your " + GetNumberSuffix(statsManager.GetLevelsCompleted(modeManager.GetMode())) + " Success");
 				
 				options.Add("Press B To Return To Menu");
 				
 				return options[Random.Range(0, options.Count)];
 			break;
 			
-			case TransitionState.levelFailure:
+			case TransitionReason.levelFailure:
+				// Check for Unique Level Text
+				if (0 == 0) // this if statement is just to keep it tidier
+				{
+					float r = Random.Range(0.0f, 1f);
+					bool doThis = r < 0.8f ? true : false;
+					
+					List<string> uniqueLevelOptions = new List<string>(GetUniqueLevelOptions("Failure"));
+					
+					if (doThis && uniqueLevelOptions.Count > 0) return uniqueLevelOptions[Random.Range(0, uniqueLevelOptions.Count)];
+				}
+			
 				List<string> optionsF = new List<string>(failureTextOptions);
 				
-				if (LoadLevel.GetCurrentLevelCurrentAttempts() > 1)
+				if (statsManager.GetCurrentLevelCurrentAttempts() > 1)
 				{
 					optionsF.Add("Again?");
 					optionsF.Add("History Repeats Itself");
 				}
 				
-				if (LoadLevel.GetCurrentLevelCurrentAttempts() > 4)
+				if (statsManager.GetCurrentLevelCurrentAttempts() > 4)
 				{
-					optionsF.Add(LoadLevel.GetCurrentLevelCurrentAttempts().ToString() + " Tries Already?");
-					optionsF.Add("Level Attempts: " + LoadLevel.GetCurrentLevelCurrentAttempts().ToString());
+					optionsF.Add(statsManager.GetCurrentLevelCurrentAttempts().ToString() + " Tries Already?");
+					optionsF.Add("Level Attempts: " + statsManager.GetCurrentLevelCurrentAttempts().ToString());
 					
 					optionsF.Add("Tricky isn't it?");
 					optionsF.Add("Struggling?");
-					optionsF.Add("You're Having Trouble With This One?");
+					optionsF.Add("You're Having Trouble With <i>This</i> One?");
 					optionsF.Add("This Is An Easy One!");
 				}
 				
-				if (LoadLevel.GetCurrentLevelCurrentAttempts() > 6)
+				if (statsManager.GetCurrentLevelCurrentAttempts() > 6)
 				{
 					optionsF.Add("Ha");
 					optionsF.Add(":(");
 					optionsF.Add("NOT AGAIN");
 				}
 				
-				if (LoadLevel.GetCurrentLevelCurrentAttempts() > 10)
+				if (statsManager.GetCurrentLevelCurrentAttempts() > 10)
 				{
 					optionsF.Add("I Admire Your Determination");
 					optionsF.Add("Keep Going!");
@@ -335,32 +374,32 @@ public class TransitionText : MonoBehaviour {
 					optionsF.Add("You're Doing It Wrong");
 				}
 				
-				if (LoadLevel.GetCurrentAttempts() > 20)
+				if (statsManager.GetCurrentAttempts(modeManager.GetMode()) > 20)
 				{
-					optionsF.Add("That's Your " + GetNumberSuffix(LoadLevel.GetCurrentAttempts()) + " Attempt");
-					optionsF.Add(LoadLevel.GetCurrentAttempts().ToString() + " Attempts So Far");
-					optionsF.Add("That Was Attempt " + LoadLevel.GetCurrentAttempts().ToString());
+					optionsF.Add("That's Your " + GetNumberSuffix(statsManager.GetCurrentAttempts(modeManager.GetMode())) + " Attempt");
+					optionsF.Add(statsManager.GetCurrentAttempts(modeManager.GetMode()).ToString() + " Attempts So Far");
+					optionsF.Add("That Was Attempt " + statsManager.GetCurrentAttempts(modeManager.GetMode()).ToString());
 				}
 				
-				if (LoadLevel.GetCurrentAttempts() > 700)
+				if (statsManager.GetCurrentAttempts(modeManager.GetMode()) > 700)
 				{
 					optionsF.Add("This Isn't Going Great");
 					optionsF.Add("Not Going For A Highscore Eh?");
 					optionsF.Add("Probably Won't Be #1");
 				}
 				
-				if (LoadLevel.GetTimesStarted() >= 1) 
-				{
-					optionsF.Add("That's Your " + GetNumberSuffix(LoadLevel.GetTotalAttempts()) + " Total Attempt");
-					optionsF.Add("At " + LoadLevel.GetTotalSeconds().ToString("f2") + " Seconds Across All Games");
-				}
+				// if (LoadLevel.GetTimesStarted() >= 1) 
+				// {
+					// optionsF.Add("That's Your " + GetNumberSuffix(LoadLevel.GetTotalAttempts()) + " Total Attempt");
+					// optionsF.Add("At " + LoadLevel.GetTotalSeconds().ToString("f2") + " Seconds Across All Games");
+				// }
 				
 				// if (LoadLevel.GetTimesCompleted() >= 1) 
 				// {
 					// optionsF.Add(LoadLevel.GetTimesCompleted().ToString() );
 				// }
 				
-				if (LoadLevel.GetPercentageComplete() > 0.5f)
+				if (statsManager.GetPercentageComplete(modeManager.GetMode()) > 0.5f)
 				{
 					optionsF.Add("Thought You Could Handle It?");
 					optionsF.Add("Bad");
@@ -376,8 +415,6 @@ public class TransitionText : MonoBehaviour {
 					optionsF.Add("C'mon");
 				}
 				
-				// if (Vector2.Distance(playerGO.transform.position, endPointGO.transform.position) < 1)
-				// if (Vector2.Distance(playerLastPos, endPointLastPos) < 1)
 				if (controller.closeCall == true)
 				{
 					int r = Random.Range(0, 4);
@@ -395,9 +432,10 @@ public class TransitionText : MonoBehaviour {
 					if (doThis) return optionsF[Random.Range(0, optionsF.Count)];
 				}
 				
-				if (LoadLevel.GetCurrentBadStreak() > 9)
+				// minus because bad streak is negative, might change
+				if (statsManager.GetCurrentStreak() < -9)
 				{
-					float r = Random.Range(0.0f, 1f) - LoadLevel.GetPercentageComplete();
+					float r = Random.Range(0.0f, 1f) - statsManager.GetPercentageComplete(modeManager.GetMode());
 					bool doThis = r < 0.02f ? true : false;
 					
 					if (doThis) optionsF.Clear();
@@ -411,19 +449,19 @@ public class TransitionText : MonoBehaviour {
 					optionsF.Add("Can You Break The Cycle?");
 					optionsF.Add("Surely You Can Do One Of These?");
 					
-					optionsF.Add(LoadLevel.GetCurrentBadStreak().ToString() + " Failures And Counting");
-					optionsF.Add(LoadLevel.GetCurrentBadStreak().ToString() + " Failures In A Row!");
+					optionsF.Add(Mathf.Abs(statsManager.GetCurrentStreak()).ToString() + " Failures And Counting");
+					optionsF.Add(Mathf.Abs(statsManager.GetCurrentStreak()).ToString() + " Failures In A Row!");
 					
-					if (LoadLevel.GetBestBadStreak() == LoadLevel.GetCurrentBadStreak())
-					{
-						optionsF.Add("Worst Streak Yet!");
-						optionsF.Add("Hopeless!");
-					}
+					// if (statsManager.GetBestBadStreak() == statsManager.GetCurrentBadStreak())
+					// {
+						// optionsF.Add("Worst Streak Yet!");
+						// optionsF.Add("Hopeless!");
+					// }
 					
 					if (doThis) return optionsF[Random.Range(0, optionsF.Count)];
 				}
 				
-				if (LoadLevel.GetGoodStreakBreak() == true)
+				if (statsManager.GetStreakBreak() == true)
 				{
 					optionsF.Add("Couldn't Last Forever");
 					optionsF.Add("You Had A Good Run");
@@ -432,37 +470,34 @@ public class TransitionText : MonoBehaviour {
 					optionsF.Add("All Good Things End");
 					optionsF.Add("Rightly So");
 					optionsF.Add("About Time");
-					optionsF.Add("You Lose Your Streak On That One?");
 				}
 				
-				if (LoadLevel.GetCurrentLevelBestAttempts() < LoadLevel.GetCurrentLevelCurrentAttempts())
-				{
-					optionsF.Add("No Record For You");
-					optionsF.Add("Taken " + Mathf.Abs(LoadLevel.GetLastAttemptsDifference()).ToString() + " More Attempts Already");
-				}
+				// if (LoadLevel.GetCurrentLevelBestAttempts() < LoadLevel.GetCurrentLevelCurrentAttempts())
+				// {
+					// optionsF.Add("No Record For You");
+					// optionsF.Add("Taken " + Mathf.Abs(LoadLevel.GetLastAttemptsDifference()).ToString() + " More Attempts Already");
+				// }
 				
-				optionsF.Add(LoadLevel.GetLastSeconds().ToString("f2") + " Seconds Wasted");
+				optionsF.Add(statsManager.GetLastSeconds().ToString("f2") + " Seconds Wasted");
 				
-				optionsF.Add(LoadLevel.GetCurrentSeconds().ToString("f2") + " Seconds Of Practice...");
-				optionsF.Add("Current Running Time: " + LoadLevel.GetCurrentSeconds().ToString("f2") + " Seconds");
-				optionsF.Add("At " + LoadLevel.GetCurrentSeconds().ToString("f2") + " Seconds And Counting");
+				optionsF.Add(statsManager.GetCurrentSeconds(modeManager.GetMode()).ToString("f2") + " Seconds Of Practice...");
+				optionsF.Add("Current Running Time: " + statsManager.GetCurrentSeconds(modeManager.GetMode()).ToString("f2") + " Seconds");
+				optionsF.Add("At " + statsManager.GetCurrentSeconds(modeManager.GetMode()).ToString("f2") + " Seconds And Counting");
 				
-				if (LoadLevel.GetCurrentSeconds() > 3600)
+				if (statsManager.GetCurrentSeconds(modeManager.GetMode()) > 3600)
 				{
 					optionsF.Add("It's Been Over An Hour");
 				}
 				
-				optionsF.Add("That's " + LoadLevel.GetCurrentLevelCurrentSeconds().ToString("f2") + " Seconds On This Level Alone");
+				optionsF.Add("That's " + statsManager.GetCurrentLevelCurrentSeconds().ToString("f2") + " Seconds On This Level Alone");
 				
 				// optionsF.Add("Double Press Direction To Boost");
 				optionsF.Add("Remember To Boost?");
 				optionsF.Add("Did You Boost?");
 				
-				optionsF.Add("Your " + GetNumberSuffix(LoadLevel.GetCurrentAttempts() - LoadLevel.GetLevelsCompleted()) + " Failure");
+				optionsF.Add("Your " + GetNumberSuffix(statsManager.GetCurrentAttempts(modeManager.GetMode()) - statsManager.GetLevelsCompleted(modeManager.GetMode())) + " Failure");
 				
 				return optionsF[Random.Range(0, optionsF.Count)];
-				// string[] test = new string[]{"A", "B"};
-				// return test[Random.Range(0, test.Length)];
 			break;
 		}
 		
@@ -516,6 +551,29 @@ public class TransitionText : MonoBehaviour {
 		}
 		
 		return number.ToString() + suffix;
+	}
+	
+	string[] GetUniqueLevelOptions (string s) {
+		GameObject levelGO = GameObject.FindGameObjectWithTag("Level");
+		if (levelGO != null)
+		{
+			LevelText levelText = levelGO.GetComponent<LevelText>();
+			if (levelText != null)
+			{
+				if (s == "Success")
+				{
+					return levelText.bonusSuccessText;
+				}
+				
+				if (s == "Failure")
+				{
+					return levelText.bonusFailureText;
+				}
+			}
+		}
+		
+		string[] blankArray = new string[]{"MISTAKE MADE"};
+		return blankArray;
 	}
 	
 	public string GetText () {

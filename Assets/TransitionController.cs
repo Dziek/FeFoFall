@@ -15,7 +15,7 @@ public class TransitionController : MonoBehaviour {
 	// public Vector2 endPointLastPos;
 	
 	[HideInInspector]
-	public TransitionState transitionState;
+	public TransitionReason transitionReason;
 	[HideInInspector]
 	public bool gameCompleted;
 	
@@ -34,11 +34,11 @@ public class TransitionController : MonoBehaviour {
 		transitionText = GetComponent<TransitionText>();
 	}
 	
-	void BeginTransition (TransitionState tS) {
+	void BeginTransition (TransitionReason tS) {
 		
 		if (transitioning == false)
 		{
-			transitionState = tS;
+			transitionReason = tS;
 			StartCoroutine("Transition");
 		}
 	}
@@ -47,7 +47,7 @@ public class TransitionController : MonoBehaviour {
 		
 		transitioning = true;
 		
-		if (transitionState == TransitionState.levelSuccess)
+		if (transitionReason == TransitionReason.levelSuccess)
 		{
 			// Tells LoadLevel a level has been completed, and returns whether that was the last level
 			// gameCompleted = LoadLevel.LevelCompleted();
@@ -55,12 +55,12 @@ public class TransitionController : MonoBehaviour {
 			levelManager.LevelCompleted();
 		}
 		
-		// if (transitionState == TransitionState.levelFailure)
+		// if (transitionReason == TransitionReason.levelFailure)
 		// {
 			// LoadLevel.LevelFailed();
 		// }
 		
-		// if (transitionState == TransitionState.levelSuccess)
+		// if (transitionReason == TransitionReason.levelSuccess)
 		// {
 			// // Reset Game if you start to play and levels are all complete
 			// if (LoadLevel.CheckComplete())
@@ -72,10 +72,10 @@ public class TransitionController : MonoBehaviour {
 		
 		yield return transitionScreen.StartPhaseOne();
 		
-		// transitionText.UpdateText();
-		// string text = transitionText.GetText();
+		transitionText.UpdateText();
+		string text = transitionText.GetText();
 		
-		string text = "Hello There";
+		// string text = "Hello There";
 		
 		
 		MinMax waitTime = new MinMax(0.25f, 1f);
@@ -121,19 +121,19 @@ public class TransitionController : MonoBehaviour {
 	}
 	
 	void OnEnable () {
-		Messenger<TransitionState>.AddListener("Transition", BeginTransition);
+		Messenger<TransitionReason>.AddListener("Transition", BeginTransition);
 		Messenger<bool>.AddListener("CloseCall", CloseCallUpdate);
-		Messenger.AddListener("MainMenu", Cancel);
+		Messenger.AddListener("BackToMenu", Cancel);
 	}
 	
 	void OnDisable () {
-		Messenger<TransitionState>.RemoveListener("Transition", BeginTransition);
+		Messenger<TransitionReason>.RemoveListener("Transition", BeginTransition);
 		Messenger<bool>.RemoveListener("CloseCall", CloseCallUpdate);
-		Messenger.RemoveListener("MainMenu", Cancel);
+		Messenger.RemoveListener("BackToMenu", Cancel);
 	}
 }
 
-public enum TransitionState {
+public enum TransitionReason {
 	levelSuccess,
 	levelFailure,
 	levelLoad,
