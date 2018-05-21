@@ -35,7 +35,7 @@ public class TransitionController : MonoBehaviour {
 	}
 	
 	void BeginTransition (TransitionReason tS) {
-		
+		Debug.Log(tS);
 		if (transitioning == false)
 		{
 			transitionReason = tS;

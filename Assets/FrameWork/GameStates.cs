@@ -24,7 +24,8 @@ public class GameStates : MonoBehaviour {
 	void Start () {
 		ChangeState("MainMenu");
 		
-		if (Application.loadedLevelName == "LevelTesting" || Application.loadedLevelName == "GraphicsTesting" )
+		if (Application.loadedLevelName == "LevelTesting" || Application.loadedLevelName == "GraphicsTesting"
+			|| Application.loadedLevelName == "CongratsTesting")
 		{
 			ChangeState("Playing");
 		}
@@ -34,17 +35,25 @@ public class GameStates : MonoBehaviour {
 
 	public void ChangeStateOnClick (string newState) {
 		state = (states)System.Enum.Parse(typeof(states), newState);
-		menuScript.LoadMenu(newState, null);
+		if (menuScript != null)
+		{
+			menuScript.LoadMenu(newState, null);
+		}
 	}
 	
 	public static void ChangeState (string newState) {
 		state = (states)System.Enum.Parse(typeof(states), newState);
-		menuScript.LoadMenu(newState, null);
+		if (menuScript != null)
+		{
+			menuScript.LoadMenu(newState, null);
+		}
 	}
 	
 	public static void ChangeState (string newState, string extra) {
 		state = (states)System.Enum.Parse(typeof(states), newState);
-		menuScript.LoadMenu(newState, extra);
+		if (menuScript != null)
+		{
+		}
 	}
 	
 	public static string GetState () {

@@ -80,7 +80,7 @@ public class StatsManager : MonoBehaviour {
 		
 		if (currentStreak < 0)
 		{
-			if (currentStreak < -4)
+			if (currentStreak <= -6)
 			{
 				streakBreak = true;
 			}
@@ -93,7 +93,7 @@ public class StatsManager : MonoBehaviour {
 	void LevelFailed () {
 		if (currentStreak > 0)
 		{
-			if (currentStreak > 4)
+			if (currentStreak >= 3)
 			{
 				streakBreak = true;
 			}

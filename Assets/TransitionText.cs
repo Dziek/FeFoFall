@@ -52,14 +52,31 @@ public class TransitionText : MonoBehaviour {
 			
 			case TransitionReason.levelSuccess:	
 				// Check for Unique Level Text
-				if (0 == 0) // this if statement is just to keep it tidier
+				// GameObject levelGO = GameObject.FindGameObjectWithTag("Level");
+				// if (levelGO != null)
+				// {
+				LevelText levelText = GameObject.FindGameObjectWithTag("Level").GetComponent<LevelText>();
+				if (levelText != null)
 				{
-					float r = Random.Range(0.0f, 1f);
-					bool doThis = r < 0.8f ? true : false;
+					int r = Random.Range(0, 10); // might balance this out based on times attempted / number of options / start at 2 add 1 for each option
+					// bool doThis = r < 8 ? true : false;
+					bool doThis = false;
 					
-					List<string> uniqueLevelOptions = new List<string>(GetUniqueLevelOptions("Success"));
+					List<string> uniqueLevelOptions = new List<string>();
 					
-					if (doThis && uniqueLevelOptions.Count > 0) return uniqueLevelOptions[Random.Range(0, uniqueLevelOptions.Count)];
+					// LevelText levelText = levelGO.GetComponent<LevelText>();
+					// if (levelText != null)
+					// {
+						if (levelText.bonusSuccessText.Length > 0)
+						{
+							uniqueLevelOptions = new List<string>(levelText.bonusSuccessText);
+							// doThis = r < (7 + uniqueLevelOptions.Count) ? true : false;
+							doThis = r < 8 ? true : false;
+						}
+					// }
+					
+					// if (doThis && uniqueLevelOptions.Count > 0) return uniqueLevelOptions[Random.Range(0, uniqueLevelOptions.Count)];
+					if (doThis) return uniqueLevelOptions[Random.Range(0, uniqueLevelOptions.Count)];
 				}
 				
 				// Start of normal text options
@@ -75,8 +92,12 @@ public class TransitionText : MonoBehaviour {
 					if (doThis) options.Clear();
 					
 					options.Add("First Time Lucky!");
-					options.Add("Beginner's Luck!");
+					options.Add("Beginner's Luck");
 					options.Add("Hole In One!");
+					options.Add("We Got Us A Natural");
+					options.Add("Straight To It");
+					options.Add("No Messing About");
+					options.Add("Ooft");
 					
 					if (doThis) return options[Random.Range(0, options.Count)];
 				}
@@ -86,11 +107,13 @@ public class TransitionText : MonoBehaviour {
 					options.Add(GetNumberSuffix(currentLevelAttempts) + " Time Lucky");
 					options.Add("Whatever");
 					options.Add("Practice Makes Perfect");
+					options.Add("That's More Like It");
 				}
 				
 				if (currentLevelAttempts >= 10)
 				{
 					options.Add("Finally");
+					options.Add("About Time");
 					options.Add("Yawn");
 					
 					options.Add("Proud Of You");
@@ -118,6 +141,11 @@ public class TransitionText : MonoBehaviour {
 					break;
 				}
 				
+				if (statsManager.GetPercentageComplete(modeManager.GetMode()) > 0.1f && statsManager.GetPercentageComplete(modeManager.GetMode()) < 0.2f)
+				{
+					options.Add("Only Gets Better From Here");
+				}
+				
 				if (statsManager.GetPercentageComplete(modeManager.GetMode()) > 0.45f && statsManager.GetPercentageComplete(modeManager.GetMode()) < 0.5f)
 				{
 					options.Add("Nearly Halfway There!");
@@ -133,7 +161,6 @@ public class TransitionText : MonoBehaviour {
 				if (statsManager.GetPercentageComplete(modeManager.GetMode()) < 0.1f)
 				{			
 					options.Add("Just Getting Started");
-					options.Add("Hope You Got Snacks");
 					options.Add("Early Victory");
 					
 					options.Add("Pfft, That Was Easy");
@@ -143,7 +170,7 @@ public class TransitionText : MonoBehaviour {
 				{
 					options.Add("Way To Go Slugger");
 					options.Add("CHAMPION");
-					options.Add("A* Performance There");
+					options.Add("A+ Performance There");
 					options.Add("Textbook");
 					options.Add("Back Of The Net");
 					options.Add("GOOOOOOOAAAAAAL");
@@ -245,13 +272,16 @@ public class TransitionText : MonoBehaviour {
 				
 				if (statsManager.GetStreakBreak() == true)
 				{
-					float r = Random.Range(0.0f, 1f) - statsManager.GetPercentageComplete(modeManager.GetMode());
-					bool doThis = r < 0.02f ? true : false;
+					// float r = Random.Range(0.0f, 1f) - statsManager.GetPercentageComplete(modeManager.GetMode());
+					float r = Random.Range(0.0f, 1f);
+					// bool doThis = r < 0.02f ? true : false;
+					bool doThis = r < 0.8f ? true : false;
 					
 					if (doThis) options.Clear();
 					
 					options.Add("That's The Spirit");
 					options.Add("About Time");
+					options.Add("Finally");
 					options.Add("Bad Streak Broken");
 					options.Add("But Can You Keep It Going?");
 					options.Add("Ruin My Fun");
@@ -325,14 +355,30 @@ public class TransitionText : MonoBehaviour {
 			
 			case TransitionReason.levelFailure:
 				// Check for Unique Level Text
-				if (0 == 0) // this if statement is just to keep it tidier
+				// GameObject levelGO = GameObject.FindGameObjectWithTag("Level");
+				// if (levelGO != null)
+				// {
+				LevelText levelTextF = GameObject.FindGameObjectWithTag("Level").GetComponent<LevelText>();
+				if (levelTextF != null)
 				{
-					float r = Random.Range(0.0f, 1f);
-					bool doThis = r < 0.8f ? true : false;
+					int r = Random.Range(0, 10);
+					// bool doThis = r < 8 ? true : false;
+					bool doThis = false;
 					
-					List<string> uniqueLevelOptions = new List<string>(GetUniqueLevelOptions("Failure"));
+					List<string> uniqueLevelOptions = new List<string>();
 					
-					if (doThis && uniqueLevelOptions.Count > 0) return uniqueLevelOptions[Random.Range(0, uniqueLevelOptions.Count)];
+					// LevelText levelText = levelGO.GetComponent<LevelText>();
+					// if (levelText != null)
+					// {
+						if (levelTextF.bonusFailureText.Length > 0)
+						{
+							uniqueLevelOptions = new List<string>(levelTextF.bonusFailureText);
+							doThis = r < (2 + uniqueLevelOptions.Count) ? true : false;
+						}
+					// }
+					
+					// if (doThis && uniqueLevelOptions.Count > 0) return uniqueLevelOptions[Random.Range(0, uniqueLevelOptions.Count)];
+					if (doThis) return uniqueLevelOptions[Random.Range(0, uniqueLevelOptions.Count)];
 				}
 			
 				List<string> optionsF = new List<string>(failureTextOptions);
@@ -492,8 +538,8 @@ public class TransitionText : MonoBehaviour {
 				optionsF.Add("That's " + statsManager.GetCurrentLevelCurrentSeconds().ToString("f2") + " Seconds On This Level Alone");
 				
 				// optionsF.Add("Double Press Direction To Boost");
-				optionsF.Add("Remember To Boost?");
-				optionsF.Add("Did You Boost?");
+				// optionsF.Add("Remember To Boost?");
+				// optionsF.Add("Did You Boost?");
 				
 				optionsF.Add("Your " + GetNumberSuffix(statsManager.GetCurrentAttempts(modeManager.GetMode()) - statsManager.GetLevelsCompleted(modeManager.GetMode())) + " Failure");
 				
@@ -553,28 +599,30 @@ public class TransitionText : MonoBehaviour {
 		return number.ToString() + suffix;
 	}
 	
-	string[] GetUniqueLevelOptions (string s) {
-		GameObject levelGO = GameObject.FindGameObjectWithTag("Level");
-		if (levelGO != null)
-		{
-			LevelText levelText = levelGO.GetComponent<LevelText>();
-			if (levelText != null)
-			{
-				if (s == "Success")
-				{
-					return levelText.bonusSuccessText;
-				}
+	// string[] GetUniqueLevelOptions (string s) {
+		// GameObject levelGO = GameObject.FindGameObjectWithTag("Level");
+		// if (levelGO != null)
+		// {
+			// LevelText levelText = levelGO.GetComponent<LevelText>();
+			// if (levelText != null)
+			// {
+				// if (s == "Success")
+				// {
+					// return levelText.bonusSuccessText;
+				// }
 				
-				if (s == "Failure")
-				{
-					return levelText.bonusFailureText;
-				}
-			}
-		}
+				// if (s == "Failure")
+				// {
+					// return levelText.bonusFailureText;
+				// }
+			// }
+		// }
 		
-		string[] blankArray = new string[]{"MISTAKE MADE"};
-		return blankArray;
-	}
+		// // string[] blankArray = new string[]{"MISTAKE MADE"};
+		// // return blankArray;
+		
+		// return null;
+	// }
 	
 	public string GetText () {
 		return displayText.text;
