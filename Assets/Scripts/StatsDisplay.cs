@@ -35,29 +35,32 @@ public class StatsDisplay : MonoBehaviour {
 	}
 	
 	public void UpdateText () {
-		progress.text = "Level Progress: " + statsManager.GetLevelsCompleted(modeManager.GetMode()) + " / " + statsManager.GetNumberOfLevels(modeManager.GetMode());
-		currentAttempts.text = "Current Attempts: " + statsManager.GetCurrentAttempts(modeManager.GetMode());
 		
-		secondsSpendCurrent.text = "Current Seconds: " + statsManager.GetCurrentSeconds(modeManager.GetMode()).ToString("f2");
+		Mode currentMode = modeManager.GetMode();
 		
-		// if (LoadLevel.GetTimesStarted() > 1)
-		// {
-			// timesStarted.text = "Times Started: " + LoadLevel.GetTimesStarted();
-			// timesCompleted.text = "Times Completed: " + LoadLevel.GetTimesCompleted();
-			// bestAttempts.text = "Best Attempts: " + LoadLevel.GetBestAttempts();
-			// totalAttempts.text = "Total Attempts: " + LoadLevel.GetTotalAttempts();
-			// totalLevelsCompleted.text = "Total Levels Completed: " + LoadLevel.GetTotalLevelsCompleted().ToString("f2");
+		progress.text = "Level Progress: " + statsManager.GetLevelsCompleted(currentMode) + " / " + statsManager.GetNumberOfLevels(currentMode);
+		currentAttempts.text = "Current Attempts: " + statsManager.GetCurrentAttempts(currentMode);
+		
+		secondsSpendCurrent.text = "Current Seconds: " + statsManager.GetCurrentSeconds(currentMode).ToString("f2");
+		
+		if (statsManager.GetModeTimesStarted(currentMode) > 1)
+		{
+			timesStarted.text = "Times Started: " + statsManager.GetModeTimesStarted(currentMode);
+			timesCompleted.text = "Times Completed: " + statsManager.GetModeTimesCompleted(currentMode);
+			bestAttempts.text = "Best Attempts: " + statsManager.GetModeBestAttempts(currentMode);
+			totalAttempts.text = "Total Attempts: " + statsManager.GetModeTotalAttempts(currentMode);
+			totalLevelsCompleted.text = "Total Levels Completed: " + statsManager.GetModeTotalLevelsCompleted(currentMode).ToString();
 			
-			// secondsSpendTotal.text = "Total Seconds: " + LoadLevel.GetTotalSeconds();
-			// secondsSpendBest.text = "Best Seconds: " + LoadLevel.GetBestSeconds();
-		// }else{
-			// timesStarted.text = "";
-			// timesCompleted.text = "";
-			// bestAttempts.text = "";
-			// totalAttempts.text = "";
-			// totalLevelsCompleted.text = "";
-			// secondsSpendTotal.text = "";
-			// secondsSpendBest.text = "";
-		// }
+			secondsSpendTotal.text = "Total Seconds: " + statsManager.GetModeTotalSeconds(currentMode).ToString("f2");
+			secondsSpendBest.text = "Best Seconds: " + statsManager.GetModeBestSeconds(currentMode).ToString("f2");
+		}else{
+			timesStarted.text = "";
+			timesCompleted.text = "";
+			bestAttempts.text = "";
+			totalAttempts.text = "";
+			totalLevelsCompleted.text = "";
+			secondsSpendTotal.text = "";
+			secondsSpendBest.text = "";
+		}
 	}
 }

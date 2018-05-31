@@ -18,7 +18,8 @@ public class CompletedMainDisplay : MonoBehaviour {
 	
 	void OnEnable () {
 		// string cA = GameObject.Find("StatsManager").GetComponent<StatsManager>().GetCurrentAttempts(Mode.Main).ToString();
-		string cA = LoadLevel.GetCurrentAttempts().ToString();
+		string cA = GameObject.Find("StatsManager").GetComponent<StatsManager>().GetCurrentAttempts(GameObject.Find("ModeManager").GetComponent<ModeManager>().GetMode()).ToString();
+		// string cA = LoadLevel.GetCurrentAttempts().ToString();
 		// completedMsg.text = completedString.Replace("-X-", cA);
 		
 		// if (cM.Length == 0)

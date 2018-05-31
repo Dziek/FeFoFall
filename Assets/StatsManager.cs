@@ -17,19 +17,25 @@ public class StatsManager : MonoBehaviour {
 	
 	private bool isTimerRunning;
 	private float timeValue;
-
+	
+	// THIS IS TEMPORARY UNTIL PROPER SAVING/LOADING MODE STATS IS IN
 	void Awake () {
+		Debug.Log("REMEMBER TO TAKE THIS OUT");
+		DataManager.modeStats.Add(Mode.Main, new ModeStats());
+		DataManager.modeStats.Add(Mode.Tricky, new ModeStats());
+		DataManager.modeStats.Add(Mode.GauntletA, new ModeStats());
+		DataManager.modeStats.Add(Mode.GauntletB, new ModeStats());
+		DataManager.modeStats.Add(Mode.Basement, new ModeStats());
+	}
+	
+	// void Awake () {
 		
 		// instance = this;
 		
-		// DataManager.levelStatsByMode.Add("Main", new Dictionary <string, LevelStats>());
-		// DataManager.levelStatsByMode.Add("Tricky", new Dictionary <string, LevelStats>());
-		// DataManager.levelStatsByMode.Add("Basement", new Dictionary <string, LevelStats>());
-		// DataManager.levelStatsByMode.Add("GauntletA", new Dictionary <string, LevelStats>());
-		// DataManager.levelStatsByMode.Add("GauntletB", new Dictionary <string, LevelStats>());
+		
 		
 		// DataManager.LoadData();
-	}
+	// }
 
 	void OnEnable () {
 		Messenger<GameObject>.AddListener("NewLevel", UpdateCurrentLevel);
@@ -103,6 +109,46 @@ public class StatsManager : MonoBehaviour {
 		currentStreak--;
 	}
 	
+	// void ModeStarted (Mode mode) {
+		// DataManager.modeStats[mode].timesStarted++;
+		
+		// DataManager.SaveData();
+	// }
+	
+	public void ModeComplete (Mode mode) {
+		DataManager.modeStats[mode].timesCompleted++;
+		
+		// do best attempts
+		
+		int totalAttempts = 0;
+		
+		foreach (string id in levelIDsByMode[mode])
+		{
+			totalAttempts += DataManager.levelStats[id].currentAttempts;
+		}
+		
+		if (totalAttempts < DataManager.modeStats[mode].bestAttempts || DataManager.modeStats[mode].bestAttempts == 0)
+		{
+			DataManager.modeStats[mode].bestAttempts = totalAttempts;
+		}
+		
+		// do best time
+		
+		float totalTime = 0;
+		
+		foreach (string id in levelIDsByMode[mode])
+		{
+			totalTime += DataManager.levelStats[id].secondsPlayedCurrent;
+		}
+		
+		if (totalTime < DataManager.modeStats[mode].bestTime || DataManager.modeStats[mode].bestTime == 0)
+		{
+			DataManager.modeStats[mode].bestTime = totalTime;
+		}
+		
+		DataManager.SaveData();
+	}
+	
 	void StartTimer () {
 		StartCoroutine(Timer());
 		// Debug.Log("StartTimer");
@@ -170,6 +216,22 @@ public class StatsManager : MonoBehaviour {
 		return DataManager.levelStats[n];
 	}
 	
+	public void ClearModeStats (Mode mode) {
+		// go through every level, making them not completed and setting current attempts / whatever to 0
+		
+		foreach (string id in levelIDsByMode[mode])
+		{
+			DataManager.levelStats[id].isCompleted = false;
+			DataManager.levelStats[id].currentAttempts = 0;
+			DataManager.levelStats[id].secondsPlayedCurrent = 0;
+		}
+		
+		// increase timesStarted here (although not technically correct I can probably get away with it)
+		DataManager.modeStats[mode].timesStarted++;
+		
+		DataManager.SaveData();
+	}
+	
 	// STATS RETRIEVAL FOR TEXT 
 	
 	public int GetNumberOfLevels (Mode mode) {
@@ -225,7 +287,7 @@ public class StatsManager : MonoBehaviour {
 	}
 	
 	public int GetCurrentLevelCurrentAttempts () {
-		Debug.Log(currentLevelID);
+		// Debug.Log(currentLevelID);
 		return DataManager.levelStats[currentLevelID].currentAttempts;
 	}
 	
@@ -247,5 +309,57 @@ public class StatsManager : MonoBehaviour {
 	
 	public float GetCurrentLevelCurrentSeconds() {
 		return DataManager.levelStats[currentLevelID].secondsPlayedCurrent;
+	}
+	
+	public int GetModeTimesCompleted (Mode mode) {
+		return DataManager.modeStats[mode].timesCompleted;
+	}
+	
+	public int GetModeTimesStarted (Mode mode) {
+		return DataManager.modeStats[mode].timesStarted;
+	}
+	
+	public int GetModeBestAttempts (Mode mode) {
+		return DataManager.modeStats[mode].bestAttempts;
+	}
+	
+	public int GetModeTotalAttempts (Mode mode) {
+		int totalAttempts = 0;
+		
+		for (int i = 0; i < levelIDsByMode[mode].Count; i++)
+		{
+			string lookUpID = levelIDsByMode[mode][i];
+			totalAttempts += DataManager.levelStats[lookUpID].totalAttempts;
+		}
+		
+		return totalAttempts;
+	}
+	
+	public int GetModeTotalLevelsCompleted (Mode mode) {
+		int levelsCompleted = 0;
+		
+		for (int i = 0; i < levelIDsByMode[mode].Count; i++)
+		{
+			string lookUpID = levelIDsByMode[mode][i];
+			levelsCompleted += DataManager.levelStats[lookUpID].timesCompleted;
+		}
+		
+		return levelsCompleted;
+	}
+	
+	public float GetModeTotalSeconds (Mode mode) {
+		float totalSeconds = 0;
+		
+		for (int i = 0; i < levelIDsByMode[mode].Count; i++)
+		{
+			string lookUpID = levelIDsByMode[mode][i];
+			totalSeconds += DataManager.levelStats[lookUpID].secondsPlayedTotal;
+		}
+		
+		return totalSeconds;
+	}
+	
+	public float GetModeBestSeconds (Mode mode) {
+		return DataManager.modeStats[mode].bestTime;
 	}
 }

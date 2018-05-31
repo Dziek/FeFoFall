@@ -20,6 +20,11 @@ public class ModeManager : MonoBehaviour {
 		SetMode(newMode);
 	}
 	
+	public void SetModeInt (int i) {
+		Mode newMode = (Mode)i;
+		SetMode(newMode);
+	}
+	
 	public Mode GetMode () {
 		return mode;
 	}

@@ -53,6 +53,7 @@ public class GameStates : MonoBehaviour {
 		state = (states)System.Enum.Parse(typeof(states), newState);
 		if (menuScript != null)
 		{
+			menuScript.LoadMenu(newState, extra);
 		}
 	}
 	

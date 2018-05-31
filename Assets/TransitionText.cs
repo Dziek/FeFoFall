@@ -27,7 +27,7 @@ public class TransitionText : MonoBehaviour {
 	
 	public string ChooseText () {
 		
-		Debug.Log("Choosing Text");
+		// Debug.Log("Choosing Text");
 		
 		if (controller.gameCompleted == true)
 		{
@@ -47,7 +47,24 @@ public class TransitionText : MonoBehaviour {
 		switch (controller.transitionReason)
 		{
 			case TransitionReason.levelLoad:
-				return loadTextOptions[Random.Range(0, loadTextOptions.Length)];
+				
+				List<string> optionsL = new List<string>(loadTextOptions);
+				
+				if (controller.gameReset == true)
+				{
+					optionsL.Clear();
+					
+					optionsL.Add("Another Go?");
+					optionsL.Add("Clearing Data");
+					optionsL.Add("Doing A Reset");
+					optionsL.Add("Back For More?");
+					optionsL.Add("Do Better This Time");
+					optionsL.Add("Cleaning Up");
+					
+					return optionsL[Random.Range(0, optionsL.Count)];
+				}
+			
+				return optionsL[Random.Range(0, optionsL.Count)];
 			// break;
 			
 			case TransitionReason.levelSuccess:	

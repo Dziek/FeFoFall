@@ -11,7 +11,7 @@ public class LevelParentGroup : MonoBehaviour {
 	
 	private StatsManager statsManager;
 	
-	private List<GameObject> allLevels = new List<GameObject>();
+	// private List<GameObject> allLevels = new List<GameObject>();
 	// private List<GameObject> currentLevels = new List<GameObject>();
 	
 	public TopLevelGroup thisGroup = new TopLevelGroup();
@@ -19,23 +19,25 @@ public class LevelParentGroup : MonoBehaviour {
 	void Awake () {
 		LevelGroup[] childGroups = GetComponentsInChildren<LevelGroup>();
 		
+		thisGroup.allLevels = new List<GameObject>();
+		
 		for (int i = 0; i < childGroups.Length; i++)
 		{
 			for (int o = 0; o < childGroups[i].levels.Count; o++)
 			{
 				// Debug.Log(i + " " + o);
-				allLevels.Add(childGroups[i].levels[o]);
+				thisGroup.allLevels.Add(childGroups[i].levels[o]);
 			}
 		}
 		
 		statsManager = GameObject.Find("StatsManager").GetComponent<StatsManager>();
-		statsManager.AddLevelsByMode(allLevels, mode);
+		statsManager.AddLevelsByMode(thisGroup.allLevels, mode);
 	}
 	
 	void Start () {
 		statsManager = GetComponentInParent<LevelManager>().statsManager;
 		
-		foreach (GameObject level in allLevels)
+		foreach (GameObject level in thisGroup.allLevels)
 		{
 			if (statsManager.LevelLookUp(level.name).isCompleted == false)
 			{
@@ -45,5 +47,6 @@ public class LevelParentGroup : MonoBehaviour {
 		
 		thisGroup.activeRange = activeRange;
 		thisGroup.levelRange = levelRange;
+		// thisGroup.allLevels = allLevels;
 	}
 }

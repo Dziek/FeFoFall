@@ -13,6 +13,7 @@ public class ModeButton : MonoBehaviour, ISelectHandler {
 	}
 	
 	void Select () {
+		// Debug.Log("Selected");
 		modeManager.SetMode(mode);
 	}
 	

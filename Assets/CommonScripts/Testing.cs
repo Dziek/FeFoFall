@@ -5,6 +5,10 @@ using UnityEngine.Audio;
 
 public class Testing : MonoBehaviour {
 	
+	public static bool t1 = false;
+	public static bool t2 = false;
+	public static bool t3 = false;
+	
 	public AudioMixerGroup audioMixerGroup;
 	
 	// private int sNum = 0;
@@ -14,10 +18,36 @@ public class Testing : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		// if (Input.GetButtonDown("Reset"))
-		// {
-			// Restart();
-		// }
+		if (Input.GetButtonDown("Reset"))
+		{
+			Restart();
+		}
+		
+		if (Input.GetKeyDown(KeyCode.Alpha1))
+		{
+			t1 = !t1;
+			Debug.Log("Changing t1 to " + t1);
+		}
+		
+		if (Input.GetKeyDown(KeyCode.Alpha2))
+		{
+			t2 = !t2;
+			Debug.Log("Changing t2 to " + t2);
+		}
+		
+		if (Input.GetKeyDown(KeyCode.Alpha3))
+		{
+			t3 = !t3;
+			Debug.Log("Changing t3 to " + t3);
+		}
+		
+		if (Input.GetKeyDown(KeyCode.Alpha0))
+		{
+			t1 = false;
+			t2 = false;
+			t3 = false;
+			Debug.Log("Changing t's to false");
+		}
 		
 		if (Input.GetKeyDown("escape"))
 		{
@@ -42,7 +72,7 @@ public class Testing : MonoBehaviour {
 	}
 	
 	public void Restart () {
-		// Application.LoadLevel(Application.loadedLevel);
+		Application.LoadLevel(Application.loadedLevel);
 	}
 	
 	// public void TakeScreenshot () {

@@ -37,8 +37,8 @@ public class LevelManager : MonoBehaviour {
 	
 	//checks if game is over
 	public bool CheckForGameOver () {
-		// Debug.Log(modeManager);
-		if (modeGroups[(int)modeManager.GetMode()].currentLevels.Count <= 1)
+		// Debug.Log(modeGroups[(int)modeManager.GetMode()].currentLevels.Count);
+		if (modeGroups[(int)modeManager.GetMode()].currentLevels.Count == 0)
 		{
 			Debug.Log("GameOver");
 			return true;
@@ -61,12 +61,23 @@ public class LevelManager : MonoBehaviour {
 	}
 	
 	public void SwitchLevel () {
+		Debug.Log("Switching Level");
+		// Debug.Break();
 		
-		CheckForGameOver();
+		// if (CheckForGameOver())
+		// {
+			// return;
+		// }
 		
 		if (currentLevelGO != null)
 		{
 			Destroy(currentLevelGO);
+		}
+		
+		// THIS seems unnecessary, I don't think SwitchLevel gets called becaused of an earlier CheckForGameOver
+		if (CheckForGameOver())
+		{
+			return;
 		}
 		
 		// could just Clamp the below, make it one line
@@ -82,15 +93,35 @@ public class LevelManager : MonoBehaviour {
 		
 		// 20% chance of choosing the first level in the queue
 		GameObject levelGO = Random.Range(0,5) == 0 ? modeGroups[(int)modeManager.GetMode()].currentLevels[0] : modeGroups[(int)modeManager.GetMode()].currentLevels[Random.Range(0, range)];
+		
+		int g = 0;
 		while (levelGO == lastLevelGO && range > 1)
 		{
+			Debug.Log("Looping");
 			levelGO = modeGroups[(int)modeManager.GetMode()].currentLevels[Random.Range(0, range)];
+			
+			g++;
+			
+			if (g > 20)
+			{
+				break;
+			}
 		}
 		
 		lastLevelGO = levelGO;
 		currentLevelGO = Instantiate(levelGO);
 		
 		Messenger<GameObject>.Broadcast("NewLevel", levelGO);
+	}
+	
+	public void ResetModeLevels () {
+		
+		Mode currentMode = modeManager.GetMode();
+		
+		statsManager.ClearModeStats(currentMode);
+		modeGroups[(int)currentMode].ResetLevels();
+		
+		// Debug.Log(modeGroups[(int)currentMode].currentLevels.Count);
 	}
 	
 	void OnEnable () {
@@ -141,6 +172,11 @@ public class TopLevelGroup {
 	public int activeRange;
 	public LevelRange levelRange;
 	public List<GameObject> currentLevels = new List<GameObject>();
+	public List<GameObject> allLevels = new List<GameObject>();
+	
+	public void ResetLevels () {
+		currentLevels = allLevels;
+	}
 }
 
 [System.Serializable]

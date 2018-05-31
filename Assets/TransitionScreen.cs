@@ -56,6 +56,9 @@ public class TransitionScreen : MonoBehaviour {
 	
 	public IEnumerator StartPhaseOne () {
 		
+		// Debug.Log("Start Of Phase One");
+		// Debug.Break();
+		
 		GameObject startPoint;
 		
 		if (controller.transitionReason != TransitionReason.levelLoad)
@@ -111,8 +114,39 @@ public class TransitionScreen : MonoBehaviour {
 			// startPoint = GameObject.Find("Play").transform.position;
 			startPoint = GameObject.Find("Play");
 			expandPanelGO.transform.localScale = new Vector2(2, 2);
+			
+			// Debug.Log("About to yield break");
+			// Debug.Break();
+			
 			yield break;
 		}
+		
+		if (Testing.t1 == true)
+		{
+			expandPanelGO.transform.localScale = new Vector2(2, 2);
+			expandPanelImage.color = playerColour;
+			
+			yield break;
+		}
+		
+		if (Testing.t2 == true)
+		{
+			expandPanelGO.transform.localScale = new Vector2(2, 2);
+			expandPanelImage.color = defaultColour;
+			
+			yield break;
+		}
+		
+		if (Testing.t3 == true)
+		{
+			expandPanelGO.transform.localScale = new Vector2(2, 2);
+			expandPanelImage.color = endColour;
+			
+			yield break;
+		}
+		
+		// Debug.Log("Slightly Later In Phase One");
+		// Debug.Break();
 		
 		// if (startPoint == null)
 		// {
@@ -204,6 +238,8 @@ public class TransitionScreen : MonoBehaviour {
 		}else{
 			// LoadLevel.ClearLevel();
 			completeScreenGO.SetActive(true);
+			controller.levelManager.ClearLevel();
+			controller.statsManager.ModeComplete(controller.modeManager.GetMode());
 		}
 		
 		transitionTextGO.SetActive(true);

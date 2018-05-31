@@ -7,6 +7,7 @@ using System.IO;
 public class DataManager : MonoBehaviour {
 	
 	public static Dictionary <string, LevelStats> levelStats = new Dictionary <string, LevelStats>();
+	public static Dictionary <Mode, ModeStats> modeStats = new Dictionary <Mode, ModeStats>();
 	// public static Dictionary <string, LevelData> levelData = new Dictionary <string, LevelData>();
 	// public static Dictionary <string, Dictionary<string, LevelStats>> levelStatsByMode = new Dictionary <string, Dictionary<string, LevelStats>>();
 	
@@ -55,8 +56,10 @@ public class DataManager : MonoBehaviour {
 		}
 	}
 	
-	public static void ClearCurrentAttempt () {
+	public static void ClearModeStats (Mode mode) {
 		// go through every level, making them not completed and setting current attempts / whatever to 0
+		
+		// for (int i = 0; i < levelStats[]
 		
 		SaveData();
 	}

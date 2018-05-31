@@ -18,11 +18,15 @@ public class TransitionController : MonoBehaviour {
 	public TransitionReason transitionReason;
 	[HideInInspector]
 	public bool gameCompleted;
+	[HideInInspector]
+	public bool gameReset; // this means it was completed, but is being reset as player is starting again
 	
 	[HideInInspector]
 	public bool closeCall;
 	
 	public LevelManager levelManager;
+	public StatsManager statsManager;
+	public ModeManager modeManager;
 	
 	private TransitionScreen transitionScreen;
 	private TransitionText transitionText;
@@ -35,12 +39,18 @@ public class TransitionController : MonoBehaviour {
 	}
 	
 	void BeginTransition (TransitionReason tS) {
-		Debug.Log(tS);
+		// Debug.Log(tS);
+		// Debug.Break();
+		
+		gameCompleted = false;
+		
 		if (transitioning == false)
 		{
 			transitionReason = tS;
 			StartCoroutine("Transition");
 		}
+		
+		Debug.Log("Starting T");
 	}
 	
 	IEnumerator Transition () {
@@ -51,8 +61,22 @@ public class TransitionController : MonoBehaviour {
 		{
 			// Tells LoadLevel a level has been completed, and returns whether that was the last level
 			// gameCompleted = LoadLevel.LevelCompleted();
-			gameCompleted = levelManager.CheckForGameOver();
 			levelManager.LevelCompleted();
+			gameCompleted = levelManager.CheckForGameOver();
+		}
+		
+		if (transitionReason == TransitionReason.levelLoad)
+		{
+			// Tells LoadLevel a level has been completed, and returns whether that was the last level
+			// gameCompleted = LoadLevel.LevelCompleted();
+			// levelManager.LevelCompleted();
+			gameReset = levelManager.CheckForGameOver();
+			
+			if (gameReset == true)
+			{
+				// statsManager.ClearModeStats(modeManager.GetMode());	
+				levelManager.ResetModeLevels();
+			}
 		}
 		
 		// if (transitionReason == TransitionReason.levelFailure)
@@ -70,7 +94,15 @@ public class TransitionController : MonoBehaviour {
 			// }
 		// }
 		
+		// Debug.Log("About To Start Phase One");
+		// Debug.Break();
+		
+		// HANGS AFTER HERE
+		
 		yield return transitionScreen.StartPhaseOne();
+		
+		// Debug.Log("Just After Phase One");
+		// Debug.Break();
 		
 		transitionText.UpdateText();
 		string text = transitionText.GetText();
@@ -88,7 +120,19 @@ public class TransitionController : MonoBehaviour {
 		// Debug.Log("Wait Time: " + actualWaitTime);
 		
 		// yield return transitionScreen.StartPhaseOne();
+		
+		// BUT BEFORE HERE
+		
+		// Debug.Log("About To Start Phase Two");
+		// Debug.Break();
+		
 		yield return transitionScreen.StartPhaseTwo(actualWaitTime);
+		
+		// if (gameCompleted)
+		// {
+			// levelManager.ClearLevel();
+		// }
+		
 		yield return transitionScreen.StartPhaseThree();
 		
 		if (gameCompleted == false)

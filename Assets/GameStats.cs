@@ -13,22 +13,24 @@ public class GameStats : MonoBehaviour {
 	private float timePlayed;
 	private int levelsCompleted;
 	private int globalAttempts;
+	private int globalnumberOfSessions;
 }
 
 [System.Serializable]
 public class ModeStats {
-	public int levelsCompleted;
+	// public int levelsCompleted;
 	public int numberOfSessions;
 	
-	public bool isCompleted; // possibly redundant
+	// public bool isCompleted; // possibly redundant
+	public int timesStarted = 1;
 	public int timesCompleted;
 	
-	public int currentAttempts;
-	public int totalAttempts;
+	// public int currentAttempts;
+	// public int totalAttempts;
 	public int bestAttempts;
 	
-	public float secondsPlayedCurrent;
-	public float secondsPlayedTotal;
+	// public float secondsPlayedCurrent;
+	// public float secondsPlayedTotal;
 	public float bestTime;
 }
 

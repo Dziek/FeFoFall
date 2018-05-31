@@ -29,13 +29,13 @@ public class MainMenuController : MonoBehaviour {
 	}
 	
 	void D () {
-		Debug.Log(EventSystem.current.alreadySelecting);
+		// Debug.Log(EventSystem.current.alreadySelecting);
 		
 		if (onDisableButtonGO != null)
 		{
 			EventSystem.current.SetSelectedGameObject(onDisableButtonGO);
 			// Debug.Log("Setting to: " + EventSystem.current.currentSelectedGameObject);
-			Debug.Log("Setting to: " + onDisableButtonGO);
+			// Debug.Log("Setting to: " + onDisableButtonGO);
 		}
 	}
 	
@@ -48,9 +48,13 @@ public class MainMenuController : MonoBehaviour {
 		// selectedButtonGO = null;
 		// selectedButtonGO = EventSystem.current.currentSelectedGameObject;
 		
-		onDisableButtonGO = EventSystem.current.currentSelectedGameObject;
+		if (EventSystem.current.currentSelectedGameObject != null)
+		{
+			onDisableButtonGO = EventSystem.current.currentSelectedGameObject;
+		}
+		
 		// Debug.Log(EventSystem.current.currentSelectedGameObject);
-		Debug.Log(onDisableButtonGO);
+		// Debug.Log(onDisableButtonGO);
 		
 		EventSystem.current.SetSelectedGameObject(null);
 	}
