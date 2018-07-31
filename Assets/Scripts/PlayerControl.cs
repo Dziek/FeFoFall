@@ -32,11 +32,19 @@ public class PlayerControl : MonoBehaviour {
 	
 	private Renderer pR; // player renderer
 	private SpriteRenderer sR; // player renderer
+	private GameObject graphicsGO; // local childed graphics GameObject
 	
 	private LevelInfoDisplay lvlInfoDisplay; // the level info display, to be removed on first movement
 	private bool canGoAway = true; // a check to make sure movement doesn't register multiple game attempts
 	
 	// private bool canMove = false; // GameStates.Playing check does this too
+	
+	public enum TriggerActions{
+		None,
+		ReverseControls,
+		TurnInvisible,
+		TurnShadow
+	}public TriggerActions triggerAction = TriggerActions.None;
 	
 	public enum directions{
 		Up,
@@ -67,10 +75,10 @@ public class PlayerControl : MonoBehaviour {
 		
 		if (playerGraphicsGO)
 		{
-			GameObject go = Instantiate(playerGraphicsGO, transform.position, transform.rotation) as GameObject;
-			go.transform.SetParent(transform);
+			graphicsGO = Instantiate(playerGraphicsGO, transform.position, transform.rotation) as GameObject;
+			graphicsGO.transform.SetParent(transform);
 			
-			go.transform.localScale = Vector2.one;
+			graphicsGO.transform.localScale = Vector2.one;
 		}
 		
 		// Debug.Log("Here");
@@ -88,6 +96,9 @@ public class PlayerControl : MonoBehaviour {
 		sR.color = normalColour;
 		
 		startingPos = transform.position;
+		
+		// GameObject.Find("TransitionControllers").GetComponent<TransitionScreen>().SetPlayer(this);
+		Messenger<PlayerControl>.Broadcast("SetPlayer", this);
 	}
 	
 	// Update is called once per frame
@@ -105,25 +116,46 @@ public class PlayerControl : MonoBehaviour {
 		// if (Input.GetKeyDown("w")||Input.GetKeyDown("up"))
 		if (Input.GetAxisRaw("Vertical") > 0.5f && verticalInputReset == true) 
 		{
-			RegisterInput("Up");
+			if (reverseControls == false)
+			{
+				RegisterInput("Up");
+			}else{
+				RegisterInput("Down");
+			}
+			
 			verticalInputReset = false;
 		}
 		// if (Input.GetKeyDown("s")||Input.GetKeyDown("down")) 
 		if (Input.GetAxisRaw("Vertical") < -0.5f && verticalInputReset == true) 
 		{
-			RegisterInput("Down");
+			if (reverseControls == false)
+			{
+				RegisterInput("Down");
+			}else{
+				RegisterInput("Up");
+			}
 			verticalInputReset = false;
 		}
 		// if (Input.GetKeyDown("d")||Input.GetKeyDown("right")) 
 		if (Input.GetAxisRaw("Horizontal") > 0.5f && horizontalInputReset == true) 
 		{	
-			RegisterInput("Right");
+			if (reverseControls == false)
+			{
+				RegisterInput("Right");
+			}else{
+				RegisterInput("Left");
+			}
 			horizontalInputReset = false;
 		}
 		// if (Input.GetKeyDown("a")||Input.GetKeyDown("left")) 
 		if (Input.GetAxisRaw("Horizontal") < -0.5f && horizontalInputReset == true && noLeft == false) 
 		{
-			RegisterInput("Left");
+			if (reverseControls == false)
+			{
+				RegisterInput("Left");
+			}else{
+				RegisterInput("Right");
+			}
 			horizontalInputReset = false;
 		}
 		
@@ -235,16 +267,19 @@ public class PlayerControl : MonoBehaviour {
 			direction = selectedDirection;
 		}
 		
+		// Debug.Log(gameObject.name);
+		
 		if (lvlInfoDisplay != null && canGoAway)
 		{
 			lvlInfoDisplay.GoAway();
 			canGoAway = false;
 			
 			Messenger.Broadcast("FirstMovement");
-			Messenger.Broadcast("LevelStarted");
+			// Messenger.Broadcast("LevelStarted");
 			
 			if (Application.loadedLevelName != "LevelTesting")
 			{
+				Messenger.Broadcast("LevelStarted");
 				// LoadLevel.StartTimer();
 			}
 		}
@@ -258,8 +293,8 @@ public class PlayerControl : MonoBehaviour {
 	
 	void Move () {
 		
-		if (reverseControls == false)
-		{
+		// if (reverseControls == false)
+		// {
 			switch (direction)
 			{
 				case directions.Up:
@@ -275,23 +310,23 @@ public class PlayerControl : MonoBehaviour {
 					transform.Translate(Vector3.right * (-Time.deltaTime * speedL), Space.World);
 				break;
 			}
-		}else{
-			switch (direction)
-			{
-				case directions.Up:
-					transform.Translate(Vector3.up * (Time.deltaTime * -speedL), Space.World);
-				break;
-				case directions.Down:
-					transform.Translate(Vector3.up * (Time.deltaTime * speedL), Space.World);
-				break;
-				case directions.Right:
-					transform.Translate(Vector3.right * (Time.deltaTime * -speedL), Space.World);
-				break;
-				case directions.Left:
-					transform.Translate(Vector3.right * (Time.deltaTime * speedL), Space.World);
-				break;
-			}
-		}
+		// }else{
+			// switch (direction)
+			// {
+				// case directions.Up:
+					// transform.Translate(Vector3.up * (Time.deltaTime * -speedL), Space.World);
+				// break;
+				// case directions.Down:
+					// transform.Translate(Vector3.up * (Time.deltaTime * speedL), Space.World);
+				// break;
+				// case directions.Right:
+					// transform.Translate(Vector3.right * (Time.deltaTime * -speedL), Space.World);
+				// break;
+				// case directions.Left:
+					// transform.Translate(Vector3.right * (Time.deltaTime * speedL), Space.World);
+				// break;
+			// }
+		// }
 	}
 
 	public void Reset () {
@@ -300,6 +335,7 @@ public class PlayerControl : MonoBehaviour {
 	}
 	
 	public void UpdateLevelInfoDisplayObject (LevelInfoDisplay lID) {
+		// Debug.Log(gameObject.name);
 		lvlInfoDisplay = lID;
 	}
 	
@@ -347,7 +383,11 @@ public class PlayerControl : MonoBehaviour {
 			    // Debug.Log("Distance " + distance + " Converted Distance " + convertedDistance);
 			    Messenger<bool>.Broadcast("CloseCall", convertedDistance < 0.4f);
 				
+				// TRYING NEW THINGS
 				gameObject.SetActive(false);
+				
+				// graphicsGO.SetActive(false);
+				// gameObject.GetComponent<Collider2D>().enabled = false;
 		    }
 		   
 		    if(other.gameObject.tag == "End")
@@ -367,7 +407,11 @@ public class PlayerControl : MonoBehaviour {
 				
 				GameObject.Find("LevelCompletePS").GetComponent<LevelCompletePS>().Fire(v);
 				
-				gameObject.SetActive(false);
+				// TRYING NEW THINGS
+				// gameObject.SetActive(false);
+				
+				// graphicsGO.SetActive(false);
+				// gameObject.GetComponent<Collider2D>().enabled = false;
 		    }
 		}
 	}
@@ -387,6 +431,42 @@ public class PlayerControl : MonoBehaviour {
 			// LoadLevel.StopTimer();
 		// }
 	// }
+	
+	public void TriggerActivated (float time) {
+		switch (triggerAction)
+		{
+			case TriggerActions.ReverseControls:
+				if (time != 0)
+				{
+					StartCoroutine("ReverseControlCountdown", time);
+				}else{
+					reverseControls = !reverseControls;
+				}
+			break;
+			
+			case TriggerActions.TurnInvisible:
+				if (time != 0)
+				{
+					// StartCoroutine("ReverseControlCountdown", time);
+					Debug.Log("Not coded this in!");
+				}else{
+					sR.enabled = !sR.enabled;
+					graphicsGO.active = !graphicsGO.active;
+				}
+			break;
+			
+			case TriggerActions.TurnShadow:
+				if (time != 0)
+				{
+					// StartCoroutine("ReverseControlCountdown", time);
+					Debug.Log("Not coded this in!");
+				}else{
+					// graphicsGO.active = !graphicsGO.active;
+					sR.enabled = !sR.enabled;
+				}
+			break;
+		}
+	}
 	
 	public void ReverseControls (float time) {
 		reverseControls = !reverseControls;

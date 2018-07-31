@@ -33,7 +33,12 @@ public class CameraShake : MonoBehaviour {
 	}
 	
 	void StartConstantShake (float intensity) {
-		constantCoroutine = StartCoroutine(ShakeCameraConstantly(intensity));
+		if (constantCoroutine == null)
+		{
+			// Debug.Log("It Is Null");
+			constantCoroutine = StartCoroutine(ShakeCameraConstantly(intensity));
+		}
+		// constantCoroutine = StartCoroutine(ShakeCameraConstantly(intensity));
 	}
 	
 	void StopConstantShake () {

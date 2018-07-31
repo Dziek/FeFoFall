@@ -14,6 +14,7 @@ public class ObjectManipulation <T> : MonoBehaviour{
 	
 	public float executeTimeDefault = 1; // time to execute next step
 	public float pauseTimeDefault; // time to pause when reaching either point
+	public float delay = 0; // time to wait before executing
 	
 	[Header ("Options")]
 	
@@ -99,6 +100,11 @@ public class ObjectManipulation <T> : MonoBehaviour{
 		currentListPos = 1;
 		
 		SetUp();
+		
+		if (delay > 0)
+		{
+			yield return new WaitForSeconds(delay);
+		}
 		
 		if (convertTimeToSpeed == true)
 		{

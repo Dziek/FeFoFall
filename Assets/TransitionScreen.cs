@@ -31,6 +31,8 @@ public class TransitionScreen : MonoBehaviour {
 	
 	private Color nextColour;
 	
+	// public GameObject playerGO;
+	private PlayerControl playerControl;
 	private float playerSpeed;
 	private Vector3 playerScale;
 	
@@ -63,9 +65,16 @@ public class TransitionScreen : MonoBehaviour {
 		
 		if (controller.transitionReason != TransitionReason.levelLoad)
 		{
-			// startPoint = GameObject.Find("Player").transform.position;
-			startPoint = GameObject.Find("Player");
-			playerSpeed = startPoint.GetComponent<PlayerControl>().GetSpeed();
+			// // startPoint = GameObject.Find("Player").transform.position;
+			// startPoint = GameObject.Find("Player");
+			// // startPoint = playerGO;
+			// Debug.Log(startPoint);
+			// // Debug.Log(startPoint.GetComponent<PlayerControl>());
+			// playerSpeed = startPoint.GetComponent<PlayerControl>().GetSpeed();
+			// playerScale = startPoint.transform.localScale;
+			
+			startPoint = playerControl.gameObject;
+			playerSpeed = playerControl.GetSpeed();
 			playerScale = startPoint.transform.localScale;
 			
 			if (controller.transitionReason == TransitionReason.levelSuccess)
@@ -267,7 +276,9 @@ public class TransitionScreen : MonoBehaviour {
 		{
 			completeScreenGO.SetActive(false);
 			levelInfoScreenGO.SetActive(true);
-			endPoint = GameObject.Find("Player");
+			
+			// endPoint = GameObject.Find("Player");
+			endPoint = playerControl.gameObject;
 		}else{
 			endPoint = GameObject.Find("Play");	
 		}		
@@ -312,6 +323,25 @@ public class TransitionScreen : MonoBehaviour {
 			yield return null;
 		}
 		
+		// playerGO = GameObject.Find("Player");
+		// Debug.Log(playerGO);
+		
 		yield return null;
+	}
+	
+	// public void SetPlayer (PlayerControl pC) {
+		// playerControl = pC;
+	// }
+	
+	void OnEnable () {
+		Messenger<PlayerControl>.AddListener("SetPlayer", UpdatePlayerControl);
+	}
+	
+	void OnDisable () {
+		Messenger<PlayerControl>.RemoveListener("SetPlayer", UpdatePlayerControl);
+	}
+	
+	void UpdatePlayerControl (PlayerControl pC) {
+		playerControl = pC;
 	}
 }

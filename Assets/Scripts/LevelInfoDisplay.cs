@@ -19,9 +19,12 @@ public class LevelInfoDisplay : MonoBehaviour {
 	
 	void OnDisable () {
 		// Messenger<GameObject>.RemoveListener("NewLevel", UpdateDisplay);
+		// Debug.Log("Turning Off");
 	}
 	
 	void UpdateDisplay (GameObject levelGO) {
+		
+		// Debug.Log(levelGO);
 		
 		if (levelGO != null)
 		{

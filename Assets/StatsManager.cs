@@ -4,6 +4,8 @@ using UnityEngine;
 // using System.Runtime.Serialization.Formatters.Binary;
 // using System.IO;
 
+using Microsoft.Xbox.Services.Statistics.Manager;
+
 public class StatsManager : MonoBehaviour {
 	
 	// public static StatsManager instance;
@@ -20,12 +22,15 @@ public class StatsManager : MonoBehaviour {
 	
 	// THIS IS TEMPORARY UNTIL PROPER SAVING/LOADING MODE STATS IS IN
 	void Awake () {
-		Debug.Log("REMEMBER TO TAKE THIS OUT");
-		DataManager.modeStats.Add(Mode.Main, new ModeStats());
-		DataManager.modeStats.Add(Mode.Tricky, new ModeStats());
-		DataManager.modeStats.Add(Mode.GauntletA, new ModeStats());
-		DataManager.modeStats.Add(Mode.GauntletB, new ModeStats());
-		DataManager.modeStats.Add(Mode.Basement, new ModeStats());
+		if (Application.loadedLevelName != "LevelTesting" && Application.loadedLevelName != "GraphicsTesting")
+		{
+			Debug.Log("REMEMBER TO TAKE THIS OUT");
+			DataManager.modeStats.Add(Mode.Main, new ModeStats());
+			DataManager.modeStats.Add(Mode.Tricky, new ModeStats());
+			DataManager.modeStats.Add(Mode.GauntletA, new ModeStats());
+			DataManager.modeStats.Add(Mode.GauntletB, new ModeStats());
+			DataManager.modeStats.Add(Mode.Basement, new ModeStats());
+		}
 	}
 	
 	// void Awake () {
@@ -62,12 +67,15 @@ public class StatsManager : MonoBehaviour {
 	}
 	
 	void LevelStarted () {
-		DataManager.levelStats[currentLevelID].currentAttempts++;
-		DataManager.levelStats[currentLevelID].totalAttempts++;
-		
-		streakBreak = false;
-		
-		StartTimer();
+		if (Application.loadedLevelName != "LevelTesting" && Application.loadedLevelName != "GraphicsTesting")
+		{
+			DataManager.levelStats[currentLevelID].currentAttempts++;
+			DataManager.levelStats[currentLevelID].totalAttempts++;
+			
+			streakBreak = false;
+			
+			StartTimer();
+		}
 	}
 	
 	void LevelOver () {
@@ -130,6 +138,15 @@ public class StatsManager : MonoBehaviour {
 		if (totalAttempts < DataManager.modeStats[mode].bestAttempts || DataManager.modeStats[mode].bestAttempts == 0)
 		{
 			DataManager.modeStats[mode].bestAttempts = totalAttempts;
+			
+			// #if WINDOWS_UWP
+			
+				// StatisticManager.SetStatisticIntegerData(1, "bestAttempts", totalAttempts);
+				// XboxLive.Instance.StatsManager.SetStatisticIntegerData(1, "bestAttempts", totalAttempts);
+				
+				// when I do this quote teat my cautious optimism
+			
+			// #endif
 		}
 		
 		// do best time

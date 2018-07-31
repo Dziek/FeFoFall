@@ -15,6 +15,7 @@ public class LevelManager : MonoBehaviour {
 	private List<TopLevelGroup> modeGroups = new List<TopLevelGroup>();
 	
 	private GameObject lastLevelGO;
+	private GameObject lastLastLevelGO;
 	private GameObject currentLevelGO;
 	
 	void Start () {
@@ -89,15 +90,29 @@ public class LevelManager : MonoBehaviour {
 		// }
 		
 		int range = CalculateCurrentRange();
-		// Debug.Log(range);
+		Debug.Log("Range = " + range);
 		
 		// 20% chance of choosing the first level in the queue
 		GameObject levelGO = Random.Range(0,5) == 0 ? modeGroups[(int)modeManager.GetMode()].currentLevels[0] : modeGroups[(int)modeManager.GetMode()].currentLevels[Random.Range(0, range)];
 		
 		int g = 0;
+		while ((levelGO == lastLevelGO || levelGO == lastLastLevelGO) && range > 2)
+		{
+			// Debug.Log("Looping");
+			levelGO = modeGroups[(int)modeManager.GetMode()].currentLevels[Random.Range(0, range)];
+			
+			g++;
+			
+			if (g > 4)
+			{
+				break;
+			}
+		}
+		
+		g = 0;
 		while (levelGO == lastLevelGO && range > 1)
 		{
-			Debug.Log("Looping");
+			// Debug.Log("Looping");
 			levelGO = modeGroups[(int)modeManager.GetMode()].currentLevels[Random.Range(0, range)];
 			
 			g++;
@@ -108,6 +123,7 @@ public class LevelManager : MonoBehaviour {
 			}
 		}
 		
+		lastLastLevelGO = lastLevelGO;
 		lastLevelGO = levelGO;
 		currentLevelGO = Instantiate(levelGO);
 		
@@ -143,10 +159,15 @@ public class LevelManager : MonoBehaviour {
 		}else{
 			for (int i = 0; i < modeGroups[(int)modeManager.GetMode()].levelRange.rangeTiers.Length; i++)
 			{
+				// set it to value
+				range = modeGroups[(int)modeManager.GetMode()].levelRange.rangeTiers[i].range;
+				
 				if (statsManager.GetLevelsCompleted(modeManager.GetMode()) <= modeGroups[(int)modeManager.GetMode()].levelRange.rangeTiers[i].progress)
 				{
-					range = modeGroups[(int)modeManager.GetMode()].levelRange.rangeTiers[i].range;
+					// range = modeGroups[(int)modeManager.GetMode()].levelRange.rangeTiers[i].range;
 					// Debug.Log("Setting to tier: " + i);
+					
+					// break out if necessary
 					break;
 				}
 			}

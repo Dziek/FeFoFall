@@ -34,6 +34,18 @@ public class Rotation : MonoBehaviour {
 	// private bool triggerActive;
 	// private bool canChange = true;
 	
+	void OnEnable () {
+		Messenger<PlayerControl>.AddListener("SetPlayer", UpdatePlayerControl);
+	}
+	
+	void OnDisable () {
+		Messenger<PlayerControl>.RemoveListener("SetPlayer", UpdatePlayerControl);
+	}
+	
+	void UpdatePlayerControl (PlayerControl pC) {
+		playerScript = pC;
+	}
+	
 	// Use this for initialization
 	void Start () {
 		startAngle = transform.eulerAngles.z;

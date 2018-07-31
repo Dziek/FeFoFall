@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Movement : MonoBehaviour {
 	
+	// private PlayerControl playerControl;
+	
 	// private float startZ;
 	private	Vector3 startPoint;
 	public Vector3 endPoint;
@@ -26,6 +28,18 @@ public class Movement : MonoBehaviour {
 	
 	// private GameObject player;
 	private PlayerControl playerScript;
+	
+	void OnEnable () {
+		Messenger<PlayerControl>.AddListener("SetPlayer", UpdatePlayerControl);
+	}
+	
+	void OnDisable () {
+		Messenger<PlayerControl>.RemoveListener("SetPlayer", UpdatePlayerControl);
+	}
+	
+	void UpdatePlayerControl (PlayerControl pC) {
+		playerScript = pC;
+	}
 	
 	// Use this for initialization
 	void Start () {
@@ -155,7 +169,8 @@ public class Movement : MonoBehaviour {
 		{
 			if (GameStates.GetState() == "Playing")
 			{
-				playerScript = GameObject.Find("Player").GetComponent<PlayerControl>();
+				// playerScript = GameObject.Find("Player").GetComponent<PlayerControl>();
+				// playerScript = playerControl;
 				// Debug.Log(playerScript);
 				
 				// if (playerScript != null)

@@ -50,7 +50,7 @@ public class TransitionController : MonoBehaviour {
 			StartCoroutine("Transition");
 		}
 		
-		Debug.Log("Starting T");
+		// Debug.Log("Starting T");
 	}
 	
 	IEnumerator Transition () {

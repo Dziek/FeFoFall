@@ -7,6 +7,7 @@ public class Trigger : MonoBehaviour {
 	
 	public float timeActive;
 	public GameObject receiver;
+	// public bool reverseControls;
 	public bool oneShot;
 	public bool oneShotDestroy;
 	
@@ -27,7 +28,11 @@ public class Trigger : MonoBehaviour {
 	
 	// Use this for initialization
 	void Awake () {
-		receiver.SendMessage("WaitForTrigger");
+		if (receiver.tag != "Player")
+		{
+			receiver.SendMessage("WaitForTrigger");
+		}
+		
 		activated = GetComponent<Renderer>().material;
 		
 		if (GetComponent<Renderer>().enabled == false)
