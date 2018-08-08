@@ -80,6 +80,10 @@ public class TransitionScreen : MonoBehaviour {
 			if (controller.transitionReason == TransitionReason.levelSuccess)
 			{
 				expandPanelImage.color = endColour;
+				
+				// expandPanelGO.transform.localScale = new Vector2(2, 2);
+				// expandPanelImage.color = playerColour;
+				// yield break;
 			}else{
 				// int r = Random.Range(0, 3);
 				// // int r = 0;

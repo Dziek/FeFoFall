@@ -7,6 +7,7 @@ public class AudioController : MonoBehaviour {
 	public AudioClip successNoise;
 	public AudioClip failureNoise;
 	public AudioClip triggerNoise;
+	public AudioClip boostNoise;
 	
 	private AudioSource audioSource;
 	private AudioSource audioSourceBackUp;
@@ -34,6 +35,12 @@ public class AudioController : MonoBehaviour {
 		PlayClip(triggerNoise);
 	}
 	
+	void PlayBoost () {
+		// audioSource.clip = triggerNoise;
+		// audioSource.Play();
+		PlayClip(boostNoise);
+	}
+	
 	void PlayClip (AudioClip clip) {
 		
 		if (audioSource.isPlaying == false)
@@ -50,11 +57,13 @@ public class AudioController : MonoBehaviour {
 		Messenger.AddListener("Success", PlaySuccess);
 		Messenger.AddListener("Failure", PlayFailure);
 		Messenger.AddListener("Trigger", PlayTrigger);
+		Messenger.AddListener("Boost", PlayBoost);
 	}
 	
 	void OnDisable () {
 		Messenger.RemoveListener("Success", PlaySuccess);
 		Messenger.RemoveListener("Failure", PlayFailure);
 		Messenger.RemoveListener("Trigger", PlayTrigger);
+		Messenger.RemoveListener("Boost", PlayBoost);
 	}
 }

@@ -46,7 +46,9 @@ public class OptionsMenuController : MonoBehaviour {
 	}
 	
 	public void ResetGame () {
-		LoadLevel.Reset();
+		// LoadLevel.Reset();
+		// GameObject.Find("StatsManager").GetComponent<StatsManager>().ClearModeStats(Mode.Main);
+		GameObject.Find("Levels").GetComponent<LevelManager>().ResetModeLevels();
 		LoadOptionsMenu();
 	}
 }

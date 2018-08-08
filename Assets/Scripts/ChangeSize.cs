@@ -27,6 +27,18 @@ public class ChangeSize : MonoBehaviour {
 	// private GameObject player;
 	private PlayerControl playerScript;
 	
+	void OnEnable () {
+		Messenger<PlayerControl>.AddListener("SetPlayer", UpdatePlayerControl);
+	}
+	
+	void OnDisable () {
+		Messenger<PlayerControl>.RemoveListener("SetPlayer", UpdatePlayerControl);
+	}
+	
+	void UpdatePlayerControl (PlayerControl pC) {
+		playerScript = pC;
+	}
+	
 	void Awake () {
 		endSize = new Vector3(endSize.x, endSize.y, 1);
 	}
@@ -159,7 +171,7 @@ public class ChangeSize : MonoBehaviour {
 		{
 			if (GameStates.GetState() == "Playing")
 			{
-				playerScript = GameObject.Find("Player").GetComponent<PlayerControl>();
+				// playerScript = GameObject.Find("Player").GetComponent<PlayerControl>();
 				StartCoroutine("CheckForPlayerMovement");
 				yield break;
 			}

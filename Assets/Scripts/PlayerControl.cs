@@ -5,6 +5,9 @@ public class PlayerControl : MonoBehaviour {
 
 	public GameObject playerGraphicsGO;
 	public bool noLeft = false;
+	public bool noUp = false;
+	public bool noDown = false;
+	public bool noRight = false;
 	public bool reverseControls = false; // should reverse controls?
 
 	public float standardSpeed; // standard speed
@@ -33,6 +36,8 @@ public class PlayerControl : MonoBehaviour {
 	private Renderer pR; // player renderer
 	private SpriteRenderer sR; // player renderer
 	private GameObject graphicsGO; // local childed graphics GameObject
+	[HideInInspector]
+	public GameObject shadowGO; // local childed graphics GameObject
 	
 	private LevelInfoDisplay lvlInfoDisplay; // the level info display, to be removed on first movement
 	private bool canGoAway = true; // a check to make sure movement doesn't register multiple game attempts
@@ -114,7 +119,7 @@ public class PlayerControl : MonoBehaviour {
 	
 	void CheckControls () {
 		// if (Input.GetKeyDown("w")||Input.GetKeyDown("up"))
-		if (Input.GetAxisRaw("Vertical") > 0.5f && verticalInputReset == true) 
+		if (Input.GetAxisRaw("Vertical") > 0.5f && verticalInputReset == true && noUp == false) 
 		{
 			if (reverseControls == false)
 			{
@@ -126,7 +131,7 @@ public class PlayerControl : MonoBehaviour {
 			verticalInputReset = false;
 		}
 		// if (Input.GetKeyDown("s")||Input.GetKeyDown("down")) 
-		if (Input.GetAxisRaw("Vertical") < -0.5f && verticalInputReset == true) 
+		if (Input.GetAxisRaw("Vertical") < -0.5f && verticalInputReset == true && noDown == false) 
 		{
 			if (reverseControls == false)
 			{
@@ -137,7 +142,7 @@ public class PlayerControl : MonoBehaviour {
 			verticalInputReset = false;
 		}
 		// if (Input.GetKeyDown("d")||Input.GetKeyDown("right")) 
-		if (Input.GetAxisRaw("Horizontal") > 0.5f && horizontalInputReset == true) 
+		if (Input.GetAxisRaw("Horizontal") > 0.5f && horizontalInputReset == true && noRight == false) 
 		{	
 			if (reverseControls == false)
 			{
@@ -182,6 +187,9 @@ public class PlayerControl : MonoBehaviour {
 	}
 	
 	IEnumerator Boost () {
+		
+		Messenger.Broadcast("Boost");
+		
 		speedL = boostSpeed;
 		// StartCoroutine("ChangeColour", boostMat);
 		StartCoroutine("ChangeColour", boostColour);
@@ -452,6 +460,7 @@ public class PlayerControl : MonoBehaviour {
 				}else{
 					sR.enabled = !sR.enabled;
 					graphicsGO.active = !graphicsGO.active;
+					shadowGO.active = !shadowGO.active;
 				}
 			break;
 			
@@ -463,6 +472,7 @@ public class PlayerControl : MonoBehaviour {
 				}else{
 					// graphicsGO.active = !graphicsGO.active;
 					sR.enabled = !sR.enabled;
+					graphicsGO.active = !graphicsGO.active;
 				}
 			break;
 		}

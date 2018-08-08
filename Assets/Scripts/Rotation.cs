@@ -298,7 +298,11 @@ public class Rotation : MonoBehaviour {
 		{
 			if (GameStates.GetState() == "Playing")
 			{
-				playerScript = GameObject.Find("Player").GetComponent<PlayerControl>();
+				if (Application.loadedLevelName == "LevelTesting" || Application.loadedLevelName == "GraphicsTesting")
+				{
+					playerScript = GameObject.Find("Player").GetComponent<PlayerControl>();
+				}
+				
 				StartCoroutine("CheckForPlayerMovement");
 				yield break;
 			}

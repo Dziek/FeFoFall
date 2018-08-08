@@ -42,6 +42,8 @@ public class DynamicShadowsFast : MonoBehaviour {
 	
 	private Vector2 screenBounds = new Vector2(8.86f, 4.969642f);
 	
+	private Transform parentTransform;
+	
 	void Awake () {
 		
 		// hitPoints = new Vector2[amount];
@@ -60,6 +62,8 @@ public class DynamicShadowsFast : MonoBehaviour {
 		// Debug.Log(System.Enviroment.Version);
 		
 		// GetComponent<Renderer>().sortingLayerName = "Background";
+		
+		
 	}
 	
     void Start() {
@@ -124,6 +128,12 @@ public class DynamicShadowsFast : MonoBehaviour {
 		// SortHitPointsQuick();
 		// MakeTriangles();
 		// Draw();
+		
+		// Debug.Log(transform.root);
+		transform.parent.parent.gameObject.GetComponent<PlayerControl>().shadowGO = gameObject;
+		parentTransform = transform.parent;
+		transform.SetParent(transform.root);
+		transform.rotation = Quaternion.identity;
     }
 	
 	// Update is called once per frame
@@ -132,11 +142,15 @@ public class DynamicShadowsFast : MonoBehaviour {
 		
 		if (level != null)
 		{
+			transform.position = parentTransform.transform.position;
+			
 			GetCorners();
 			Cast();
 			SortHitPointsQuick();
 			MakeTriangles();
 			Draw();
+			
+			// transform.position = parentTransform.transform.position;
 		}
 	}
 	

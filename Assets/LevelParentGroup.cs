@@ -49,4 +49,36 @@ public class LevelParentGroup : MonoBehaviour {
 		thisGroup.levelRange = levelRange;
 		// thisGroup.allLevels = allLevels;
 	}
+	
+	// void SortCurrentLevels () {
+		// statsManager = GetComponentInParent<LevelManager>().statsManager;
+		
+		// foreach (GameObject level in thisGroup.allLevels)
+		// {
+			// if (statsManager.LevelLookUp(level.name).isCompleted == false)
+			// {
+				// thisGroup.currentLevels.Add(level);
+			// }
+		// }
+		
+		// thisGroup.activeRange = activeRange;
+		// thisGroup.levelRange = levelRange;
+		// // thisGroup.allLevels = allLevels;
+	// }
+	
+	// public TopLevelGroup GetGroup () {
+		// statsManager = GetComponentInParent<LevelManager>().statsManager;
+		
+		// foreach (GameObject level in thisGroup.allLevels)
+		// {
+			// if (statsManager.LevelLookUp(level.name).isCompleted == false)
+			// {
+				// thisGroup.currentLevels.Add(level);
+			// }
+		// }
+		
+		// thisGroup.activeRange = activeRange;
+		// thisGroup.levelRange = levelRange;
+		// // thisGroup.allLevels = allLevels;
+	// }
 }

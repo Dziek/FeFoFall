@@ -142,11 +142,15 @@ public class Movement : MonoBehaviour {
 	}
 	
 	public void TriggerActivated (float time) {
-		// timer = 0;
-		StartCoroutine("Move");
-		if (time != 0)
+		if (waitForTrigger == true)
 		{
-			StartCoroutine("Timer", time);
+			StartCoroutine("Move");
+			if (time != 0)
+			{
+				StartCoroutine("Timer", time);
+			}
+		}else{
+			StopCoroutine("Move");
 		}
 	}
 	
@@ -169,7 +173,11 @@ public class Movement : MonoBehaviour {
 		{
 			if (GameStates.GetState() == "Playing")
 			{
-				// playerScript = GameObject.Find("Player").GetComponent<PlayerControl>();
+				if (Application.loadedLevelName == "LevelTesting" || Application.loadedLevelName == "GraphicsTesting")
+				{
+					// Debug.Log("Looking!");
+					playerScript = GameObject.Find("Player").GetComponent<PlayerControl>();
+				}
 				// playerScript = playerControl;
 				// Debug.Log(playerScript);
 				

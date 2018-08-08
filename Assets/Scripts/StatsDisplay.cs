@@ -43,6 +43,7 @@ public class StatsDisplay : MonoBehaviour {
 		
 		secondsSpendCurrent.text = "Current Seconds: " + statsManager.GetCurrentSeconds(currentMode).ToString("f2");
 		
+		Debug.Log(currentMode);
 		if (statsManager.GetModeTimesStarted(currentMode) > 1)
 		{
 			timesStarted.text = "Times Started: " + statsManager.GetModeTimesStarted(currentMode);

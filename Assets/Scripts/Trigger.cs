@@ -7,6 +7,7 @@ public class Trigger : MonoBehaviour {
 	
 	public float timeActive;
 	public GameObject receiver;
+	public bool stopReceiver = false;
 	// public bool reverseControls;
 	public bool oneShot;
 	public bool oneShotDestroy;
@@ -30,7 +31,10 @@ public class Trigger : MonoBehaviour {
 	void Awake () {
 		if (receiver.tag != "Player")
 		{
-			receiver.SendMessage("WaitForTrigger");
+			if (stopReceiver == false)
+			{
+				receiver.SendMessage("WaitForTrigger");
+			}
 		}
 		
 		activated = GetComponent<Renderer>().material;

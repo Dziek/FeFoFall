@@ -35,6 +35,27 @@ public class DataManager : MonoBehaviour {
 		FileStream fs = new FileStream(Application.persistentDataPath + "/LevelStats.dat", FileMode.Create);
 		formatter.Serialize(fs, data);
 		fs.Close();
+		
+		SaveModeData();
+	}
+	
+	public static void SaveModeData () {
+		
+		// Debug.Log("Saving Mode Data");
+		
+		List<DictionaryDataForMode> data = new List<DictionaryDataForMode>();
+		
+		foreach(var entry in modeStats)
+        {
+            data.Add(new DictionaryDataForMode(entry.Key, entry.Value));
+        }  
+		
+		// save both those Lists
+		
+		BinaryFormatter formatter = new BinaryFormatter();
+		FileStream fs = new FileStream(Application.persistentDataPath + "/ModeStats.dat", FileMode.Create);
+		formatter.Serialize(fs, data);
+		fs.Close();
 	}
 	
 	public static void LoadData () {
@@ -54,18 +75,55 @@ public class DataManager : MonoBehaviour {
 			
 			// Debug.Log("DONE");
 		}
+		
+		if(File.Exists(Application.persistentDataPath + "/ModeStats.dat")) 
+		{
+			BinaryFormatter bf = new BinaryFormatter();
+			FileStream file = File.Open(Application.persistentDataPath + "/ModeStats.dat", FileMode.Open);
+			List<DictionaryDataForMode> data = (List<DictionaryDataForMode>)bf.Deserialize(file);
+			file.Close();
+			
+			foreach(var d in data)
+			{
+				modeStats.Add(d.key, d.value);
+				// Debug.Log(d.key);
+				// Debug.Log(Resources.Load("Levels/C0/" + d.key));
+			}
+			
+			// Debug.Log("DONE");
+		}
 	}
 	
-	public static void ClearModeStats (Mode mode) {
-		// go through every level, making them not completed and setting current attempts / whatever to 0
+	// public static void LoadModeData () {
+		// if(File.Exists(Application.persistentDataPath + "/ModeStats.dat")) 
+		// {
+			// BinaryFormatter bf = new BinaryFormatter();
+			// FileStream file = File.Open(Application.persistentDataPath + "/ModeStats.dat", FileMode.Open);
+			// List<DictionaryData> data = (List<DictionaryData>)bf.Deserialize(file);
+			// file.Close();
+			
+			// foreach(var d in data)
+			// {
+				// modeStats.Add(d.key, d.value);
+				// // Debug.Log(d.key);
+				// // Debug.Log(Resources.Load("Levels/C0/" + d.key));
+			// }
+			
+			// // Debug.Log("DONE");
+		// }
+	// }
+	
+	// public static void ClearModeStats (Mode mode) {
+		// // go through every level, making them not completed and setting current attempts / whatever to 0
 		
-		// for (int i = 0; i < levelStats[]
+		// // for (int i = 0; i < levelStats[]
 		
-		SaveData();
-	}
+		// SaveData();
+	// }
 	
 	public static void ClearData () {
 		File.Delete(Application.persistentDataPath + "/LevelStats.dat");
+		File.Delete(Application.persistentDataPath + "/ModeStats.dat");
 	}
 	
 	[System.Serializable]
@@ -74,6 +132,18 @@ public class DataManager : MonoBehaviour {
 		public LevelStats value; 
 		
 		public DictionaryData (string k, LevelStats v)
+		{
+			key = k;
+			value = v;
+		}
+	}  
+	
+	[System.Serializable]
+	class DictionaryDataForMode {
+		public Mode key;
+		public ModeStats value; 
+		
+		public DictionaryDataForMode (Mode k, ModeStats v)
 		{
 			key = k;
 			value = v;

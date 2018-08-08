@@ -99,6 +99,9 @@ public class TransitionText : MonoBehaviour {
 				// Start of normal text options
 				List<string> options = new List<string>(successTextOptions);
 				
+				//basic ones - TODO: Move others here
+				// options.Add("...");
+				
 				int currentLevelAttempts = statsManager.GetCurrentLevelCurrentAttempts();
 				
 				if (currentLevelAttempts == 1)
@@ -365,7 +368,13 @@ public class TransitionText : MonoBehaviour {
 				
 				options.Add("Your " + GetNumberSuffix(statsManager.GetLevelsCompleted(modeManager.GetMode())) + " Success");
 				
-				options.Add("Press B To Return To Menu");
+				#if UNITY_WSA 
+					options.Add("Press B To Return To Menu");
+				#endif
+				
+				#if UNITY_STANDALONE
+					options.Add("Press Escape To Return To Menu");
+				#endif
 				
 				return options[Random.Range(0, options.Count)];
 			break;
@@ -396,9 +405,13 @@ public class TransitionText : MonoBehaviour {
 					
 					// if (doThis && uniqueLevelOptions.Count > 0) return uniqueLevelOptions[Random.Range(0, uniqueLevelOptions.Count)];
 					if (doThis) return uniqueLevelOptions[Random.Range(0, uniqueLevelOptions.Count)];
+					// return uniqueLevelOptions[Random.Range(0, uniqueLevelOptions.Count)];
 				}
 			
 				List<string> optionsF = new List<string>(failureTextOptions);
+				
+				// basics
+				optionsF.Add("...");
 				
 				if (statsManager.GetCurrentLevelCurrentAttempts() > 1)
 				{
@@ -472,10 +485,13 @@ public class TransitionText : MonoBehaviour {
 					optionsF.Add("Miss The Easy Levels?");
 					optionsF.Add("It Doesn't Get Better");
 					optionsF.Add("Shameful");
-					optionsF.Add("Coward");
-					
+					optionsF.Add("What Happened There?");
+					optionsF.Add("I Wouldn't Have Done That");
 					optionsF.Add("One More Try");
 					optionsF.Add("C'mon");
+					optionsF.Add("Ouch");
+					optionsF.Add("Rookie Mistake");
+					optionsF.Add("Biffed It");
 				}
 				
 				if (controller.closeCall == true)
@@ -552,7 +568,10 @@ public class TransitionText : MonoBehaviour {
 					optionsF.Add("It's Been Over An Hour");
 				}
 				
-				optionsF.Add("That's " + statsManager.GetCurrentLevelCurrentSeconds().ToString("f2") + " Seconds On This Level Alone");
+				if (statsManager.GetCurrentLevelCurrentSeconds() > 5)
+				{
+					optionsF.Add("That's " + statsManager.GetCurrentLevelCurrentSeconds().ToString("f2") + " Seconds On This Level Alone");
+				}
 				
 				// optionsF.Add("Double Press Direction To Boost");
 				// optionsF.Add("Remember To Boost?");

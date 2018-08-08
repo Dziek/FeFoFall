@@ -4,7 +4,7 @@ using UnityEngine;
 // using System.Runtime.Serialization.Formatters.Binary;
 // using System.IO;
 
-using Microsoft.Xbox.Services.Statistics.Manager;
+// using Microsoft.Xbox.Services.Statistics.Manager;
 
 public class StatsManager : MonoBehaviour {
 	
@@ -22,15 +22,43 @@ public class StatsManager : MonoBehaviour {
 	
 	// THIS IS TEMPORARY UNTIL PROPER SAVING/LOADING MODE STATS IS IN
 	void Awake () {
+		
+		
+		// DataManager.LoadData();
+		// DataManager.ClearData();
+		
 		if (Application.loadedLevelName != "LevelTesting" && Application.loadedLevelName != "GraphicsTesting")
 		{
-			Debug.Log("REMEMBER TO TAKE THIS OUT");
-			DataManager.modeStats.Add(Mode.Main, new ModeStats());
-			DataManager.modeStats.Add(Mode.Tricky, new ModeStats());
-			DataManager.modeStats.Add(Mode.GauntletA, new ModeStats());
-			DataManager.modeStats.Add(Mode.GauntletB, new ModeStats());
-			DataManager.modeStats.Add(Mode.Basement, new ModeStats());
+			// Debug.Log("REMEMBER TO TAKE THIS OUT");
+			// DataManager.modeStats.Add(Mode.Main, new ModeStats());
+			// DataManager.modeStats.Add(Mode.Tricky, new ModeStats());
+			// DataManager.modeStats.Add(Mode.GauntletA, new ModeStats());
+			// DataManager.modeStats.Add(Mode.GauntletB, new ModeStats());
+			// DataManager.modeStats.Add(Mode.Basement, new ModeStats());
+			
+			
+			DataManager.LoadData();
+			
+			//GOOD? Check if 
+			
+			CheckForMode(Mode.Main);
+			CheckForMode(Mode.Tricky);
+			CheckForMode(Mode.GauntletA);
+			CheckForMode(Mode.GauntletB);
+			CheckForMode(Mode.Basement);
 		}
+	}
+	
+	// Checks if mode is already in the saved data
+	void CheckForMode (Mode m) {
+		if (DataManager.modeStats.ContainsKey(m) == false)
+		{
+			DataManager.modeStats.Add(m, new ModeStats());
+			// Debug.Log("Added Mode");
+		}
+		// }else{
+			// Debug.Log("Found Mode Already");
+		// }
 	}
 	
 	// void Awake () {
@@ -59,7 +87,7 @@ public class StatsManager : MonoBehaviour {
 		Messenger.RemoveListener("Success", LevelCompleted);
 		Messenger.RemoveListener("Failure", LevelFailed);
 		
-		// DataManager.SaveData();
+		DataManager.SaveData();
 	}
 	
 	void UpdateCurrentLevel (GameObject levelGO) {
@@ -213,13 +241,21 @@ public class StatsManager : MonoBehaviour {
 			// }	
 		// }
 		
+		// Debug.Log(levelGOs.Count);
+		
 		levelIDsByMode.Add(mode, new List<string>());
+		
+		
 		
 		// for (int i = 0; i < levelGOs.Count; i++)
 		foreach (GameObject level in levelGOs)
 		{
 			// levelIDsByMode[mode].Add(levelGOs[i].name);
-			levelIDsByMode[mode].Add(level.name);
+			
+			string s = level.name;
+			levelIDsByMode[mode].Add(s);
+			
+			// levelIDsByMode[mode].Add(level.name);
 		}
 	}
 	
@@ -247,6 +283,7 @@ public class StatsManager : MonoBehaviour {
 		DataManager.modeStats[mode].timesStarted++;
 		
 		DataManager.SaveData();
+		// Application.LoadLevel(Application.loadedLevel);
 	}
 	
 	// STATS RETRIEVAL FOR TEXT 
@@ -289,6 +326,15 @@ public class StatsManager : MonoBehaviour {
 		}
 		
 		return currentAttempts;
+	}
+	
+	public float GetAverageAttemptsPerLevel (Mode mode) {
+		float currentAttempts = (float)GetCurrentAttempts(mode);
+		float noOfLevels = (float)GetNumberOfLevels(mode);
+		
+		float averageAttempts = currentAttempts / noOfLevels;
+		
+		return averageAttempts;
 	}
 	
 	public float GetCurrentSeconds (Mode mode) {
