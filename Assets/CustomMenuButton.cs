@@ -20,11 +20,15 @@ public class CustomMenuButton : MonoBehaviour, ISelectHandler, IDeselectHandler,
 		defaultText = buttonText.text;
 		// defaultColour = buttonText.color;
 		 
-		buttonText.color = deselectedColor;
+		// buttonText.color = deselectedColor;
 		
 		// mainMenuController = GameObject.Find("MainMenu").GetComponent<MainMenuController>();
 		GetComponent<Button>().onClick.AddListener(OnClick);
     }
+	
+	void Start () {
+		buttonText.color = deselectedColor;
+	}
 	 
 	void Select () {
 		// buttonText.text = " " + defaultText;

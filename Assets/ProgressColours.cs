@@ -20,12 +20,17 @@ public class ProgressColours : MonoBehaviour {
 		
 		float pointValue = LoadLevel.GetPercentageComplete();
 		// Debug.Log(pointValue);
+		//TEST
+		pointValue = 0.5f;
 		
 		Camera.main.backgroundColor = backgroundGradient.Evaluate(pointValue);
-		player.mat.color = player.grad.Evaluate(pointValue);
-		trigger.mat.color = trigger.grad.Evaluate(pointValue);
-		walls.mat.color = walls.grad.Evaluate(pointValue);
-		endPoint.mat.color = endPoint.grad.Evaluate(pointValue);
+		
+		// I believe this is causing the slowdown. Only happens when you complete a level, and also, doesn't do anything because everything uses sprites now
+		
+		// player.mat.color = player.grad.Evaluate(pointValue);
+		// trigger.mat.color = trigger.grad.Evaluate(pointValue);
+		// walls.mat.color = walls.grad.Evaluate(pointValue);
+		// endPoint.mat.color = endPoint.grad.Evaluate(pointValue);
 	}
 	
 	void OnEnable () {

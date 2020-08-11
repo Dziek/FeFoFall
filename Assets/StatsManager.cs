@@ -43,8 +43,9 @@ public class StatsManager : MonoBehaviour {
 			
 			CheckForMode(Mode.Main);
 			CheckForMode(Mode.Tricky);
-			CheckForMode(Mode.GauntletA);
-			CheckForMode(Mode.GauntletB);
+			CheckForMode(Mode.Time);
+			CheckForMode(Mode.Lives);
+			CheckForMode(Mode.OneShot);
 			CheckForMode(Mode.Basement);
 		}
 	}
@@ -326,6 +327,14 @@ public class StatsManager : MonoBehaviour {
 		}
 		
 		return currentAttempts;
+	}
+	
+	public int GetCurrentFailures (Mode mode) {
+		int currentFailures;
+		
+		currentFailures = GetCurrentAttempts(mode) - GetLevelsCompleted(mode);
+		
+		return currentFailures;
 	}
 	
 	public float GetAverageAttemptsPerLevel (Mode mode) {

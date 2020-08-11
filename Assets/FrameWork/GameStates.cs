@@ -25,7 +25,7 @@ public class GameStates : MonoBehaviour {
 		ChangeState("MainMenu");
 		
 		if (Application.loadedLevelName == "LevelTesting" || Application.loadedLevelName == "GraphicsTesting"
-			|| Application.loadedLevelName == "CongratsTesting")
+			|| Application.loadedLevelName == "CongratsTesting"|| Application.loadedLevelName == "Aesthetics")
 		{
 			ChangeState("Playing");
 		}

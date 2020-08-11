@@ -37,6 +37,14 @@ public class OptionsMenuController : MonoBehaviour {
 		}
 	}
 	
+	public void LoadBoostMenu () {
+		// optionsMenu.menuScreenGO.SetActive(false);
+		// resetMenu.menuScreenGO.SetActive(true);
+		
+		// selectedButtonGO = EventSystem.current.currentSelectedGameObject;
+		// EventSystem.current.SetSelectedGameObject(resetMenu.defaultSelectedGO);
+	}
+	
 	public void LoadResetMenu () {
 		optionsMenu.menuScreenGO.SetActive(false);
 		resetMenu.menuScreenGO.SetActive(true);

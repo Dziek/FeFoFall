@@ -12,6 +12,8 @@ public class TransitionScreen : MonoBehaviour {
 	public GameObject levelInfoScreenGO;
 	public GameObject completeScreenGO;
 	
+	public EndScreenController endScreenController;
+	
 	public GameObject transitionTextGO;
 	// public Text transitionText;
 	
@@ -171,8 +173,26 @@ public class TransitionScreen : MonoBehaviour {
 		startingXScale = startPoint.transform.localScale.x * 0.058f;
 		startingScale = startPoint.transform.localScale * 0.058f;
 		
+		//*******//
+		
+		Vector2 screenPos = startPoint.transform.position;
+		
+		if (GameObject.Find("LevelCamera") != null)
+		{
+			Camera cam = GameObject.Find("LevelCamera").GetComponent<Camera>();
+			
+			screenPos = cam.WorldToViewportPoint(startPoint.transform.position);
+			
+			screenPos = Camera.main.ViewportToWorldPoint(screenPos);
+			
+			// Debug.Break();
+		}
+		
+		//*******//
+		
 		expandPanelGO.transform.localScale = new Vector3 (startingXScale, startPoint.transform.localScale.y * 0.1f, 1);
-		expandPanelGO.transform.position = new Vector3 (startPoint.transform.position.x, startPoint.transform.position.y, expandPanelGO.transform.position.z);
+		// expandPanelGO.transform.position = new Vector3 (startPoint.transform.position.x, startPoint.transform.position.y, expandPanelGO.transform.position.z);
+		expandPanelGO.transform.position = new Vector3 (screenPos.x, screenPos.y, expandPanelGO.transform.position.z);
 		
 		float target = 2f;
 		
@@ -188,13 +208,18 @@ public class TransitionScreen : MonoBehaviour {
 		float t = 0;
 		float timeToGrow = 0.5f;
 		
-		// modify timeToGrow based on playerSpeed
+		if (controller.transitionReason != TransitionReason.levelSkip)
+		{
+			// modify timeToGrow based on playerSpeed
 		
-		MinMax playerSpeedValues = new MinMax(1, 16);
-		MinMax timeToGrowValues = new MinMax(0.1f, 0.7f);
-		
-		float l = Mathf.InverseLerp(playerSpeedValues.min, playerSpeedValues.max, playerSpeed);
-		timeToGrow = Mathf.Lerp(timeToGrowValues.min, timeToGrowValues.max, 1-l);
+			MinMax playerSpeedValues = new MinMax(1, 16);
+			MinMax timeToGrowValues = new MinMax(0.1f, 0.7f);
+			
+			float l = Mathf.InverseLerp(playerSpeedValues.min, playerSpeedValues.max, playerSpeed);
+			timeToGrow = Mathf.Lerp(timeToGrowValues.min, timeToGrowValues.max, 1-l);
+		}else{
+			timeToGrow = 0.2f;
+		}
 		
 		// float changeColourDelay = 0.2f; 0.06f 0.18f
 		float changeColourDelay = Random.Range(0, 0.15f);
@@ -244,13 +269,23 @@ public class TransitionScreen : MonoBehaviour {
 			// levelInfoScreenGO.SetActive(true);
 		// }
 		
-		if (controller.gameCompleted == false && controller.transitionReason != TransitionReason.levelTest)
+		if (controller.gameOver == true)
 		{
-			// LoadLevel.GetLevel();
-			controller.levelManager.SwitchLevel();
+			endScreenController.GameOver();
+			controller.levelManager.ClearLevel();
+			
+		}else if (controller.gameCompleted == false && controller.transitionReason != TransitionReason.levelTest)
+		{
+			if (controller.transitionReason == TransitionReason.levelFailure && controller.modeManager.GetMode() == Mode.Tricky)
+			{
+				controller.levelManager.ReloadLevel();
+			}else{
+				controller.levelManager.SwitchLevel();
+			}
 		}else{
 			// LoadLevel.ClearLevel();
-			completeScreenGO.SetActive(true);
+			// completeScreenGO.SetActive(true);
+			endScreenController.Completed();
 			controller.levelManager.ClearLevel();
 			controller.statsManager.ModeComplete(controller.modeManager.GetMode());
 		}
@@ -276,7 +311,7 @@ public class TransitionScreen : MonoBehaviour {
 		
 		GameObject endPoint;
 		
-		if (controller.gameCompleted == false)
+		if (controller.gameCompleted == false && controller.gameOver == false)
 		{
 			completeScreenGO.SetActive(false);
 			levelInfoScreenGO.SetActive(true);
@@ -284,7 +319,11 @@ public class TransitionScreen : MonoBehaviour {
 			// endPoint = GameObject.Find("Player");
 			endPoint = playerControl.gameObject;
 		}else{
-			endPoint = GameObject.Find("Play");	
+			endPoint = GameObject.Find("Play");
+			if (endPoint == null)
+			{
+				endPoint = GameObject.Find("Levels");
+			}
 		}		
 		
 		transitionTextGO.SetActive(false);

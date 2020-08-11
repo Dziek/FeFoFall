@@ -9,6 +9,11 @@ using UnityEditorInternal;
 
 public class LevelDataEditor : Editor {  
     private ReorderableList list;
+	
+	// private void Awake () {
+		// AssetPreview.SetPreviewTextureCacheSize(150);
+		// Debug.Log("AWAKE");
+	// }
 
     private void OnEnable() {
 		list = new ReorderableList(serializedObject, 
@@ -28,10 +33,14 @@ public class LevelDataEditor : Editor {
 			
 				// if using custom classes / structs / whatever, can use below code with the name of the variable and it'll work it out!
 				// element.FindPropertyRelative("Type")
-				
-			EditorGUI.DrawPreviewTexture(
-				new Rect(rect.x + rect.width * 0.32f, rect.y, EditorGUIUtility.singleLineHeight, EditorGUIUtility.singleLineHeight), 
-				AssetPreview.GetAssetPreview(element.objectReferenceValue));
+			
+			Texture previewTexture = AssetPreview.GetAssetPreview(element.objectReferenceValue);	// this is what errors if null. This makes it slower(?), but not show errors
+			if (previewTexture != null)
+			{
+				EditorGUI.DrawPreviewTexture(
+					new Rect(rect.x + rect.width * 0.32f, rect.y, EditorGUIUtility.singleLineHeight, EditorGUIUtility.singleLineHeight), 
+					previewTexture);
+			}
 		};
 		
 		list.drawHeaderCallback = (Rect rect) => {  

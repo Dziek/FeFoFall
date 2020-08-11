@@ -14,6 +14,8 @@ public class TransitionText : MonoBehaviour {
 	
 	private string lastText;
 	// private string newText;
+	private string overrideText; // if a TextTrigger sets text to this, it'll be said. Might change to 90% chance. Currently ignores transitionReason 
+	private OverrideCondition overrideCondition; // if these match then use overrideText
 	
 	private TransitionController controller;
 	private StatsManager statsManager;
@@ -34,6 +36,18 @@ public class TransitionText : MonoBehaviour {
 			return completeText;
 		}
 		
+		// this is the text from TextTrigger
+		if (overrideText != "" 
+			&& (
+			(overrideCondition == OverrideCondition.levelSuccess && controller.transitionReason == TransitionReason.levelSuccess) 
+			|| 
+			(overrideCondition == OverrideCondition.levelFailure && controller.transitionReason == TransitionReason.levelFailure) 
+			|| overrideCondition == OverrideCondition.none)
+			)
+		{
+			return overrideText;
+		}
+		
 		// GameObject levelGO = GameObject.FindGameObjectWithTag("Level");
 		// if (levelGO != null)
 		// {
@@ -44,8 +58,46 @@ public class TransitionText : MonoBehaviour {
 			// }
 		// }
 		
+		if (controller.modeManager.GetMode() == Mode.Time)
+		{
+			float time = controller.timeChallengeManager.GetTime();
+			
+			if (time <= 0)
+			{
+				return "Outta Time Baby";
+			}
+			
+			return time.ToString("f2");
+		}
+		
+		if (controller.modeManager.GetMode() == Mode.Lives)
+		{
+			int lives = controller.livesChallengeManager.GetLives();
+			
+			if (lives <= 0)
+			{
+				return "Outta Lives Baby";
+			}
+			
+			return lives.ToString();
+		}
+		
 		switch (controller.transitionReason)
 		{
+			case TransitionReason.levelSkip:
+				List<string> optionsS = new List<string>();
+				
+				optionsS.Add("Giving Up?");
+				optionsS.Add("Ha, Knew It");
+				optionsS.Add("Come Back To It Later");
+				optionsS.Add("I Think It's Best");
+				optionsS.Add("Quitter");
+				optionsS.Add("Coward");
+				optionsS.Add("Disappointing");
+				
+				return optionsS[Random.Range(0, optionsS.Count)];
+			//break;
+			
 			case TransitionReason.levelLoad:
 				
 				List<string> optionsL = new List<string>(loadTextOptions);
@@ -141,10 +193,10 @@ public class TransitionText : MonoBehaviour {
 				}
 				
 				switch (statsManager.GetPercentageComplete(modeManager.GetMode()).ToString()) {
-					case "0.25":
-						// options.Add("Quarter Done!");
-						return "Quarter Done!";
-					break;
+					// case "0.25":
+						// // options.Add("Quarter Done!");
+						// return "Quarter Done!";
+					// break;
 					
 					case "0.5":
 						// options.Add("Halfway There!");
@@ -157,7 +209,10 @@ public class TransitionText : MonoBehaviour {
 					break;
 					
 					default:
-						options.Add((statsManager.GetPercentageComplete(modeManager.GetMode()) * 100).ToString("f2") + "% Done!");
+						if (statsManager.GetPercentageComplete(modeManager.GetMode()) >= 0.5f) // it's off-putting unless over 50%
+						{
+							options.Add((statsManager.GetPercentageComplete(modeManager.GetMode()) * 100).ToString("f2") + "% Done!");
+						}
 					break;
 				}
 				
@@ -243,9 +298,12 @@ public class TransitionText : MonoBehaviour {
 					break;
 					
 					default:
-						options.Add("Just " + statsManager.GetNumberOfLevelsRemaining(modeManager.GetMode()).ToString() + " Levels To Go");
-						options.Add("Only " + statsManager.GetNumberOfLevelsRemaining(modeManager.GetMode()).ToString() + " Levels Remaining");
-						options.Add("Now Do That " + statsManager.GetNumberOfLevelsRemaining(modeManager.GetMode()).ToString() + " More Times");
+						if (statsManager.GetPercentageComplete(modeManager.GetMode()) >= 0.5f) // it's off-putting unless over 50%
+						{
+							options.Add("Just " + statsManager.GetNumberOfLevelsRemaining(modeManager.GetMode()).ToString() + " Levels To Go");
+							options.Add("Only " + statsManager.GetNumberOfLevelsRemaining(modeManager.GetMode()).ToString() + " Levels Remaining");
+							options.Add("Now Do That " + statsManager.GetNumberOfLevelsRemaining(modeManager.GetMode()).ToString() + " More Times");
+						}
 					break;
 				}
 				
@@ -354,8 +412,11 @@ public class TransitionText : MonoBehaviour {
 					options.Add(statsManager.GetLevelsCompleted(modeManager.GetMode()).ToString() + " Levels Completed");
 				}
 				
-				options.Add(statsManager.GetLevelsCompleted(modeManager.GetMode()).ToString() + " Down, " + statsManager.GetNumberOfLevelsRemaining(modeManager.GetMode()).ToString() + " To Go");
-				options.Add(statsManager.GetLevelsCompleted(modeManager.GetMode()).ToString() + " / " + statsManager.GetNumberOfLevels(modeManager.GetMode()).ToString());
+				if (statsManager.GetPercentageComplete(modeManager.GetMode()) >= 0.5f) // it's off-putting unless over 50%
+				{
+					options.Add(statsManager.GetLevelsCompleted(modeManager.GetMode()).ToString() + " Down, " + statsManager.GetNumberOfLevelsRemaining(modeManager.GetMode()).ToString() + " To Go");
+					options.Add(statsManager.GetLevelsCompleted(modeManager.GetMode()).ToString() + " / " + statsManager.GetNumberOfLevels(modeManager.GetMode()).ToString());
+				}
 				
 				if (statsManager.GetLastSeconds() > 10)
 				{
@@ -401,6 +462,15 @@ public class TransitionText : MonoBehaviour {
 							uniqueLevelOptions = new List<string>(levelTextF.bonusFailureText);
 							doThis = r < (2 + uniqueLevelOptions.Count) ? true : false;
 						}
+						
+						if (statsManager.GetCurrentLevelCurrentAttempts() > 4 && levelTextF.bonusHintText.Length > 0)
+						{
+							for (int i = 0; i < levelTextF.bonusHintText.Length; i++)
+							{
+								uniqueLevelOptions.Add(levelTextF.bonusHintText[i]);
+							}
+							doThis = r < (2 + uniqueLevelOptions.Count) ? true : false;
+						}
 					// }
 					
 					// if (doThis && uniqueLevelOptions.Count > 0) return uniqueLevelOptions[Random.Range(0, uniqueLevelOptions.Count)];
@@ -412,6 +482,9 @@ public class TransitionText : MonoBehaviour {
 				
 				// basics
 				optionsF.Add("...");
+				optionsF.Add("Seriously?");
+				optionsF.Add("Brave Move That");
+				optionsF.Add("Don't Do That");
 				
 				if (statsManager.GetCurrentLevelCurrentAttempts() > 1)
 				{
@@ -588,15 +661,21 @@ public class TransitionText : MonoBehaviour {
 	
 	public void UpdateText () {
 		
+		int counter = 5;
+		
 		string newText = ChooseText();
 		
-		while (lastText == newText)
+		while (lastText == newText && counter >= 0)
 		{
 			newText = ChooseText();
+			counter--;
 		}
 		
 		displayText.text = newText;
 		lastText = newText;
+		
+		overrideText = ""; // reset overrideText
+		overrideCondition = OverrideCondition.none;
 	}
 	
 	string GetNumberSuffix (int number) {
@@ -659,6 +738,15 @@ public class TransitionText : MonoBehaviour {
 		
 		// return null;
 	// }
+	
+	// public void SetText (string t) {
+		// overrideText = t;
+	// }
+	
+	public void SetText (string t, OverrideCondition oC) {
+		overrideText = t;
+		overrideCondition = oC;
+	}
 	
 	public string GetText () {
 		return displayText.text;

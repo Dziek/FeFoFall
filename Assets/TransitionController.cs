@@ -19,6 +19,8 @@ public class TransitionController : MonoBehaviour {
 	[HideInInspector]
 	public bool gameCompleted;
 	[HideInInspector]
+	public bool gameOver;
+	[HideInInspector]
 	public bool gameReset; // this means it was completed, but is being reset as player is starting again
 	
 	[HideInInspector]
@@ -27,6 +29,8 @@ public class TransitionController : MonoBehaviour {
 	public LevelManager levelManager;
 	public StatsManager statsManager;
 	public ModeManager modeManager;
+	public TimeChallengeManager timeChallengeManager;
+	public LivesChallengeManager livesChallengeManager;
 	
 	private TransitionScreen transitionScreen;
 	private TransitionText transitionText;
@@ -42,7 +46,9 @@ public class TransitionController : MonoBehaviour {
 		// Debug.Log(tS);
 		// Debug.Break();
 		
+		// Reset these
 		gameCompleted = false;
+		gameOver = false;
 		
 		if (transitioning == false)
 		{
@@ -77,12 +83,35 @@ public class TransitionController : MonoBehaviour {
 				// statsManager.ClearModeStats(modeManager.GetMode());	
 				levelManager.ResetModeLevels();
 			}
+			
+			if (modeManager.GetMode() == Mode.Time && timeChallengeManager.CheckResetNeed() == true)
+			{
+				levelManager.ResetModeLevels();	
+			}
+			
+			if (modeManager.GetMode() == Mode.Lives && livesChallengeManager.CheckResetNeed() == true)
+			{
+				levelManager.ResetModeLevels();	
+			}
 		}
 		
-		// if (transitionReason == TransitionReason.levelFailure)
-		// {
-			// LoadLevel.LevelFailed();
-		// }
+		if (transitionReason == TransitionReason.levelFailure)
+		{
+			if (modeManager.GetMode() == Mode.OneShot)
+			{
+				gameOver = true;	
+			}
+			
+			if (modeManager.GetMode() == Mode.Time && timeChallengeManager.GetTime() <= 0)
+			{
+				gameOver = true;	
+			}
+			
+			if (modeManager.GetMode() == Mode.Lives && livesChallengeManager.GetLives() <= 0)
+			{
+				gameOver = true;	
+			}
+		}
 		
 		// if (transitionReason == TransitionReason.levelSuccess)
 		// {
@@ -135,7 +164,7 @@ public class TransitionController : MonoBehaviour {
 		
 		yield return transitionScreen.StartPhaseThree();
 		
-		if (gameCompleted == false)
+		if (gameCompleted == false && gameOver == false)
 		{
 			GameStates.ChangeState("Playing");
 		}else{
@@ -181,6 +210,7 @@ public enum TransitionReason {
 	levelSuccess,
 	levelFailure,
 	levelLoad,
+	levelSkip,
 	levelTest
 }
 

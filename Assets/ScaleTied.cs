@@ -6,6 +6,14 @@ public class ScaleTied : MonoBehaviour {
 	
 	public GameObject playerGO;
 	
+	public bool useX = true;
+	public bool useY;
+	
+	// public bool flipX;
+	// public bool flipY;
+	
+	public bool tieXToY;
+	
 	// Use this for initialization
 	void Start () {
 		playerGO = GameObject.Find("Player");
@@ -20,6 +28,35 @@ public class ScaleTied : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		transform.localScale = new Vector2(playerGO.transform.position.x, 1);
+		
+		float x, y;
+		x = y = 1;
+		
+		if (useX == true)
+		{
+			x = playerGO.transform.position.x;
+			
+			// if (flipX == true)
+			// {
+				// x = -x;
+			// }
+			
+			if (tieXToY == true)
+			{
+				x = playerGO.transform.position.y;
+			}
+		}
+		
+		if (useY == true)
+		{
+			y = playerGO.transform.position.y;
+			
+			// if (flipY == true)
+			// {
+				// y = -y;
+			// }
+		}
+		
+		transform.localScale = new Vector2(x, y);
 	}
 }

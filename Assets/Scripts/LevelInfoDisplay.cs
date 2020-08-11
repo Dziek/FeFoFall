@@ -11,15 +11,36 @@ public class LevelInfoDisplay : MonoBehaviour {
 	public Text lvlAttempts;
 	public Text lvlBestTime;
 	
+	private ModeManager modeManager;
+	
+	void Awake () {
+		modeManager = GameObject.Find("ModeManager").GetComponent<ModeManager>();
+	}
+	
 	void OnEnable () {
 		// Messenger<GameObject>.AddListener("NewLevel", UpdateDisplay);
 		
 		UpdateDisplay(GameObject.FindWithTag("Level"));
+		// Debug.Log("Updating Display From OnEnable");
 	}
 	
 	void OnDisable () {
 		// Messenger<GameObject>.RemoveListener("NewLevel", UpdateDisplay);
 		// Debug.Log("Turning Off");
+	}
+	
+	void Update () {
+		
+		// this is for level skipping in Tricky mode. There may well be a better place for this code, but it lives here for now
+		
+		if (Input.GetButtonDown("NextLevel") && modeManager.GetMode() == Mode.Tricky)
+		{
+			// Messenger.Broadcast("Success");
+			GameStates.ChangeState("Transition", "Skip");
+			Messenger<TransitionReason>.Broadcast("Transition", TransitionReason.levelSkip);
+			
+			gameObject.SetActive(false);
+		}
 	}
 	
 	void UpdateDisplay (GameObject levelGO) {
@@ -40,6 +61,8 @@ public class LevelInfoDisplay : MonoBehaviour {
 				// lvlBestTime.text = "Level Best Time: " + LoadLevel.GetCurrentLevelBestTime().ToString("f2");
 			}
 		}
+		
+		// Debug.Log(levelGO);
 		
 		if (levelGO.GetComponentInChildren<Canvas>() != null)
 		{

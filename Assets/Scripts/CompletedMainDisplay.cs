@@ -13,6 +13,8 @@ public class CompletedMainDisplay : MonoBehaviour {
 	
 	// private string[] cM;
 	
+	private ModeManager modeManager;
+	
 	// void OnAwake () {
 		// cM = completedMsg.text.Split("-X-"[0]);
 		// Debug.Log("A");
@@ -20,22 +22,28 @@ public class CompletedMainDisplay : MonoBehaviour {
 	
 	void Awake () {
 		rawString = completedMsg.text;
+		
+		modeManager = GameObject.Find("ModeManager").GetComponent<ModeManager>();
 	}
 	
 	void OnEnable () {
 		// string cA = GameObject.Find("StatsManager").GetComponent<StatsManager>().GetCurrentAttempts(Mode.Main).ToString();
 		
+		Mode currentMode = modeManager.GetMode();
+		
 		StatsManager statsManager = GameObject.Find("StatsManager").GetComponent<StatsManager>();
 		
-		string cA = statsManager.GetCurrentAttempts(GameObject.Find("ModeManager").GetComponent<ModeManager>().GetMode()).ToString();
-		string cT = statsManager.GetCurrentSeconds(GameObject.Find("ModeManager").GetComponent<ModeManager>().GetMode()).ToString("f2");
-		string aA = statsManager.GetAverageAttemptsPerLevel(GameObject.Find("ModeManager").GetComponent<ModeManager>().GetMode()).ToString("f2");
+		string cA = statsManager.GetCurrentAttempts(currentMode).ToString();
+		string cT = statsManager.GetCurrentSeconds(currentMode).ToString("f2");
+		string aA = statsManager.GetAverageAttemptsPerLevel(currentMode).ToString("f2");
+		string tS = (statsManager.GetModeTimesStarted(currentMode)-1).ToString();
 		
 		string newText = rawString;
 		
-		newText = newText.Replace("$", cA);
-		newText = newText.Replace("£", cT);
-		newText = newText.Replace("€", aA);
+		newText = newText.Replace("$", cA); // current attempts
+		newText = newText.Replace("£", cT); // current time in seconds
+		newText = newText.Replace("€", aA); // average attempts per level
+		newText = newText.Replace("^", tS); // time started mode (minus 1)
 		
 		completedMsg.text = newText;
 		

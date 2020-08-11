@@ -61,8 +61,17 @@ public class LevelManager : MonoBehaviour {
 		}
 	}
 	
+	public void ReloadLevel () {
+		if (currentLevelGO != null)
+		{
+			Destroy(currentLevelGO);
+		}
+		
+		currentLevelGO = Instantiate(lastLevelGO);
+	}
+	
 	public void SwitchLevel () {
-		Debug.Log("Switching Level");
+		// Debug.Log("Switching Level");
 		// Debug.Break();
 		
 		// if (CheckForGameOver())
@@ -135,9 +144,14 @@ public class LevelManager : MonoBehaviour {
 		Mode currentMode = modeManager.GetMode();
 		
 		statsManager.ClearModeStats(currentMode);
+		
+		// Debug.Log("CurrentMode: " + currentMode);
+		
 		modeGroups[(int)currentMode].ResetLevels();
 		
 		// Debug.Log(modeGroups[(int)currentMode].currentLevels.Count);
+		// Debug.Log("Reset");
+		// Debug.Log("Reset: Levels back: " + modeGroups[(int)currentMode].currentLevels.Count);
 	}
 	
 	void OnEnable () {
@@ -187,6 +201,17 @@ public class LevelManager : MonoBehaviour {
 		
 		return range;
 	}
+	
+	// Update Loop to catch if all levels was ever empty. If this happened, the whole thing was broken
+	// void Update () {
+		
+		// int v = modeGroups[(int)modeManager.GetMode()].allLevels.Count;
+		
+		// if (v == 0)
+		// {
+			// Debug.Break();
+		// }
+	// }
 }
 
 public class TopLevelGroup {
@@ -196,7 +221,9 @@ public class TopLevelGroup {
 	public List<GameObject> allLevels = new List<GameObject>();
 	
 	public void ResetLevels () {
-		currentLevels = allLevels;
+		// Debug.Log("ResetLevels - All: " + allLevels.Count);
+		currentLevels = new List<GameObject>(allLevels);
+		// Debug.Log("ResetLevels - Current: " + currentLevels.Count);
 	}
 }
 

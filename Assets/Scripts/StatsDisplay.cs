@@ -38,13 +38,23 @@ public class StatsDisplay : MonoBehaviour {
 		
 		Mode currentMode = modeManager.GetMode();
 		
-		progress.text = "Level Progress: " + statsManager.GetLevelsCompleted(currentMode) + " / " + statsManager.GetNumberOfLevels(currentMode);
-		currentAttempts.text = "Current Attempts: " + statsManager.GetCurrentAttempts(currentMode);
+		if (currentMode != Mode.None)
+		{
+			progress.text = "Level Progress: " + statsManager.GetLevelsCompleted(currentMode) + " / " + statsManager.GetNumberOfLevels(currentMode);
+			currentAttempts.text = "Current Attempts: " + statsManager.GetCurrentAttempts(currentMode);
 		
-		secondsSpendCurrent.text = "Current Seconds: " + statsManager.GetCurrentSeconds(currentMode).ToString("f2");
+			secondsSpendCurrent.text = "Current Seconds: " + statsManager.GetCurrentSeconds(currentMode).ToString("f2");
+		}else{
 		
-		Debug.Log(currentMode);
-		if (statsManager.GetModeTimesStarted(currentMode) > 1)
+			progress.text = "";
+			currentAttempts.text = "";
+			
+			secondsSpendCurrent.text = "";
+		}
+		
+		// Debug.Log(currentMode);
+		
+		if (currentMode != Mode.None && statsManager.GetModeTimesStarted(currentMode) > 1)
 		{
 			timesStarted.text = "Times Started: " + statsManager.GetModeTimesStarted(currentMode);
 			timesCompleted.text = "Times Completed: " + statsManager.GetModeTimesCompleted(currentMode);

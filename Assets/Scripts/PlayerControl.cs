@@ -9,11 +9,17 @@ public class PlayerControl : MonoBehaviour {
 	public bool noDown = false;
 	public bool noRight = false;
 	public bool reverseControls = false; // should reverse controls?
+	public bool reverseControlsX = false; // should reverse controls?
+	public int turnCount; // number of turns allowed, 0 is unlimited
+	public float turnSpeedIncrease; // the amount to increase speed by each turn
+	public bool holdControls; // makes it so you need to hold a direction to keep going
+	public bool ghostStart; // turns collider off until first move
 
 	public float standardSpeed; // standard speed
 	public float boostSpeed; // speed when boosting
 	public float boostLength; // how long boost lasts
 	public float boostCooldown; // how long until boost can be used again
+	public bool nonStopBoosts; // this means the player will boost as soon as cooldown goes down automatically
 	private float colourFadeTime = 0.2f; // how long it takes to change colour
 	
 	public Material normalMat; // how the player looks at normal speed
@@ -25,6 +31,7 @@ public class PlayerControl : MonoBehaviour {
 	public Color regainColour = new Color32(234, 234, 105, 255);  // how the player looks when regaining boost
 	
 	public ControlledMovement controlledObjectScript; // the object to be controlled as well
+	public GameObject parentOnStartGO; // on first movement change parent to this
 	
 	private Vector3 startingPos; // where the player starts
 	private float speedL; // standard speed (local) 
@@ -33,14 +40,24 @@ public class PlayerControl : MonoBehaviour {
 	// private float boostLengthL; // how long boost lasts (local)
 	// private float boostCooldownL; // how long until boost can be used again (local)
 	
-	private Renderer pR; // player renderer
+	// private Renderer pR; // player renderer
 	private SpriteRenderer sR; // player renderer
 	private GameObject graphicsGO; // local childed graphics GameObject
 	[HideInInspector]
 	public GameObject shadowGO; // local childed graphics GameObject
+	[HideInInspector]
+	public bool isMoving; // whether the player is moving
+	
+	private bool isActive = true; // whether it has control / should move
+	private bool stopped; // whether it is stopped
+	private bool freezeInput; // whether inputs are registered
+	
+	private LevelCompletePS levelCompletePS;
 	
 	private LevelInfoDisplay lvlInfoDisplay; // the level info display, to be removed on first movement
 	private bool canGoAway = true; // a check to make sure movement doesn't register multiple game attempts
+	
+	private Collider2D collider;
 	
 	// private bool canMove = false; // GameStates.Playing check does this too
 	
@@ -48,7 +65,8 @@ public class PlayerControl : MonoBehaviour {
 		None,
 		ReverseControls,
 		TurnInvisible,
-		TurnShadow
+		TurnShadow,
+		StopMoving
 	}public TriggerActions triggerAction = TriggerActions.None;
 	
 	public enum directions{
@@ -86,7 +104,12 @@ public class PlayerControl : MonoBehaviour {
 			graphicsGO.transform.localScale = Vector2.one;
 		}
 		
+		levelCompletePS = GameObject.Find("LevelCompletePS").GetComponent<LevelCompletePS>();
 		// Debug.Log("Here");
+		
+		collider = GetComponent<Collider2D>();
+		
+		
 	}
 	
 	// Use this for initialization
@@ -94,7 +117,7 @@ public class PlayerControl : MonoBehaviour {
 		speedL = standardSpeed;
 		// boostCooldownL = boostCooldown;
 		
-		pR = GetComponent<Renderer>();
+		// pR = GetComponent<Renderer>();
 		sR = GetComponent<SpriteRenderer>();
 		
 		// pR.material = normalMat;
@@ -104,6 +127,13 @@ public class PlayerControl : MonoBehaviour {
 		
 		// GameObject.Find("TransitionControllers").GetComponent<TransitionScreen>().SetPlayer(this);
 		Messenger<PlayerControl>.Broadcast("SetPlayer", this);
+		// Debug.Log("BroadcastPlayer");
+		
+		if (ghostStart == true)
+		{
+			// isActive = false;
+			ChangeActive(false);
+		}
 	}
 	
 	// Update is called once per frame
@@ -111,7 +141,10 @@ public class PlayerControl : MonoBehaviour {
 		// if (GameStates.State == GameStates.States.Playing) 
 		if (GameStates.GetState() == "Playing")
 		{
-			CheckControls();
+			if (freezeInput == false)
+			{
+				CheckControls();
+			}
 			// CheckBoost();
 			Move();
 		}
@@ -128,6 +161,7 @@ public class PlayerControl : MonoBehaviour {
 				RegisterInput("Down");
 			}
 			
+			isMoving = true;
 			verticalInputReset = false;
 		}
 		// if (Input.GetKeyDown("s")||Input.GetKeyDown("down")) 
@@ -139,28 +173,34 @@ public class PlayerControl : MonoBehaviour {
 			}else{
 				RegisterInput("Up");
 			}
+			
+			isMoving = true;
 			verticalInputReset = false;
 		}
 		// if (Input.GetKeyDown("d")||Input.GetKeyDown("right")) 
 		if (Input.GetAxisRaw("Horizontal") > 0.5f && horizontalInputReset == true && noRight == false) 
 		{	
-			if (reverseControls == false)
+			if (reverseControls == false && reverseControlsX == false)
 			{
 				RegisterInput("Right");
 			}else{
 				RegisterInput("Left");
 			}
+			
+			isMoving = true;
 			horizontalInputReset = false;
 		}
 		// if (Input.GetKeyDown("a")||Input.GetKeyDown("left")) 
 		if (Input.GetAxisRaw("Horizontal") < -0.5f && horizontalInputReset == true && noLeft == false) 
 		{
-			if (reverseControls == false)
+			if (reverseControls == false && reverseControlsX == false)
 			{
 				RegisterInput("Left");
 			}else{
 				RegisterInput("Right");
 			}
+			
+			isMoving = true;
 			horizontalInputReset = false;
 		}
 		
@@ -173,6 +213,11 @@ public class PlayerControl : MonoBehaviour {
 		{
 			verticalInputReset = true;
 		}
+		
+		if (Input.GetButtonDown("Boost"))
+		{
+			AttemptBoost();
+		}
 				
 		// #if UNITY_ANDROID
 			// if (Input.touchCount > 0)
@@ -183,6 +228,14 @@ public class PlayerControl : MonoBehaviour {
 			// transform.position = Vector3.MoveTowards(transform.position, targetp1, speed * Time.deltaTime); //Uses normal speed instead of touchSpeed
 		// #endif
 		
+		if (holdControls == true)
+		{
+			if (Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0)
+			{
+				RegisterInput("None");
+				isMoving = false;
+			}
+		}
 		
 	}
 	
@@ -258,11 +311,8 @@ public class PlayerControl : MonoBehaviour {
 		yield return null;
 	}
 	
-	public void RegisterInput (string dir) {
-		
-		selectedDirection = (directions) System.Enum.Parse (typeof(directions), dir);
-	
-		if (direction == selectedDirection && boosting == false && boostReady)
+	void AttemptBoost () {
+		if(boosting == false && boostReady)
 		{
 			boosting = true;
 			boostReady = false;
@@ -271,7 +321,50 @@ public class PlayerControl : MonoBehaviour {
 			// boostCooldownL = boostCooldown;
 			
 			StartCoroutine("Boost");
+		}
+	}
+	
+	public void RegisterInput (string dir) {
+		
+		if (ghostStart == true)
+		{
+			ghostStart = false;
+			// isActive = true;
+			ChangeActive(true);
+		}
+		
+		if (isActive == false)
+		{
+			// quit out and don't process any input
+			return;
+		}
+		
+		selectedDirection = (directions) System.Enum.Parse (typeof(directions), dir);
+	
+		if (direction == selectedDirection)
+		{
+			AttemptBoost();
 		}else{
+			if (turnCount > 0)
+			{
+				turnCount--;
+				if (turnCount == 0)
+				{
+					noLeft = true;
+					noRight = true;
+					noUp = true;
+					noDown = true;
+				}
+			}
+			
+			if (turnSpeedIncrease > 0)
+			{
+				standardSpeed += turnSpeedIncrease;
+				boostSpeed += turnSpeedIncrease;
+				
+				speedL += turnSpeedIncrease;
+			}
+			
 			direction = selectedDirection;
 		}
 		
@@ -284,6 +377,11 @@ public class PlayerControl : MonoBehaviour {
 			
 			Messenger.Broadcast("FirstMovement");
 			// Messenger.Broadcast("LevelStarted");
+			
+			if (parentOnStartGO != null)
+			{
+				transform.SetParent(parentOnStartGO.transform);
+			}
 			
 			if (Application.loadedLevelName != "LevelTesting")
 			{
@@ -301,23 +399,33 @@ public class PlayerControl : MonoBehaviour {
 	
 	void Move () {
 		
+		if (nonStopBoosts == true)
+		{
+			AttemptBoost();
+		}
+		
 		// if (reverseControls == false)
 		// {
-			switch (direction)
+			
+			if (stopped == false)
 			{
-				case directions.Up:
-					transform.Translate(Vector3.up * (Time.deltaTime * speedL), Space.World);
-				break;
-				case directions.Down:
-					transform.Translate(Vector3.up * (-Time.deltaTime * speedL), Space.World);
-				break;
-				case directions.Right:
-					transform.Translate(Vector3.right * (Time.deltaTime * speedL), Space.World);
-				break;
-				case directions.Left:
-					transform.Translate(Vector3.right * (-Time.deltaTime * speedL), Space.World);
-				break;
+				switch (direction)
+				{
+					case directions.Up:
+						transform.Translate(Vector3.up * (Time.deltaTime * speedL), Space.World);
+					break;
+					case directions.Down:
+						transform.Translate(Vector3.up * (-Time.deltaTime * speedL), Space.World);
+					break;
+					case directions.Right:
+						transform.Translate(Vector3.right * (Time.deltaTime * speedL), Space.World);
+					break;
+					case directions.Left:
+						transform.Translate(Vector3.right * (-Time.deltaTime * speedL), Space.World);
+					break;
+				}
 			}
+			
 		// }else{
 			// switch (direction)
 			// {
@@ -336,6 +444,23 @@ public class PlayerControl : MonoBehaviour {
 			// }
 		// }
 	}
+	
+	void ChangeActive (bool newActiveState) {
+		isActive = newActiveState;
+		
+		collider.enabled = isActive;
+		
+		if (isActive == true)
+		{
+			Color32 t = sR.color;
+			t.a = 255;
+			sR.color = t;
+		}else{
+			Color32 t = sR.color;
+			t.a = 120;
+			sR.color = t;
+		}
+	}
 
 	public void Reset () {
 		direction = directions.None;
@@ -349,7 +474,7 @@ public class PlayerControl : MonoBehaviour {
 	
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		if (Application.loadedLevelName == "LevelTesting" || Application.loadedLevelName == "GraphicsTesting" )
+		if (Application.loadedLevelName == "LevelTesting" || Application.loadedLevelName == "GraphicsTesting"  || Application.loadedLevelName == "Aesthetics" )
 		{
 			if(other.gameObject.tag == "Wall" || other.gameObject.tag == "Frame")
 			{
@@ -359,6 +484,7 @@ public class PlayerControl : MonoBehaviour {
 			if(other.gameObject.tag == "End")
 			{
 				Application.LoadLevel(Application.loadedLevel);
+				Debug.Log("Did It!");
 			}
 		}else{
 		    if(other.gameObject.tag == "Wall" || other.gameObject.tag == "Frame")
@@ -381,8 +507,11 @@ public class PlayerControl : MonoBehaviour {
 				
 			    Messenger<float, float>.Broadcast("screenshake", shakeIntensity, shakeDuration);
 			    // Messenger<float, float>.Broadcast("screenshake", 0.08f, 0.03f);
-			   
+				
+				
+				Messenger<PlayerControl>.Broadcast("SetPlayer", this); // Testing new thing - trying to make it recognise which player hit a wall
 			    Messenger<TransitionReason>.Broadcast("Transition", TransitionReason.levelFailure);
+				
 			   
 			    Transform endPoint = GameObject.Find("EndPoint").transform;
 			    float distance = Vector2.Distance(transform.position, endPoint.position);
@@ -392,7 +521,7 @@ public class PlayerControl : MonoBehaviour {
 			    Messenger<bool>.Broadcast("CloseCall", convertedDistance < 0.4f);
 				
 				// TRYING NEW THINGS
-				gameObject.SetActive(false);
+				// gameObject.SetActive(false);
 				
 				// graphicsGO.SetActive(false);
 				// gameObject.GetComponent<Collider2D>().enabled = false;
@@ -411,9 +540,18 @@ public class PlayerControl : MonoBehaviour {
 			
 			    Messenger<TransitionReason>.Broadcast("Transition", TransitionReason.levelSuccess);
 				
-				Vector2 v = other.gameObject.GetComponent<Collider2D>().bounds.ClosestPoint(transform.position);
+				Vector2 collisionPoint = other.gameObject.GetComponent<Collider2D>().bounds.ClosestPoint(transform.position);
 				
-				GameObject.Find("LevelCompletePS").GetComponent<LevelCompletePS>().Fire(v);
+				if (GameObject.Find("LevelCamera") != null)
+				{
+					Camera cam = GameObject.Find("LevelCamera").GetComponent<Camera>();
+					
+					collisionPoint = cam.WorldToViewportPoint(collisionPoint);
+					
+					collisionPoint = Camera.main.ViewportToWorldPoint(collisionPoint);
+				}
+				
+				levelCompletePS.Fire(collisionPoint);
 				
 				// TRYING NEW THINGS
 				// gameObject.SetActive(false);
@@ -475,7 +613,34 @@ public class PlayerControl : MonoBehaviour {
 					graphicsGO.active = !graphicsGO.active;
 				}
 			break;
+			
+			case TriggerActions.StopMoving:
+				if (stopped == false)
+				{	
+					if (time != 0)
+					{
+						StartCoroutine("StopMoving", time);
+					}
+					
+					stopped = true;
+				}else{
+					stopped = false;
+				}
+			break;
 		}
+	}
+	
+	IEnumerator StopMoving (float time) {
+		
+		float t = 0;
+		
+		while (t < time) 
+		{
+			t += Time.deltaTime;
+			yield return null;
+		}
+		
+		stopped = false;
 	}
 	
 	public void ReverseControls (float time) {
@@ -500,6 +665,18 @@ public class PlayerControl : MonoBehaviour {
 		reverseControls = false;
 	}
 	
+	public void FreezeInput (bool v) {
+		freezeInput = v;
+	}
+	
+	public float GetCurrentSpeed () {
+		return speedL;
+	}
+	
+	public bool CheckIfBoosting () {
+		return boosting;
+	}
+	
 	// void UpdateCanMove () {
 		// canMove = true;
 	// }
@@ -511,6 +688,22 @@ public class PlayerControl : MonoBehaviour {
 	// void OnDisable () {
 		// Messenger.RemoveListener("TransitionComplete", UpdateCanMove);
 	// }
+	
+	// void ondrawgizmos () {
+        // gizmos.color = color.green;
+		
+		// // camera cam = camera.main;
+		// camera cam = gameobject.find("camera").getcomponent<camera>();
+		
+		// vector3 screenpos = cam.worldtoviewportpoint(transform.position);
+		
+		// screenpos = camera.main.viewporttoworldpoint(screenpos);
+		// // screenpos = cam.viewporttoworldpoint(screenpos);
+		
+		// // debug.log("sp: " + screenpos + " ap " + transform.position);
+        // gizmos.drawsphere(screenpos, 1f);
+        
+    // }
 	
 }
 

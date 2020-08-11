@@ -17,6 +17,9 @@ public class Movement : MonoBehaviour {
 	public bool oneWay; // if want to use this pause must be at least 0.1f
 	public bool oneCircuit; // if want to use this pause must be at least 0.1f
 	public bool skipFirstPause;
+	public bool waitForTransition; // wait for Transition to have finished
+	
+	public bool timeOnlyMovesWhenPlayerDoes; // does what it says bub
 	
 	private float timer;
 	private float oneWayCutOff;
@@ -25,6 +28,9 @@ public class Movement : MonoBehaviour {
 	private bool waitForTrigger;
 	private bool partOneCompleteForOneCircuit;
 	private bool partOneCompleteForSkipPause;
+	
+	private int waitForThisNumberOfTriggers;
+	private int noOfTriggersTripped;
 	
 	// private GameObject player;
 	private PlayerControl playerScript;
@@ -54,7 +60,7 @@ public class Movement : MonoBehaviour {
 		
 		if (!waitForTrigger)
 		{
-			if (waitForPlayerMovement)
+			if (waitForPlayerMovement == true || waitForTransition == true)
 			{
 				StartCoroutine("WaitForGameStart");
 			}else{
@@ -76,7 +82,20 @@ public class Movement : MonoBehaviour {
 		{
 			if (GameStates.GetState() == "Playing")
 			{
-				timer += Time.deltaTime;
+				if (timeOnlyMovesWhenPlayerDoes == true)
+				{
+					if (playerScript != null)
+					{
+						if (playerScript.isMoving == true)
+						{
+							timer += Time.deltaTime;
+						}
+					}			
+				}else{
+					timer += Time.deltaTime;
+				}
+				
+				// timer += Time.deltaTime;
 				float pos = 0;
 				
 				if (!skipFirstPause)
@@ -141,7 +160,23 @@ public class Movement : MonoBehaviour {
 		waitForTrigger = true;
 	}
 	
+	public void WaitForNumberTrigger () {
+		waitForTrigger = true;
+		
+		waitForThisNumberOfTriggers++;
+		
+		// Debug.Log(waitForThisNumberOfTriggers);
+	}
+	
 	public void TriggerActivated (float time) {
+		
+		noOfTriggersTripped++;
+		
+		if (noOfTriggersTripped < waitForThisNumberOfTriggers)
+		{
+			return;
+		}
+		
 		if (waitForTrigger == true)
 		{
 			StartCoroutine("Move");
@@ -153,6 +188,19 @@ public class Movement : MonoBehaviour {
 			StopCoroutine("Move");
 		}
 	}
+	
+	// public void TriggerActivated (float time) {
+		// if (waitForTrigger == true)
+		// {
+			// StartCoroutine("Move");
+			// if (time != 0)
+			// {
+				// StartCoroutine("Timer", time);
+			// }
+		// }else{
+			// StopCoroutine("Move");
+		// }
+	// }
 	
 	IEnumerator Timer (float t) {
 		
@@ -183,7 +231,15 @@ public class Movement : MonoBehaviour {
 				
 				// if (playerScript != null)
 				// {
-					StartCoroutine("CheckForPlayerMovement");
+					if (waitForTransition)
+					{
+						StartCoroutine("Move");
+					}
+					
+					if (waitForPlayerMovement)
+					{
+						StartCoroutine("CheckForPlayerMovement");
+					}
 					yield break;
 				// }
 			}

@@ -11,12 +11,14 @@ public class Rotation : MonoBehaviour {
 	public float rotationAmount;
 	
 	public float pause;
+	public float delay;
 	
 	public bool waitForPlayerMovement;
 	public bool oneWay; // if want to use this pause must be at least 0.1f
 	public bool oneCircuit; // if want to use this pause must be at least 0.1f
 	public bool sway;
 	public bool skipFirstPause;
+	public bool resetOnActivated; // this means all bools and such will reset when Trigger is hit
 	
 	public bool useBelowPivot; // can only be 360
 	public int dir; // must be 1 or -1, only used when using pivot
@@ -72,6 +74,19 @@ public class Rotation : MonoBehaviour {
 	
 	IEnumerator Rotate () {
 		// while (GameStates.GetState() == "Playing")
+			
+		if (resetOnActivated == true)
+		{
+			partOneCompleteForOneCircuit = false;
+			partOneCompleteForSkipPause = false;
+		}
+		
+		
+		if (delay > 0)
+		{
+			yield return new WaitForSeconds(delay);
+		}	
+		
 		while (true)
 		{
 			if (GameStates.GetState() == "Playing")
@@ -271,11 +286,15 @@ public class Rotation : MonoBehaviour {
 	}
 	
 	public void TriggerActivated (float time) {
-		// timer = 0;
-		StartCoroutine("Rotate");
-		if (time != 0)
+		if (waitForTrigger == true)
 		{
-			StartCoroutine("Timer", time);
+			StartCoroutine("Rotate");
+			if (time != 0)
+			{
+				StartCoroutine("Timer", time);
+			}
+		}else{
+			StopCoroutine("Rotate");
 		}
 	}
 	

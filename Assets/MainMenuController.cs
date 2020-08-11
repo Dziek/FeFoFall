@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 public class MainMenuController : MonoBehaviour {
 
 	public MenuScreen mainSubMenu;
+	public MenuScreen playSubMenu;
+	public MenuScreen challengesSubMenu; // this should just be a sub of play, and dealt with inside the PlayMenuController. But I've done this instead :(
 	public MenuScreen optionsSubMenu;
 	public MenuScreen statsSubMenu;
 	public MenuScreen extrasSubMenu;
@@ -24,11 +26,11 @@ public class MainMenuController : MonoBehaviour {
 	}
 	
 	void OnEnable () {
-		Invoke("D", 0.0f);
+		Invoke("DelayedOnEnableMethod", 0.0f);
 		
 	}
 	
-	void D () {
+	void DelayedOnEnableMethod () {
 		// Debug.Log(EventSystem.current.alreadySelecting);
 		
 		if (onDisableButtonGO != null)
@@ -48,6 +50,11 @@ public class MainMenuController : MonoBehaviour {
 		// selectedButtonGO = null;
 		// selectedButtonGO = EventSystem.current.currentSelectedGameObject;
 		
+		if (EventSystem.current == null)
+		{
+			return;
+		}
+		
 		if (EventSystem.current.currentSelectedGameObject != null)
 		{
 			onDisableButtonGO = EventSystem.current.currentSelectedGameObject;
@@ -61,6 +68,8 @@ public class MainMenuController : MonoBehaviour {
 	
 	public void LoadMainSub () {
 		mainSubMenu.menuScreenGO.SetActive(true);
+		playSubMenu.menuScreenGO.SetActive(false);
+		challengesSubMenu.menuScreenGO.SetActive(false);
 		optionsSubMenu.menuScreenGO.SetActive(false);
 		statsSubMenu.menuScreenGO.SetActive(false);
 		extrasSubMenu.menuScreenGO.SetActive(false);
@@ -68,7 +77,7 @@ public class MainMenuController : MonoBehaviour {
 		// MenuManager always makes the Play Button be selected on MainMenu load anyway
 		// What this does, is make it so when you leave Options, you're still on Options
 		
-		if (selectedButtonGO != null)
+		if (selectedButtonGO != null && selectedButtonGO.active == true)
 		{
 			EventSystem.current.SetSelectedGameObject(selectedButtonGO);
 		}else{
@@ -76,8 +85,41 @@ public class MainMenuController : MonoBehaviour {
 		}
 	}
 	
+	public void OpenPlaySub () {
+		mainSubMenu.menuScreenGO.SetActive(false);
+		playSubMenu.menuScreenGO.SetActive(true);
+		challengesSubMenu.menuScreenGO.SetActive(false);
+		optionsSubMenu.menuScreenGO.SetActive(false);
+		statsSubMenu.menuScreenGO.SetActive(false);
+		extrasSubMenu.menuScreenGO.SetActive(false);
+		
+		if (selectedButtonGO != null && selectedButtonGO.active == true)
+		{
+			EventSystem.current.SetSelectedGameObject(selectedButtonGO);
+		}else{
+			EventSystem.current.SetSelectedGameObject(playSubMenu.defaultSelectedGO);
+		}
+		
+		selectedButtonGO = EventSystem.current.currentSelectedGameObject;
+		// EventSystem.current.SetSelectedGameObject(playSubMenu.defaultSelectedGO);
+	}
+	
+	public void OpenChallengesSub () {
+		mainSubMenu.menuScreenGO.SetActive(false);
+		playSubMenu.menuScreenGO.SetActive(false);
+		challengesSubMenu.menuScreenGO.SetActive(true);
+		optionsSubMenu.menuScreenGO.SetActive(false);
+		statsSubMenu.menuScreenGO.SetActive(false);
+		extrasSubMenu.menuScreenGO.SetActive(false);
+		
+		selectedButtonGO = EventSystem.current.currentSelectedGameObject;
+		EventSystem.current.SetSelectedGameObject(challengesSubMenu.defaultSelectedGO);
+	}
+	
 	public void OpenOptionsSub () {
 		mainSubMenu.menuScreenGO.SetActive(false);
+		playSubMenu.menuScreenGO.SetActive(false);
+		challengesSubMenu.menuScreenGO.SetActive(false);
 		optionsSubMenu.menuScreenGO.SetActive(true);
 		statsSubMenu.menuScreenGO.SetActive(false);
 		extrasSubMenu.menuScreenGO.SetActive(false);
@@ -88,6 +130,8 @@ public class MainMenuController : MonoBehaviour {
 	
 	public void OpenStatsSub () {
 		mainSubMenu.menuScreenGO.SetActive(false);
+		playSubMenu.menuScreenGO.SetActive(false);
+		challengesSubMenu.menuScreenGO.SetActive(false);
 		optionsSubMenu.menuScreenGO.SetActive(false);
 		statsSubMenu.menuScreenGO.SetActive(true);
 		extrasSubMenu.menuScreenGO.SetActive(false);
@@ -98,6 +142,8 @@ public class MainMenuController : MonoBehaviour {
 	
 	public void OpenExtrasSub () {
 		mainSubMenu.menuScreenGO.SetActive(false);
+		playSubMenu.menuScreenGO.SetActive(false);
+		challengesSubMenu.menuScreenGO.SetActive(false);
 		optionsSubMenu.menuScreenGO.SetActive(false);
 		statsSubMenu.menuScreenGO.SetActive(false);
 		extrasSubMenu.menuScreenGO.SetActive(true);

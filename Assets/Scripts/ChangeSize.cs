@@ -15,6 +15,7 @@ public class ChangeSize : MonoBehaviour {
 	public bool oneWay; // if want to use this pause must be at least 0.1f
 	public bool oneCircuit; // if want to use this pause must be at least 0.1f
 	public bool skipFirstPause;
+	public bool waitForTransition; // wait for Transition to have finished
 	
 	private float timer;
 	private float oneWayCutOff;
@@ -23,6 +24,9 @@ public class ChangeSize : MonoBehaviour {
 	private bool waitForTrigger;
 	private bool partOneCompleteForOneCircuit;
 	private bool partOneCompleteForSkipPause;
+	
+	private int waitForThisNumberOfTriggers;
+	private int noOfTriggersTripped;
 	
 	// private GameObject player;
 	private PlayerControl playerScript;
@@ -56,11 +60,12 @@ public class ChangeSize : MonoBehaviour {
 		
 		if (!waitForTrigger)
 		{
-			if (waitForPlayerMovement)
+			if (waitForPlayerMovement == true || waitForTransition == true)
 			{
 				StartCoroutine("WaitForGameStart");
 			}else{
 				StartCoroutine("Change");
+				// Debug.Log("Hmm");
 			}
 		}
 		
@@ -68,18 +73,25 @@ public class ChangeSize : MonoBehaviour {
 	
 	IEnumerator Change () {
 		// while (GameStates.GetState() == "Playing")
-			
+		
+		// Debug.Log(Time.time);
+		// Debug.Log("Changing");
+	
 		if (delay > 0)
 		{
 			yield return new WaitForSeconds(delay);
 		}
+		
+		// Debug.Log(Time.time);
+		
+		float pos = 0;
 		
 		while (true)
 		{
 			if (GameStates.GetState() == "Playing")
 			{
 				timer += Time.deltaTime;
-				float pos = 0;
+				pos = 0;
 				
 				if (!skipFirstPause)
 				{
@@ -106,7 +118,8 @@ public class ChangeSize : MonoBehaviour {
 				{
 					if (oneWay)
 					{
-						yield break;
+						transform.localScale = endSize;
+						break;
 					}
 					if (oneCircuit)
 					{
@@ -118,7 +131,8 @@ public class ChangeSize : MonoBehaviour {
 				{
 					if (oneCircuit && partOneCompleteForOneCircuit)
 					{
-						yield break;
+						transform.localScale = startSize;
+						break;
 					}
 				}
 				
@@ -135,15 +149,34 @@ public class ChangeSize : MonoBehaviour {
 			yield return null;
 		}
 		
-		Debug.Log("End");
+		// transform.localScale = endSize;
+		// Debug.Log(pos);
 		yield return null;
 	}
 	
 	public void WaitForTrigger () {
 		waitForTrigger = true;
+		
+		// Debug.Log("Wha?");
+	}
+	
+	public void WaitForNumberTrigger () {
+		waitForTrigger = true;
+		
+		waitForThisNumberOfTriggers++;
+		
+		// Debug.Log(waitForThisNumberOfTriggers);
 	}
 	
 	public void TriggerActivated (float time) {
+		
+		noOfTriggersTripped++;
+		
+		if (noOfTriggersTripped < waitForThisNumberOfTriggers)
+		{
+			return;
+		}
+		
 		// timer = 0;
 		StartCoroutine("Change");
 		if (time != 0)
@@ -171,8 +204,22 @@ public class ChangeSize : MonoBehaviour {
 		{
 			if (GameStates.GetState() == "Playing")
 			{
-				// playerScript = GameObject.Find("Player").GetComponent<PlayerControl>();
-				StartCoroutine("CheckForPlayerMovement");
+				if (Application.loadedLevelName == "LevelTesting" || Application.loadedLevelName == "GraphicsTesting")
+				{
+					// Debug.Log("Looking!");
+					playerScript = GameObject.Find("Player").GetComponent<PlayerControl>();
+				}
+				
+				if (waitForTransition)
+				{
+					StartCoroutine("Change");
+				}
+				
+				if (waitForPlayerMovement)
+				{
+					StartCoroutine("CheckForPlayerMovement");
+				}
+				
 				yield break;
 			}
 			yield return null;

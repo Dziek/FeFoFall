@@ -18,6 +18,26 @@ public class EndPointScript : MonoBehaviour {
 			go.transform.SetParent(transform);
 			
 			go.transform.localScale = Vector2.one;
+			
+			DoParticleSystemStuff();
 		}
+	}
+	
+	void DoParticleSystemStuff () {
+		ParticleSystem ps = GetComponentInChildren<ParticleSystem>();
+		var sh = ps.shape;
+		sh.scale = new Vector2(transform.localScale.x * 2, transform.localScale.y * 2);
+		
+		float volume = transform.localScale.x * transform.localScale.y;
+		if (volume < 1) volume = 1;
+		
+		var em = ps.emission;
+		em.rateOverTime = volume * 5f;
+		
+		// var main = ps.main;
+		// main.
+		
+		var sz = ps.sizeOverLifetime;
+		sz.sizeMultiplier = Mathf.Max(transform.localScale.x, transform.localScale.y);
 	}
 }

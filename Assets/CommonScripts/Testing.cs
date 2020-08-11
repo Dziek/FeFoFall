@@ -62,12 +62,23 @@ public class Testing : MonoBehaviour {
 		
 		if (Input.GetButtonDown("Fire3"))
 		{
+			Debug.Log("Muting Level Audio");
 			MuteLevelAudio();
 		}
 		
 		if (Input.GetButtonDown("Jump"))
 		{
+			Debug.Log("Reset Camera Settings");
 			ResetCameraSettings();
+		}
+		
+		if (Input.GetKeyDown("l"))
+		{
+			Debug.Log("Skipping level");
+			
+			Messenger.Broadcast("Success");
+			GameStates.ChangeState("Transition", "Good");
+			Messenger<TransitionReason>.Broadcast("Transition", TransitionReason.levelSuccess);
 		}
 	}
 	

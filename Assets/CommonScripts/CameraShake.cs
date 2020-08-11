@@ -12,13 +12,25 @@ public class CameraShake : MonoBehaviour {
 	
 	private Coroutine constantCoroutine;
 	
+	private Camera camera;
+	
 	void Awake () {
 		// Messenger<float>.AddListener("screenshake", Shake);
 		Messenger<float, float>.AddListener("screenshake", Shake);
 		Messenger<float>.AddListener("StartConstantShake", StartConstantShake);
 		Messenger.AddListener("StopConstantShake", StopConstantShake);
 		
-		camStartPos = Camera.main.transform.position;
+		
+		
+		if (gameObject.GetComponent<Camera>() == null)
+		{
+			camera = Camera.main;
+		}else{
+			camera = gameObject.GetComponent<Camera>();
+		}
+		
+		// camStartPos = Camera.main.transform.position;
+		camStartPos = camera.transform.position;
 	}
 	
 	void OnDestroy () {
@@ -48,7 +60,8 @@ public class CameraShake : MonoBehaviour {
 		}
 		
 		constantCoroutine = null;
-		Camera.main.transform.position = camStartPos;
+		// Camera.main.transform.position = camStartPos;
+		camera.transform.position = camStartPos;
 	}	
 	
 	IEnumerator ShakeCamera (float intensity, float shakeTime) {
@@ -61,13 +74,15 @@ public class CameraShake : MonoBehaviour {
 			float shakeAmountY = (Random.value * intensity * 2) - intensity;
 			float shakeAmountZ = (Random.value * intensity * 2) - intensity;
 			
-			Camera.main.transform.position = camStartPos + new Vector3(shakeAmountX, shakeAmountY, shakeAmountZ);
+			// Camera.main.transform.position = camStartPos + new Vector3(shakeAmountX, shakeAmountY, shakeAmountZ);
+			camera.transform.position = camStartPos + new Vector3(shakeAmountX, shakeAmountY, shakeAmountZ);
 			
 			t += Time.deltaTime;
 			yield return null;
 		}
 		
-		Camera.main.transform.position = camStartPos;
+		// Camera.main.transform.position = camStartPos;
+		camera.transform.position = camStartPos;
 	}
 	
 	IEnumerator ShakeCameraConstantly (float intensity) {
@@ -78,10 +93,12 @@ public class CameraShake : MonoBehaviour {
 			float shakeAmountY = (Random.value * intensity * 2) - intensity;
 			float shakeAmountZ = (Random.value * intensity * 2) - intensity;
 			
-			Camera.main.transform.position = camStartPos + new Vector3(shakeAmountX, shakeAmountY, shakeAmountZ);
+			// Camera.main.transform.position = camStartPos + new Vector3(shakeAmountX, shakeAmountY, shakeAmountZ);
+			camera.transform.position = camStartPos + new Vector3(shakeAmountX, shakeAmountY, shakeAmountZ);
 			yield return null;
 		}
 		
-		Camera.main.transform.position = camStartPos;	
+		// Camera.main.transform.position = camStartPos;	
+		camera.transform.position = camStartPos;	
 	}
 }

@@ -1,0 +1,42 @@
+Make Crushers easier - had given up
+Make Player Spins easier
+Make Options easier / more fun
+Make Be Brave text easier
+Add LevelFailure text to Marks The Spot and change the text
+Boost Round Corners is bad
+Both me and Martin kept going at the 'wrong' bit on CornerCamera
+
+???
+Make ReversedControls easier? - smaller player?
+Lights Out Martin didn't notice EndPoint at all, aiming for top corner
+CameraRotates wider than others? I don't think so
+Didn't get Sequence straight away, also needs better delay
+Make player slower in Timing?
+Add delay to start of Virtues?
+Add dots in laps to show how many you've done, and a direction bit
+Make Minefield easier?
+Make SpearFishing player thinner
+
+!!!
+Liked CameraRotates
+Smiled at Journey
+Smiled at various invisible ones
+Got a reaction for Be Brave!
+Liked Decoys
+Went to leave but played a few more levels - good sign
+
+THOUGHTS
+Possibly have all player starting points not near a wall in early levels,
+so when people get confused they can try and save it?
+Change Safe Space name
+Martin wasn't as happy with SplitCamera as I am
+Martin did not like Marks The Spot
+Maybe have an easier invisble EndPoint level to make Marks The Spot better?
+Make the other Elevator have an elaboration like Martin thought
+I was going to make Mouth more difficult, but Martin struggled
+Bait wasn't as strong as I'd hoped, I think having multiple EndPoints
+on show diminishes it
+Levels Hints like CodeBreaker need to show up more, maybe make new script
+
+BUGS
+When pressing escape during Transition it messes up again

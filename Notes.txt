@@ -3,9 +3,7 @@ C0 improvements:
 Slow level
 Difficult level
 Palace (maybe difficult)
-Gimmick that never shows up again - rotating player?
 Better multi path level
 
-Unusual shaped player?
 Controlled movement level?
 Restricted movement level?
